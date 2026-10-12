@@ -34,7 +34,7 @@
 
 <section class="box"><h2>Publier une mise à jour</h2>
 <p class="muted">Version actuelle : <b id="curV">—</b>. Le numéro doit être plus grand (ex. 0.8 → 0.9). Le fichier est le <code>index.html</code> de l'application.</p>
-<div class="row"><div><label for="uVer">Nouvelle version</label><input id="uVer" placeholder="0.9"></div></div>
+<div class="row"><div><label for="uVer">Nouvelle version</label><input id="uVer" placeholder="auto"><small id="uHint" style="display:block;opacity:.75;margin-top:4px">Choisissez le fichier : le numéro sera proposé automatiquement.</small></div></div>
 <label for="uNotes">Nouveautés (affichées aux utilisateurs)</label><textarea id="uNotes" placeholder="- Nouvelle fonction…&#10;- Corrections…"></textarea>
 <div class="row"><div><label for="uAnd">Fichier Android (index.html)</label><input id="uAnd" type="file" accept=".html,text/html"></div>
 <div><label for="uIos">Fichier iOS (optionnel, BibleLifeCasts-iOS.html)</label><input id="uIos" type="file" accept=".html,text/html"></div></div>
@@ -129,6 +129,24 @@ $("hist").onclick=async e=>{
     const vref=db.collection("apps").doc(cur).collection("versions").doc(v),cs=await vref.collection("chunks").get();
     for(const d of cs.docs)await d.ref.delete();await vref.delete();pick()}
 };
+
+/* Versionnage automatique : compare le nouveau fichier à la dernière version publiée */
+async function lcPrevText(){const a=apps[cur]||{};if(!a.latest)return null;
+  const vref=db.collection("apps").doc(cur).collection("versions").doc(a.latest.version),f=(await vref.get()).data().files;
+  const p=f.android?"android":"ios";let s="";for(let k=0;k<f[p].n;k++)s+=(await vref.collection("chunks").doc(p+"_"+k).get()).data().d;return s}
+function lcDiff(a,b){const A=a.split("\n"),B=b.split("\n"),m=new Map();A.forEach(l=>m.set(l,(m.get(l)||0)+1));
+  let same=0;B.forEach(l=>{const n=m.get(l);if(n){same++;m.set(l,n-1)}});const t=Math.max(A.length,B.length)||1;
+  const lr=1-same/t,sr=Math.abs(a.length-b.length)/Math.max(a.length,b.length,1);return Math.max(lr,sr)}
+async function lcSuggest(){
+  const f=$("uAnd").files[0]||$("uIos").files[0];if(!f||!cur)return;const h=$("uHint"),a=apps[cur]||{};
+  if(!a.latest){$("uVer").value="0.1";h.textContent="Première publication : 0.1 (modifiable).";return}
+  h.textContent="Comparaison avec la version "+a.latest.version+"…";
+  try{const prev=await lcPrevText(),r=lcDiff(prev,await f.text()),pc=Math.round(r*100);
+    const [M,m]=String(a.latest.version).split(".").map(Number),major=r>=0.30;
+    $("uVer").value=major?(M+1)+".0":M+"."+((m||0)+1);
+    h.textContent="≈"+pc+"% modifié → "+(major?"mise à jour MAJEURE":"mise à jour mineure")+" ("+a.latest.version+" → "+$("uVer").value+"). Modifiable."}
+  catch(e){const [M,m]=String(a.latest.version).split(".").map(Number);$("uVer").value=M+"."+((m||0)+1);h.textContent="Comparaison impossible, proposition mineure (modifiable)."}}
+$("uAnd").addEventListener("change",lcSuggest);$("uIos").addEventListener("change",lcSuggest);
 </script>
 </body>
 </html>
