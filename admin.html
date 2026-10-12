@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="favicon.png">
+<title>Administration — LifeCasts</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="lc-pages.css">
+<script src="lc-common.js"></script>
+</head>
+<body>
+<header><div class="wrap">
+<a class="logo" href="index.html"><img src="mark-dark.png" height="34" alt="">LifeCasts</a>
+<nav><a href="index.html">Accueil</a><a href="applications.html">Applications</a><a href="admin.html" class="on">Administration</a></nav>
+</div></header>
+<div class="hero"><div class="wrap"><div class="eyebrow">Espace réservé</div><h1>Applications &amp; mises à jour</h1>
+<p>Publiez une nouvelle version : les applications installées la détectent et proposent de l'installer.</p></div></div>
+
+<main><div class="wrap">
+<section class="box" id="authBox"><h2>Connexion</h2><p class="muted" id="who">Chargement…</p>
+<div class="row" style="margin-top:12px"><div><button class="pill" id="inBtn" hidden>Se connecter avec Google</button><button class="pill ghost" id="outBtn" hidden>Se déconnecter</button></div></div></section>
+
+<div id="adm" hidden>
+<section class="box"><h2>Application</h2>
+<div class="row"><div><label for="appSel">Choisir</label><select id="appSel"></select></div></div>
+<div class="row"><div><label for="fId">Identifiant (sans espace)</label><input id="fId" placeholder="bible"></div><div><label for="fNom">Nom</label><input id="fNom"></div></div>
+<label for="fDesc">Description courte</label><input id="fDesc">
+<label for="fDet">Présentation détaillée</label><textarea id="fDet"></textarea>
+<div class="row"><div><label for="fWeb">Lien version web (optionnel)</label><input id="fWeb" placeholder="https://lifecasts-hub.github.io/The-Bible-App/"></div><div><label for="fOrd">Ordre d'affichage</label><input id="fOrd" type="number" value="1"></div></div>
+<div class="row" style="margin-top:16px"><div><button class="pill" id="saveApp">Enregistrer la fiche</button></div></div>
+<p class="msg" id="appMsg"></p></section>
+
+<section class="box"><h2>Publier une mise à jour</h2>
+<p class="muted">Version actuelle : <b id="curV">—</b>. Le numéro doit être plus grand (ex. 0.8 → 0.9). Le fichier est le <code>index.html</code> de l'application.</p>
+<div class="row"><div><label for="uVer">Nouvelle version</label><input id="uVer" placeholder="0.9"></div></div>
+<label for="uNotes">Nouveautés (affichées aux utilisateurs)</label><textarea id="uNotes" placeholder="- Nouvelle fonction…&#10;- Corrections…"></textarea>
+<div class="row"><div><label for="uAnd">Fichier Android (index.html)</label><input id="uAnd" type="file" accept=".html,text/html"></div>
+<div><label for="uIos">Fichier iOS (optionnel, BibleLifeCasts-iOS.html)</label><input id="uIos" type="file" accept=".html,text/html"></div></div>
+<div class="row" style="margin-top:16px"><div><button class="pill" id="pubBtn">Publier la mise à jour</button></div></div>
+<progress id="pg" value="0" max="1" hidden></progress><p class="msg" id="pubMsg"></p></section>
+
+<section class="box"><h2>Historique des versions</h2><ul class="vlist" id="hist"></ul></section>
+</div>
+</div></main>
+<footer>© <span id="y"></span> LifeCasts</footer>
+
+<script>
+$("y").textContent=new Date().getFullYear();
+let db,apps={},cur=null;
+const MARK="/*LC-OTA*/";
+const msg=(id,t,ok)=>{$(id).textContent=t;$(id).className="msg "+(ok===undefined?"":ok?"ok":"bad")};
+const vid=v=>String(v).trim();
+
+(async()=>{
+  db=await fbInit(true);const A=firebase.auth();
+  $("inBtn").onclick=()=>{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});A.signInWithPopup(p).catch(e=>msg("who","Connexion refusée : "+e.code,false))};
+  $("outBtn").onclick=()=>A.signOut();
+  A.onAuthStateChanged(async u=>{
+    $("inBtn").hidden=!!u;$("outBtn").hidden=!u;
+    if(!u){$("who").textContent="Connectez-vous avec le compte administrateur.";$("adm").hidden=true;return}
+    if(!ADMINS.includes(u.email)){$("who").textContent=u.email+" n'est pas administrateur.";$("adm").hidden=true;return}
+    $("who").textContent="Connecté : "+u.email;$("adm").hidden=false;await loadApps();
+  });
+})().catch(e=>msg("who","Erreur : "+e.message,false));
+
+async function loadApps(sel){
+  const qs=await db.collection("apps").get();apps={};qs.forEach(d=>apps[d.id]=d.data());
+  const ids=Object.keys(apps);
+  $("appSel").innerHTML=ids.map(i=>`<option value="${esc(i)}">${esc(apps[i].nom||i)}</option>`).join("")+'<option value="">+ Nouvelle application</option>';
+  $("appSel").value=sel??(ids.includes("bible")?"bible":(ids[0]||""));pick();
+}
+$("appSel").onchange=pick;
+async function pick(){
+  const i=$("appSel").value,a=apps[i]||{};cur=i||null;
+  $("fId").value=i;$("fId").disabled=!!i;$("fNom").value=a.nom||"";$("fDesc").value=a.description||"";$("fDet").value=a.details||"";$("fWeb").value=a.web||"";$("fOrd").value=a.ordre||1;
+  $("curV").textContent=a.latest?a.latest.version:"aucune";
+  if(!i){$("hist").innerHTML='<li class="muted">—</li>';return}
+  const vs=(await db.collection("apps").doc(i).collection("versions").get()).docs.map(d=>d.data()).sort((x,y)=>vcmp(y.version,x.version));
+  $("hist").innerHTML=vs.length?vs.map(v=>`<li><b>Version ${esc(v.version)}</b><span class="muted">${fdate(v.date)}</span>
+    ${a.latest&&a.latest.version===v.version?'<span class="tag">Actuelle</span>':'<span class="tag old">Archivée</span>'}
+    ${Object.keys(v.files||{}).map(p=>`<button class="pill ghost small" data-dl="${esc(v.version)}|${p}">Télécharger ${p}</button>`).join(" ")}
+    ${a.latest&&a.latest.version===v.version?"":`<button class="pill danger small" data-del="${esc(v.version)}">Supprimer</button>`}
+    <div class="notes">${nl(v.notes||"")}</div></li>`).join(""):'<li class="muted">Aucune version publiée.</li>';
+}
+$("saveApp").onclick=async()=>{
+  const i=($("fId").value||"").trim().toLowerCase().replace(/[^a-z0-9-]/g,"");if(!i||!$("fNom").value.trim())return msg("appMsg","Identifiant et nom obligatoires.",false);
+  await db.collection("apps").doc(i).set({nom:$("fNom").value.trim(),description:$("fDesc").value.trim(),details:$("fDet").value.trim(),web:$("fWeb").value.trim(),ordre:+$("fOrd").value||1},{merge:true});
+  msg("appMsg","Fiche enregistrée.",true);loadApps(i);
+};
+
+/* Découpe un texte en morceaux < 900 Ko (limite Firestore : 1 Mo par document) */
+function chunks(s){const enc=new TextEncoder(),out=[];let i=0;const step=200000;let buf="",sz=0;
+  while(i<s.length){const p=s.slice(i,i+step);i+=step;const b=enc.encode(p).length;if(sz+b>900000&&buf){out.push(buf);buf="";sz=0}buf+=p;sz+=b}
+  if(buf)out.push(buf);return out}
+
+$("pubBtn").onclick=async()=>{
+  if(!cur)return msg("pubMsg","Enregistrez d'abord la fiche de l'application.",false);
+  const v=vid($("uVer").value),a=apps[cur]||{};
+  if(!/^\d+(\.\d+)*$/.test(v))return msg("pubMsg","Numéro de version invalide (ex. 0.9).",false);
+  if(a.latest&&vcmp(v,a.latest.version)<=0)return msg("pubMsg","La version doit être supérieure à "+a.latest.version+".",false);
+  const fl={android:$("uAnd").files[0],ios:$("uIos").files[0]};if(!fl.android&&!fl.ios)return msg("pubMsg","Choisissez au moins un fichier.",false);
+  const txt={};for(const p in fl)if(fl[p]){txt[p]=await fl[p].text();
+    if(!txt[p].includes(MARK))return msg("pubMsg","Le fichier "+p+" ne contient pas le module de mise à jour (marqueur "+MARK+"). Publication annulée pour éviter de bloquer les futures mises à jour.",false);
+    if(!txt[p].includes('LC_BUILT="'+v+'"'))return msg("pubMsg","Le fichier "+p+" n'est pas marqué version "+v+' (cherchez LC_BUILT="…" en haut du fichier).',false)}
+  $("pubBtn").disabled=true;$("pg").hidden=false;
+  try{
+    const vref=db.collection("apps").doc(cur).collection("versions").doc(v),files={};
+    const all=[];for(const p in txt){const c=chunks(txt[p]);files[p]={n:c.length,len:txt[p].length};c.forEach((d,k)=>all.push([p+"_"+k,d]))}
+    $("pg").max=all.length+1;let n=0;
+    for(const [k,d] of all){await vref.collection("chunks").doc(k).set({d});$("pg").value=++n;msg("pubMsg","Envoi "+n+"/"+all.length+"…")}
+    const latest={version:v,notes:$("uNotes").value.trim(),date:Date.now(),files};
+    await vref.set(latest);
+    await db.collection("apps").doc(cur).set({latest},{merge:true});
+    $("pg").value=$("pg").max;msg("pubMsg","Version "+v+" publiée. Les applications la proposeront à leur prochaine vérification.",true);
+    $("uVer").value="";$("uNotes").value="";$("uAnd").value="";$("uIos").value="";loadApps(cur);
+  }catch(e){msg("pubMsg","Échec : "+(e.code||e.message),false)}
+  $("pubBtn").disabled=false;
+};
+
+$("hist").onclick=async e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.dl){const [v,p]=b.dataset.dl.split("|"),vref=db.collection("apps").doc(cur).collection("versions").doc(v),f=(await vref.get()).data().files[p];
+    let s="";for(let k=0;k<f.n;k++)s+=(await vref.collection("chunks").doc(p+"_"+k).get()).data().d;
+    const u=URL.createObjectURL(new Blob([s],{type:"text/html"})),l=document.createElement("a");l.href=u;l.download=cur+"-"+v+"-"+p+".html";l.click();setTimeout(()=>URL.revokeObjectURL(u),5000)}
+  if(b.dataset.del){const v=b.dataset.del;if(!confirm("Supprimer définitivement la version "+v+" ?"))return;
+    const vref=db.collection("apps").doc(cur).collection("versions").doc(v),cs=await vref.collection("chunks").get();
+    for(const d of cs.docs)await d.ref.delete();await vref.delete();pick()}
+};
+</script>
+</body>
+</html>

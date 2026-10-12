@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="favicon.png">
+<title>Applications — LifeCasts</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="lc-pages.css">
+<script src="lc-common.js"></script>
+</head>
+<body>
+<header><div class="wrap">
+<a class="logo" href="index.html"><img src="mark-dark.png" height="34" alt="">LifeCasts</a>
+<nav><a href="index.html">Accueil</a><a href="applications.html" class="on">Applications</a><a href="admin.html">Administration</a></nav>
+</div></header>
+
+<div class="hero"><div class="wrap">
+<div class="eyebrow" id="hEye">Applications</div>
+<h1 id="hTitle">La famille d'applications LifeCasts</h1>
+<p id="hDesc">Toutes nos applications, leurs nouveautés et l'historique de leurs versions.</p>
+</div></div>
+
+<main><div class="wrap" id="main"><p class="muted">Chargement…</p></div></main>
+<footer>© <span id="y"></span> LifeCasts · <a href="confidentialite.html">Confidentialité</a> · <a href="conditions.html">Conditions d'utilisation</a></footer>
+
+<script>
+$("y").textContent=new Date().getFullYear();
+const id=new URLSearchParams(location.search).get("id");
+(async()=>{
+  let db;try{db=await fbInit(false)}catch(e){$("main").innerHTML='<p class="muted">Impossible de charger les applications (hors ligne ?).</p>';return}
+  if(!id){
+    const qs=await db.collection("apps").get();
+    const apps=qs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.ordre||0)-(b.ordre||0));
+    $("main").innerHTML=apps.length?'<div class="cards">'+apps.map(a=>`<a class="card" href="applications.html?id=${encodeURIComponent(a.id)}">
+      <h3>${esc(a.nom)}</h3><p>${esc(a.description)}</p>
+      <div>${a.latest?`<span class="tag">Version ${esc(a.latest.version)}</span> <span class="muted">· ${fdate(a.latest.date)}</span>`:'<span class="tag old">Bientôt</span>'}</div>
+      <span class="muted">Voir la fiche →</span></a>`).join("")+'</div>':'<p class="muted">Aucune application publiée pour l\'instant.</p>';
+    return;
+  }
+  const d=await db.collection("apps").doc(id).get();
+  if(!d.exists){$("main").innerHTML='<p class="muted">Application introuvable. <a href="applications.html">Retour</a></p>';return}
+  const a=d.data();document.title=a.nom+" — LifeCasts";
+  $("hEye").textContent="Application";$("hTitle").textContent=a.nom;$("hDesc").textContent=a.description||"";
+  const vs=(await db.collection("apps").doc(id).collection("versions").get()).docs.map(x=>x.data()).sort((x,y)=>vcmp(y.version,x.version));
+  const L=a.latest,old=vs.filter(v=>!L||v.version!==L.version);
+  $("main").innerHTML=`
+  <p style="margin-bottom:20px"><a href="applications.html" class="muted">← Toutes les applications</a></p>
+  ${a.details?`<section class="box"><h2>À propos</h2><p>${nl(a.details)}</p>${a.web?`<p style="margin-top:14px"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></p>`:""}</section>`:(a.web?`<section class="box"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></section>`:"")}
+  <section class="box"><h2>Mise à jour actuelle</h2>${L?`
+    <div class="row" style="flex-wrap:wrap"><div><span class="tag">Version ${esc(L.version)}</span> <span class="muted">· publiée le ${fdate(L.date)}</span></div></div>
+    <p style="margin-top:12px">${nl(L.notes||"")}</p>
+    <p class="muted" style="margin-top:12px">Les applications installées détectent cette mise à jour automatiquement et proposent de l'installer, sans repasser par le store.</p>`:'<p class="muted">Aucune mise à jour publiée.</p>'}</section>
+  <section class="box"><h2>Anciennes versions</h2>${old.length?'<ul class="vlist">'+old.map(v=>`<li><b>Version ${esc(v.version)}</b><span class="muted">${fdate(v.date)}</span><span class="tag old">Archivée</span><div class="notes">${nl(v.notes||"")}</div></li>`).join("")+'</ul>':'<p class="muted">Pas encore d\'historique.</p>'}</section>`;
+})().catch(e=>{$("main").innerHTML='<p class="muted">Erreur de chargement : '+esc(e.message)+'</p>'});
+</script>
+</body>
+</html>
