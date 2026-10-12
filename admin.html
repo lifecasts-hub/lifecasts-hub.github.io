@@ -103,7 +103,8 @@ $("pubBtn").onclick=async()=>{
   const fl={android:$("uAnd").files[0],ios:$("uIos").files[0]};if(!fl.android&&!fl.ios)return msg("pubMsg","Choisissez au moins un fichier.",false);
   const txt={};for(const p in fl)if(fl[p]){txt[p]=await fl[p].text();
     if(!txt[p].includes(MARK))return msg("pubMsg","Le fichier "+p+" ne contient pas le module de mise à jour (marqueur "+MARK+"). Publication annulée pour éviter de bloquer les futures mises à jour.",false);
-    if(!txt[p].includes('LC_BUILT="'+v+'"'))return msg("pubMsg","Le fichier "+p+" n'est pas marqué version "+v+' (cherchez LC_BUILT="…" en haut du fichier).',false)}
+    if(!/\bB="[\d.]+"/.test(txt[p]))return msg("pubMsg","Le fichier "+p+" n'a pas de numéro de version (B=\"…\").",false);
+    txt[p]=txt[p].replace(/\bB="[\d.]+"/,'B="'+v+'"')}
   $("pubBtn").disabled=true;$("pg").hidden=false;
   try{
     const vref=db.collection("apps").doc(cur).collection("versions").doc(v),files={};
