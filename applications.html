@@ -7,7 +7,7 @@
 <title>Applications — LifeCasts</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="lc-pages.css">
-<script src="lc-common.js?v=2"></script>
+<script src="lc-common.js?v=4"></script>
 </head>
 <body>
 <header><div class="wrap">
@@ -47,10 +47,12 @@ const id=new URLSearchParams(location.search).get("id");
   if(repo)try{vs=await ghVersions(repo)}catch(e){}
   try{const fs=(await db.collection("apps").doc(id).collection("versions").get()).docs.map(x=>x.data());fs.forEach(v=>{if(!vs.some(g=>g.version===v.version))vs.push(v)})}catch(e){}
   vs.sort((x,y)=>vcmp(y.version,x.version));
+  let dl=[];if(repo)try{dl=await ghDownloads(repo)}catch(e){}
   const L=vs[0]||a.latest,old=vs.filter(v=>!L||v.version!==L.version);
   $("main").innerHTML=`
   <p style="margin-bottom:20px"><a href="applications.html" class="muted">← Toutes les applications</a></p>
   ${a.details?`<section class="box"><h2>À propos</h2><p>${nl(a.details)}</p>${a.web?`<p style="margin-top:14px"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></p>`:""}</section>`:(a.web?`<section class="box"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></section>`:"")}
+  ${dl.length?`<section class="box"><h2>Télécharger</h2><div style="display:flex;flex-wrap:wrap;gap:10px">${dl.map(x=>`<a class="pill accent" href="${esc(x.url)}">${esc(x.label)}</a>`).join("")}</div><p class="muted" style="margin-top:10px">Fichiers de la version ${esc(dl[0].tag)}, hébergés sur GitHub.</p></section>`:""}
   <section class="box"><h2>Mise à jour actuelle</h2>${L?`
     <div class="row" style="flex-wrap:wrap"><div><span class="tag">Version ${esc(L.version)}</span> <span class="muted">· publiée le ${fdate(L.date)}</span></div></div>
     <p style="margin-top:12px">${nl(L.notes||"")}</p>

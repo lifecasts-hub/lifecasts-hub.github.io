@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <title>LifeCasts System</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-<script src="lc-common.js?v=2"></script>
+<script src="lc-common.js?v=4"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Helvetica Neue",Arial,sans-serif;--glass:rgba(255,255,255,.72);--glass2:rgba(255,255,255,.55);--ink:#1d1d1f;--muted:#6e6e73;--line:rgba(0,0,0,.1);--accent:#9a5b1e;--win:#fff;--soft:#f5f5f7}
@@ -25,8 +25,8 @@ a{color:var(--accent)}
 /* Écran de connexion */
 #login{position:fixed;inset:0;display:grid;place-items:center;padding:16px;z-index:5}
 #login .box{width:min(400px,100%);border-radius:28px;padding:36px 28px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
-.mark{width:84px;height:84px;border-radius:22px;background:linear-gradient(135deg,#2a1c14,#9a5b1e);display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-.mark img{width:56%;filter:invert(1)}
+.mark{position:relative;overflow:hidden;width:84px;height:84px;border-radius:22px;background:linear-gradient(135deg,#2a1c14,#9a5b1e);display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.mark img{position:absolute;inset:0;margin:auto;height:60%;width:auto;filter:invert(1)}
 #login h1{margin:4px 0 0;font-size:26px;letter-spacing:-.03em}
 #login p{margin:0;color:var(--muted)}
 #gbtn{min-height:44px;margin-top:8px}

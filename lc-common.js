@@ -21,8 +21,14 @@ async function ghVersions(repo){
   const out=[],seen=new Set();
   for(const c of await r.json()){const msg=c.commit.message.replace(/\n*Co-Authored-By:[\s\S]*$/i,"").trim(),m=msg.match(/^v?(\d+(?:\.\d+)+)\s*[:\-–—]?\s*([\s\S]*)$/i);
     if(!m||seen.has(m[1]))continue;seen.add(m[1]);out.push({version:m[1],date:Date.parse(c.commit.committer.date),notes:m[2].trim()})}
-  return out.sort((x,y)=>vcmp(y.version,x.version));
+  out.sort((x,y)=>vcmp(y.version,x.version));
+  /* Version réellement publiée : var B="x.y" dans index.html de l'app */
+  try{const cur=await liveVersion(repo);if(cur){const i=out.findIndex(v=>v.version===cur);
+    if(i>0)out.unshift(out.splice(i,1)[0]);else if(i<0)out.unshift({version:cur,date:out[0]?out[0].date:Date.now(),notes:""});
+    out.forEach((v,k)=>{if(k&&vcmp(v.version,cur)>0)v.skip=1})}}catch(e){}
+  return out.filter(v=>!v.skip);
 }
+async function liveVersion(repo){const r=await fetch("/"+repo.split("/")[1]+"/index.html",{cache:"no-store"});if(!r.ok)return null;const m=(await r.text()).match(/var\s+B\s*=\s*["']([\d.]+)["']/);return m?m[1]:null}
 
 /* Icônes SVG (remplacent les emojis) */
 var ICO=(function(){var P={
@@ -37,3 +43,7 @@ palette:'<circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><c
 image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
 disk:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/>'};
 return function(n,s){return '<svg class="ico" viewBox="0 0 24 24" width="'+(s||'1em')+'" height="'+(s||'1em')+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>'}})();
+
+/* Téléchargements : fichiers .apk / .dmg joints à la dernière Release GitHub */
+async function ghDownloads(repo){const r=await fetch("https://api.github.com/repos/"+repo+"/releases/latest");if(!r.ok)return [];const j=await r.json();
+  return (j.assets||[]).map(x=>{const n=x.name.toLowerCase();const t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":null;return t&&{label:t,url:x.browser_download_url,size:x.size,tag:j.tag_name}}).filter(Boolean)}

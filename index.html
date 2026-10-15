@@ -8,7 +8,7 @@
 <meta name="description" content="LifeCasts : impression et distribution de brochures, et applications liées au ministère des bandes.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="lc-pages.css">
-<script src="lc-common.js?v=2"></script>
+<script src="lc-common.js?v=4"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 /* ================= CONFIGURATION ================= */
@@ -31,7 +31,8 @@ const LIFECASTS = {
 .icons img{width:clamp(72px,14vw,120px);height:clamp(72px,14vw,120px);border-radius:24%;box-shadow:0 18px 40px rgba(0,0,0,.18);background:var(--soft);transition:transform .4s}
 .icons img:hover{transform:translateY(-6px) scale(1.04)}
 .icons .sys{display:grid;place-items:center;width:clamp(72px,14vw,120px);height:clamp(72px,14vw,120px);border-radius:24%;background:linear-gradient(135deg,#2a1c14,#9a5b1e);box-shadow:0 18px 40px rgba(0,0,0,.18)}
-.icons .sys img{width:55%;height:auto;box-shadow:none;background:none;filter:invert(1)}
+.icons .sys{position:relative;overflow:hidden}
+.icons .sys img{position:absolute;inset:0;margin:auto;width:auto!important;height:58%!important;max-width:none;border-radius:0;transform:none!important;box-shadow:none;background:none;filter:invert(1)}
 .panel{margin:12px;border-radius:28px;text-align:center;padding:64px 22px 0;overflow:hidden}
 .panel h3{font-size:clamp(36px,6vw,56px);font-weight:700;letter-spacing:-.035em;line-height:1.07}
 .panel p.lead{font-size:clamp(19px,2.6vw,26px);margin-top:6px}
@@ -98,7 +99,7 @@ html,body{overflow-x:hidden}
 <main style="padding:0">
 <section class="hero-home" id="accueil"><div class="wrap">
 <h1>LifeCasts.</h1>
-<h2>Le ministère des bandes, imprimé, distribué, et dans vos applications.</h2>
+<h2>Le ministère des bandes : imprimé, distribué, et dans vos applications.</h2>
 <div class="ctas"><a class="pill accent" href="system.html">Ouvrir LifeCasts System</a><a class="more" href="#mission">En savoir plus</a></div>
 <div class="icons" id="heroIcons"></div>
 </div></section>
