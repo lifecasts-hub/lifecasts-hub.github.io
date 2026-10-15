@@ -357,7 +357,14 @@ function notes(el){
 .nx .tbs button{position:relative;z-index:1;border:0;background:none;color:var(--ink);font:600 12px var(--font);border-radius:36px;padding:7px 18px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}.nx .tbs button.on{color:var(--accent)}
 .nx .tbs svg,.nx .rd svg{width:24px;height:24px}.nx #nPill{position:absolute;top:4px;bottom:4px;left:0;border-radius:36px;background:var(--win);transition:transform .35s cubic-bezier(.3,.7,.3,1),width .35s cubic-bezier(.3,.7,.3,1)}
 .nx .rd{width:58px;height:58px;border-radius:29px;border:1px solid var(--line);background:var(--soft);color:var(--accent);display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.12)}.nx .rd:active,.nx .tbs button:active{transform:scale(.94)}
-.nx #nL{padding-bottom:96px!important}.nx .rt,.nx .vw{padding-bottom:110px!important}.nx .ls .hd .ib:not(.bk){display:none}
+.nx #nL{padding-bottom:96px!important}.nx .rt,.nx .vw{padding-bottom:110px!important}.nx #nNew,.nx .sr{display:none}
+.nx .rt::first-line{font-size:26px;font-weight:700;letter-spacing:-.02em}
+.nx .ed .tb{display:none;position:absolute;left:50%;bottom:84px;transform:translateX(-50%);width:min(560px,calc(100% - 24px));flex-wrap:wrap;justify-content:center;gap:6px;padding:12px;border:1px solid var(--line);border-radius:24px;background:var(--soft);box-shadow:0 10px 34px rgba(0,0,0,.18);z-index:6;overflow:visible;height:auto;max-height:60vh;overflow:auto;user-select:none}
+.nx.fmt .ed .tb{display:flex;animation:nUp .25s cubic-bezier(.3,1.4,.5,1)}@keyframes nUp{from{opacity:0;transform:translate(-50%,12px)}}
+.nx .ed .tb button,.nx .ed .tb label{width:42px;height:40px;background:var(--win);border-radius:12px}.nx .ed .tb select{height:40px;border-radius:12px;background:var(--win);flex:1 1 120px}.nx .ed .tb i.sp{display:none}
+.nx .ed .tb b{margin:0;flex:none;font-size:15px}.nx .rd.on{background:var(--accent);color:#fff}.nx .sq{display:none;align-items:center;gap:8px;flex:1;max-width:420px;background:var(--soft);border:1px solid var(--line);border-radius:40px;padding:0 18px;box-shadow:0 6px 24px rgba(0,0,0,.12)}
+.nx .sq input{flex:1;border:0;background:none;outline:none;font:16px var(--font);color:var(--ink);height:54px}.nx .sq svg{width:20px;height:20px;color:var(--muted)}
+.nx.srch .sq{display:flex}.nx.srch .tbs,.nx.srch #nFmt,.nx.srch #nNew2{display:none}
 .nx .bl{color:#d9a400;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .nx .ed .ro{margin:10px 28px 0;padding:10px 14px;border-radius:12px;background:var(--soft);font-size:12.5px;color:var(--muted)}
 .nx .em{margin:auto;color:var(--muted)}
@@ -371,7 +378,7 @@ function notes(el){
  S.notes=(S.notes||[]).map((n,i)=>typeof n==="string"?{id:"n"+Date.now()+i,t:n,m:Date.now()}:n);save();
  let fol="all",cur=null,qs="",BN=bibleNotes();
  el.style.padding="0";const qq=i=>el.querySelector("#"+i);
- el.innerHTML='<div class="nx" data-v="l"><aside><h4>Notes</h4><div id="nF"></div></aside><section class="ls"><div class="hd"><button class="ib bk" data-go="f">'+I.k+'Dossiers</button><b id="nT"></b><button class="ib" id="nDel" title="Supprimer">'+I.d+'</button><button class="ib" id="nNew" title="Nouvelle note">'+I.n+'</button></div><input class="sr" id="nQ" placeholder="Rechercher"><div id="nL" style="overflow:auto;flex:1;padding-bottom:10px"></div></section><section class="ed"><div class="hd bk" style="border:0"><button class="ib bk" data-go="l">'+I.k+'Notes</button></div><div id="nE" style="display:flex;flex-direction:column;flex:1;min-height:0"></div></section><nav class="nb"><button class="rd" id="nDel2" aria-label="Supprimer">'+I.d+'</button><div class="tbs" id="nTabs"><span id="nPill"></span><button data-f="all">'+I.f+'Toutes</button><button data-f="mine">'+I.n+'Notes</button><button data-f="bible">'+I.b+'Bible</button></div><button class="rd" id="nNew2" aria-label="Nouvelle note">'+I.n+'</button></nav></div>';
+ el.innerHTML='<div class="nx" data-v="l"><aside><h4>Notes</h4><div id="nF"></div></aside><section class="ls"><div class="hd"><button class="ib bk" data-go="f">'+I.k+'Dossiers</button><b id="nT"></b><button class="ib" id="nDel" title="Supprimer">'+I.d+'</button><button class="ib" id="nNew" title="Nouvelle note">'+I.n+'</button></div><input class="sr" id="nQ" placeholder="Rechercher"><div id="nL" style="overflow:auto;flex:1;padding-bottom:10px"></div></section><section class="ed"><div class="hd bk" style="border:0"><button class="ib bk" data-go="l">'+I.k+'Notes</button></div><div id="nE" style="display:flex;flex-direction:column;flex:1;min-height:0"></div></section><nav class="nb"><button class="rd" id="nSr" aria-label="Rechercher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button><label class="sq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="nQ2" placeholder="Rechercher dans les notes"></label><div class="tbs" id="nTabs"><span id="nPill"></span><button data-t="home"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z"/></svg>Accueil</button><button data-t="acc"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.2"/><path d="M3.5 20.5c.6-4.3 4.1-6.5 8.5-6.5s7.9 2.2 8.5 6.5H3.5z"/></svg>Compte</button></div><button class="rd" id="nFmt" aria-label="Mise en forme" style="font:700 19px var(--font)">Aa</button><button class="rd" id="nNew2" aria-label="Nouvelle note">'+I.n+'</button></nav></div>';
  const X=el.querySelector(".nx"),F=qq("nF"),Lw=qq("nL"),Ed=qq("nE");
  X.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{X.dataset.v=b.dataset.go});
  const title=n=>(n.ro?n.ref:(n.t.split("\n")[0]||"Nouvelle note")).trim()||"Nouvelle note";
@@ -416,9 +423,14 @@ function notes(el){
    if(a&&(e.ctrlKey||e.metaKey||!R.matches(":focus"))){window.open(a.href,"_blank");return}
    const li=e.target.closest("ul.ck>li");if(li&&e.offsetX<24){li.classList.toggle("dn");sync()}}}
  function render(){if(!(cur&&cur.ro&&S.editBible))BN=bibleNotes();folders();list();editor();requestAnimationFrame(pill)}
- const pill=()=>{const b=qq("nTabs").querySelector("[data-f="+fol+"]"),P=qq("nPill");qq("nTabs").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));P.style.width=b.offsetWidth+"px";P.style.transform="translateX("+b.offsetLeft+"px)";qq("nDel2").style.display=cur&&!cur.ro?"":"none"};
- qq("nTabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{fol=b.dataset.f;X.dataset.v="l";render()});
- qq("nNew2").onclick=()=>qq("nNew").click();qq("nDel2").onclick=()=>qq("nDel").click();
+ const pill=()=>{const P=qq("nPill"),b=qq("nTabs").querySelector("button");P.style.width=b.offsetWidth+"px";P.style.transform="translateX("+b.offsetLeft+"px)";qq("nTabs").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+  const ok=cur&&!cur.ro&&!(innerWidth<=760&&X.dataset.v!=="e");qq("nFmt").style.display=ok?"":"none";if(!ok){X.classList.remove("fmt");qq("nFmt").classList.remove("on")}};
+ qq("nTabs").querySelector("[data-t=home]").onclick=()=>close("notes");
+ qq("nTabs").querySelector("[data-t=acc]").onclick=()=>open("settings");
+ qq("nNew2").onclick=()=>qq("nNew").click();
+ const F2=qq("nFmt");F2.onmousedown=e=>e.preventDefault();F2.onclick=()=>{F2.classList.toggle("on",X.classList.toggle("fmt"))};
+ const S2=qq("nSr");S2.onclick=()=>{const on=X.classList.toggle("srch");S2.innerHTML=on?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>';S2.classList.toggle("on",on);if(on){X.dataset.v="l";X.classList.remove("fmt");qq("nQ2").focus()}else{qq("nQ2").value="";qs="";list()}};
+ qq("nQ2").oninput=e=>{qs=e.target.value.toLowerCase();list()};
  qq("nQ").oninput=e=>{qs=e.target.value.toLowerCase();list()};
  qq("nNew").onclick=()=>{const n={id:"n"+Date.now(),t:"",m:Date.now()};S.notes.push(n);save();if(fol==="bible")fol="mine";cur=n;X.dataset.v="e";render();qq("nRt").focus()};
  qq("nDel").onclick=()=>{if(!cur||cur.ro)return;if(cur.t&&!confirm("Supprimer cette note ?"))return;S.notes=S.notes.filter(n=>n.id!==cur.id);save();cur=items()[0]||null;X.dataset.v="l";delete Ed.dataset.id;render()};
