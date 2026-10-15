@@ -298,12 +298,16 @@ function bibleNotes(){const out={};let c="";try{c=localStorage.getItem("lc.curre
 function saveBibleNote(n){try{const o=JSON.parse(localStorage.getItem(n.src)||"{}");if(n.t.trim())o[n.key]=n.t.trim();else delete o[n.key];localStorage.setItem(n.src,JSON.stringify(o))}catch(e){}}
 /* Références bibliques dans les notes → liens vers la Bible (#LIV/chap/versets) */
 const BK=[["GEN","Genèse|Gn|Gen"],["EXO","Exode|Ex"],["LEV","Lévitique|Lv"],["NUM","Nombres|Nb"],["DEU","Deutéronome|Dt"],["JOS","Josué|Jos"],["JDG","Juges|Jg"],["RUT","Ruth|Rt"],["1SA","1 ?Samuel|1 ?S"],["2SA","2 ?Samuel|2 ?S"],["1KI","1 ?Rois|1 ?R"],["2KI","2 ?Rois|2 ?R"],["1CH","1 ?Chroniques|1 ?Ch"],["2CH","2 ?Chroniques|2 ?Ch"],["EZR","Esdras|Esd"],["NEH","Néhémie|Né"],["EST","Esther|Est"],["JOB","Job"],["PSA","Psaumes?|Ps"],["PRO","Proverbes|Pr"],["ECC","Ecclésiaste|Ec"],["SNG","Cantique des Cantiques|Ct"],["ISA","Ésaïe|Esaïe|Isaïe|Es|És"],["JER","Jérémie|Jr"],["LAM","Lamentations|Lm"],["EZK","Ézéchiel|Ezéchiel|Ez|Éz"],["DAN","Daniel|Dn"],["HOS","Osée|Os"],["JOL","Joël|Jl"],["AMO","Amos|Am"],["OBA","Abdias|Ab"],["JON","Jonas|Jon"],["MIC","Michée|Mi"],["NAM","Nahum|Na"],["HAB","Habacuc|Ha"],["ZEP","Sophonie|So"],["HAG","Aggée|Ag"],["ZEC","Zacharie|Za"],["MAL","Malachie|Ml"],["MAT","Matthieu|Mt"],["MRK","Marc|Mc"],["LUK","Luc|Lc"],["JHN","Jean|Jn"],["ACT","Actes|Ac"],["ROM","Romains|Rm"],["1CO","1 ?Corinthiens|1 ?Co"],["2CO","2 ?Corinthiens|2 ?Co"],["GAL","Galates|Ga"],["EPH","Éphésiens|Ephésiens|Ep"],["PHP","Philippiens|Ph"],["COL","Colossiens|Col"],["1TH","1 ?Thessaloniciens|1 ?Th"],["2TH","2 ?Thessaloniciens|2 ?Th"],["1TI","1 ?Timothée|1 ?Tm"],["2TI","2 ?Timothée|2 ?Tm"],["TIT","Tite|Tt"],["PHM","Philémon|Phm"],["HEB","Hébreux|He|Hé"],["JAS","Jacques|Jc"],["1PE","1 ?Pierre|1 ?P"],["2PE","2 ?Pierre|2 ?P"],["1JN","1 ?Jean|1 ?Jn"],["2JN","2 ?Jean|2 ?Jn"],["3JN","3 ?Jean|3 ?Jn"],["JUD","Jude|Jd"],["REV","Apocalypse|Ap"]];
-const BKM={};BK.forEach(([c,n])=>n.split("|").forEach(x=>BKM[x.replace(" ?"," ").toLowerCase()]=c));
+const BKM={};BK.forEach(([c,n])=>n.split("|").forEach(x=>BKM[x.replace(" ?"," ").toLowerCase()]=c));BKM.psaume=BKM.psaumes="PSA";
 const BKRE=new RegExp("(^|[^\\wÀ-ÿ])("+BK.map(b=>b[1]).join("|")+")\\.? ?(\\d{1,3})(?:[:.,] ?(\\d{1,3}(?: ?[-–] ?\\d{1,3})?(?:,\\d{1,3}(?:[-–]\\d{1,3})?)*))?(?![\\wÀ-ÿ])","gi");
+function refH(m){const nm=m[2].replace(/ +/," ").toLowerCase(),c=BKM[nm]||BKM[nm.replace(" ","")]||BKM[nm.replace(/^(\d)/,"$1 ")];if(!c)return null;
+ const v=(m[4]||"").replace(/[\s]/g,"").replace(/–/g,"-").replace(/;/g,",");return"#"+c+"/"+m[3]+(v?"/"+v:"")}
 function bibleRefs(t){const out=[],seen={};let m;BKRE.lastIndex=0;
- while((m=BKRE.exec(t||""))){const nm=m[2].replace(/ +/," ").toLowerCase(),c=BKM[nm]||BKM[nm.replace(" ","")]||BKM[nm.replace(/^(\d)/,"$1 ")];if(!c)continue;
-  const v=(m[4]||"").replace(/[\s]/g,"").replace(/–/g,"-").replace(/;/g,","),h="#"+c+"/"+m[3]+(v?"/"+v:"");
-  if(!seen[h]){seen[h]=1;out.push({h,l:m[2]+" "+m[3]+(v?":"+v:"")})}}return out}
+ while((m=BKRE.exec(t||""))){const h=refH(m);if(h&&!seen[h]){seen[h]=1;out.push({h,l:m[0].slice(m[1].length)})}}return out}
+/* texte -> HTML avec les passages bibliques en liens */
+function linkRefs(t){t=t||"";let o="",i=0,m;BKRE.lastIndex=0;
+ while((m=BKRE.exec(t))){const h=refH(m);if(!h)continue;const a=m.index+m[1].length,b=m.index+m[0].length;o+=esc(t.slice(i,a))+'<a class="bl" data-h="'+h+'">'+esc(t.slice(a,b))+"</a>";i=b}
+ return o+esc(t.slice(i))}
 function notes(el){
  if(!q("nCss")){const st=E("style",{id:"nCss"});st.textContent=`
 .nx{display:flex;height:100%;font-size:14px;color:var(--ink);background:var(--win)}
@@ -333,10 +337,12 @@ function notes(el){
 .nx .ed h2{margin:4px 28px 0;font-size:24px;letter-spacing:-.03em}
 .nx .rf{display:flex;flex-wrap:wrap;gap:6px;padding:8px 28px 0}.nx .rf:empty{display:none}.nx .rf button{border:0;border-radius:99px;padding:4px 11px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font:600 13px var(--font);cursor:pointer}
 .nx .ed textarea{flex:1;min-height:200px;border:0;outline:none;resize:none;background:none;color:var(--ink);padding:14px 28px 30px;font:16px/1.6 var(--font)}
+.nx .ed .vw{flex:1;overflow:auto;padding:14px 28px 30px;font:16px/1.6 var(--font);white-space:pre-wrap;word-wrap:break-word;cursor:text}.nx .ed .vw:empty:before{content:"Écrivez…";color:var(--muted)}
+.nx .bl{color:#d9a400;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .nx .ed .ro{margin:10px 28px 0;padding:10px 14px;border-radius:12px;background:var(--soft);font-size:12.5px;color:var(--muted)}
 .nx .em{margin:auto;color:var(--muted)}
 .nx .bk{display:none}
-@media (max-width:760px){.nx aside,.nx .ls,.nx .ed{width:100%;border:0}.nx[data-v="f"] .ls,.nx[data-v="f"] .ed,.nx[data-v="l"] aside,.nx[data-v="l"] .ed,.nx[data-v="e"] aside,.nx[data-v="e"] .ls{display:none}.nx .bk{display:flex;color:var(--accent);font-size:16px;align-items:center;gap:2px}.nx .ed textarea{padding:12px 18px}.nx .ed .dt,.nx .ed h2,.nx .ed .ro{margin-left:18px;margin-right:18px}}`;document.head.append(st)}
+@media (max-width:760px){.nx aside,.nx .ls,.nx .ed{width:100%;border:0}.nx[data-v="f"] .ls,.nx[data-v="f"] .ed,.nx[data-v="l"] aside,.nx[data-v="l"] .ed,.nx[data-v="e"] aside,.nx[data-v="e"] .ls{display:none}.nx .bk{display:flex;color:var(--accent);font-size:16px;align-items:center;gap:2px}.nx .ed textarea,.nx .ed .vw{padding:12px 18px}.nx .ed .dt,.nx .ed h2,.nx .ed .ro{margin-left:18px;margin-right:18px}}`;document.head.append(st)}
  const I={f:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
   n:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
   d:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>',
@@ -362,13 +368,15 @@ function notes(el){
   if(!cur){Ed.innerHTML='<div class="em">Aucune note sélectionnée</div>';return}
   if(Ed.dataset.id===cur.id)return;Ed.dataset.id=cur.id;
   const rw=cur.ro&&S.editBible;
-  Ed.innerHTML='<div class="dt">'+(cur.ro?"Note de la Bible":new Date(cur.m).toLocaleString("fr-FR",{dateStyle:"long",timeStyle:"short"}))+'</div>'+(cur.ro?'<h2>'+esc(cur.ref)+'</h2>'+(rw?"":'<div class="ro">Lecture seule. Pour modifier, activez « Modifier les notes de la Bible » dans Réglages › Notes.</div>'):"")+'<div class="rf" id="nR"></div><textarea id="nTx" placeholder="Écrivez…"></textarea>';
-  const T=qq("nTx");T.value=cur.t;T.readOnly=cur.ro&&!rw;
-  const R=qq("nR"),refs=()=>{R.innerHTML="";bibleRefs(T.value+(cur.ro?"":"")).forEach(r=>{const b=E("button",{textContent:r.l});b.onclick=()=>open("bible",r.h);R.append(b)})};refs();
-  T.oninput=()=>{refs();if(cur.ro&&!rw)return;cur.t=T.value;if(cur.ro)saveBibleNote(cur);else{cur.m=Date.now();save()}list()}}
+  Ed.innerHTML='<div class="dt">'+(cur.ro?"Note de la Bible":new Date(cur.m).toLocaleString("fr-FR",{dateStyle:"long",timeStyle:"short"}))+'</div>'+(cur.ro?'<h2>'+esc(cur.ref)+'</h2>'+(rw?"":'<div class="ro">Lecture seule. Pour modifier, activez « Modifier les notes de la Bible » dans Réglages › Notes.</div>'):"")+'<div class="vw" id="nV"></div><textarea id="nTx" placeholder="Écrivez…" style="display:none"></textarea>';
+  const T=qq("nTx"),V=qq("nV"),ro=cur.ro&&!rw;T.value=cur.t;T.readOnly=ro;
+  const show=()=>{V.innerHTML=linkRefs(T.value);V.style.display="";T.style.display="none"};show();
+  V.onclick=e=>{const a=e.target.closest(".bl");if(a){open("bible",a.dataset.h);return}if(ro)return;V.style.display="none";T.style.display="";T.focus()};
+  T.onblur=show;
+  T.oninput=()=>{if(ro)return;cur.t=T.value;if(cur.ro)saveBibleNote(cur);else{cur.m=Date.now();save()}list()}}
  function render(){if(!(cur&&cur.ro&&S.editBible))BN=bibleNotes();folders();list();editor()}
  qq("nQ").oninput=e=>{qs=e.target.value.toLowerCase();list()};
- qq("nNew").onclick=()=>{const n={id:"n"+Date.now(),t:"",m:Date.now()};S.notes.push(n);save();if(fol==="bible")fol="mine";cur=n;X.dataset.v="e";render();qq("nTx").focus()};
+ qq("nNew").onclick=()=>{const n={id:"n"+Date.now(),t:"",m:Date.now()};S.notes.push(n);save();if(fol==="bible")fol="mine";cur=n;X.dataset.v="e";render();qq("nV").click()};
  qq("nDel").onclick=()=>{if(!cur||cur.ro)return;if(cur.t&&!confirm("Supprimer cette note ?"))return;S.notes=S.notes.filter(n=>n.id!==cur.id);save();cur=items()[0]||null;X.dataset.v="l";delete Ed.dataset.id;render()};
  cur=items()[0]||null;if(innerWidth>760)X.dataset.v="e";render();
 }
