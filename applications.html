@@ -52,7 +52,7 @@ const id=new URLSearchParams(location.search).get("id");
   $("main").innerHTML=`
   <p style="margin-bottom:20px"><a href="applications.html" class="muted">← Toutes les applications</a></p>
   ${a.details?`<section class="box"><h2>À propos</h2><p>${nl(a.details)}</p>${a.web?`<p style="margin-top:14px"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></p>`:""}</section>`:(a.web?`<section class="box"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></section>`:"")}
-  ${dl.length?`<section class="box"><h2>Télécharger</h2><div style="display:flex;flex-wrap:wrap;gap:10px">${dl.map(x=>`<a class="pill accent" href="${esc(x.url)}">${esc(x.label)}</a>`).join("")}</div><p class="muted" style="margin-top:10px">Fichiers de la version ${esc(dl[0].tag)}, hébergés sur GitHub.</p></section>`:""}
+  ${dl.length?`<section class="box"><h2>Télécharger</h2><div style="display:flex;flex-wrap:wrap;gap:10px">${dl.map(x=>`<a class="pill accent" href="${esc(x.url)}" download>${esc(x.label)} · v${esc(x.tag.replace(/^v/,""))}</a>`).join("")}</div><p class="muted" style="margin-top:10px">Fichiers hébergés sur GitHub. Sur Android, autorisez l&#39;installation depuis le navigateur si demandé.</p></section>`:""}
   <section class="box"><h2>Mise à jour actuelle</h2>${L?`
     <div class="row" style="flex-wrap:wrap"><div><span class="tag">Version ${esc(L.version)}</span> <span class="muted">· publiée le ${fdate(L.date)}</span></div></div>
     <p style="margin-top:12px">${nl(L.notes||"")}</p>
