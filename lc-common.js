@@ -16,7 +16,7 @@ function nl(s){return esc(s).replace(/\n/g,"<br>")}
 
 /* Versions lues sur GitHub : chaque commit « vX.Y : nouveautés » qui modifie index.html = une version */
 const REPOS={bible:"lifecasts-hub/The-Bible-App",cantiques:"lifecasts-hub/Songs-Book"};
-async function ghVersions(repo){
+async function ghVersions0(repo){
   const r=await fetch("https://api.github.com/repos/"+repo+"/commits?path=index.html&per_page=100");if(!r.ok)throw new Error("GitHub indisponible");
   const out=[],seen=new Set();
   for(const c of await r.json()){const msg=c.commit.message.replace(/\n*Co-Authored-By:[\s\S]*$/i,"").trim(),m=msg.match(/^v?(\d+(?:\.\d+)+)\s*[:\-–—]?\s*([\s\S]*)$/i);
@@ -45,10 +45,18 @@ disk:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.
 return function(n,s){return '<svg class="ico" viewBox="0 0 24 24" width="'+(s||'1em')+'" height="'+(s||'1em')+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>'}})();
 
 /* Téléchargements : fichiers .apk / .dmg joints à la dernière Release GitHub */
-async function ghDownloads(repo){
+async function ghDownloads0(repo){
   try{const r=await fetch("https://api.github.com/repos/"+repo+"/contents/downloads");if(r.ok){const best={};
     for(const x of await r.json()){const n=x.name.toLowerCase(),t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":null;if(!t)continue;
       const v=(x.name.match(/(\d+(?:\.\d+)+)/)||[])[1]||"0";if(!best[t]||vcmp(v,best[t].tag)>0)best[t]={label:t,url:"/"+repo.split("/")[1]+"/downloads/"+encodeURIComponent(x.name),size:x.size,tag:v}}
     const out=Object.values(best);if(out.length)return out}}catch(e){}
   const r=await fetch("https://api.github.com/repos/"+repo+"/releases/latest");if(!r.ok)return [];const j=await r.json();
   return (j.assets||[]).map(x=>{const n=x.name.toLowerCase();const t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":null;return t&&{label:t,url:x.browser_download_url,size:x.size,tag:j.tag_name}}).filter(Boolean)}
+
+/* Cache 15 min (limite GitHub : 60 requêtes/h) + repli si GitHub ne répond pas */
+async function ghCached(k,fn,fb){let c;try{c=JSON.parse(localStorage.getItem("lcgh:"+k))}catch(e){}
+  if(c&&Date.now()-c.t<9e5)return c.v;
+  try{const v=await fn();try{localStorage.setItem("lcgh:"+k,JSON.stringify({t:Date.now(),v}))}catch(e){}return v}
+  catch(e){if(c)return c.v;if(fb)return fb();throw e}}
+function ghVersions(repo){return ghCached("v:"+repo,()=>ghVersions0(repo),async()=>{const v=await liveVersion(repo);return v?[{version:v,date:null,notes:""}]:[]})}
+function ghDownloads(repo){return ghCached("d:"+repo,async()=>{const r=await fetch("https://api.github.com/repos/"+repo+"/contents/downloads");if(r.status===403||r.status===429)throw new Error("limite");return ghDownloads0(repo)},()=>[])}
