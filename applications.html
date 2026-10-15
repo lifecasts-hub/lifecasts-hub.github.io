@@ -32,6 +32,7 @@ const id=new URLSearchParams(location.search).get("id");
   if(!id){
     const qs=await db.collection("apps").get();
     const apps=qs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.ordre||0)-(b.ordre||0));
+    await Promise.all(apps.map(async a=>{const r=a.repo||REPOS[a.id];if(r)try{a.latest=(await ghVersions(r))[0]||a.latest}catch(e){}}));
     $("main").innerHTML=apps.length?'<div class="cards">'+apps.map(a=>`<a class="card" href="applications.html?id=${encodeURIComponent(a.id)}">
       <h3>${esc(a.nom)}</h3><p>${esc(a.description)}</p>
       <div>${a.latest?`<span class="tag">Version ${esc(a.latest.version)}</span> <span class="muted">· ${fdate(a.latest.date)}</span>`:'<span class="tag old">Bientôt</span>'}</div>
@@ -42,15 +43,18 @@ const id=new URLSearchParams(location.search).get("id");
   if(!d.exists){$("main").innerHTML='<p class="muted">Application introuvable. <a href="applications.html">Retour</a></p>';return}
   const a=d.data();document.title=a.nom+" — LifeCasts";
   $("hEye").textContent="Application";$("hTitle").textContent=a.nom;$("hDesc").textContent=a.description||"";
-  const vs=(await db.collection("apps").doc(id).collection("versions").get()).docs.map(x=>x.data()).sort((x,y)=>vcmp(y.version,x.version));
-  const L=a.latest,old=vs.filter(v=>!L||v.version!==L.version);
+  let vs=[];const repo=a.repo||REPOS[id];
+  if(repo)try{vs=await ghVersions(repo)}catch(e){}
+  try{const fs=(await db.collection("apps").doc(id).collection("versions").get()).docs.map(x=>x.data());fs.forEach(v=>{if(!vs.some(g=>g.version===v.version))vs.push(v)})}catch(e){}
+  vs.sort((x,y)=>vcmp(y.version,x.version));
+  const L=vs[0]||a.latest,old=vs.filter(v=>!L||v.version!==L.version);
   $("main").innerHTML=`
   <p style="margin-bottom:20px"><a href="applications.html" class="muted">← Toutes les applications</a></p>
   ${a.details?`<section class="box"><h2>À propos</h2><p>${nl(a.details)}</p>${a.web?`<p style="margin-top:14px"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></p>`:""}</section>`:(a.web?`<section class="box"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></section>`:"")}
   <section class="box"><h2>Mise à jour actuelle</h2>${L?`
     <div class="row" style="flex-wrap:wrap"><div><span class="tag">Version ${esc(L.version)}</span> <span class="muted">· publiée le ${fdate(L.date)}</span></div></div>
     <p style="margin-top:12px">${nl(L.notes||"")}</p>
-    <p class="muted" style="margin-top:12px">Les applications installées détectent cette mise à jour automatiquement et proposent de l'installer, sans repasser par le store.</p>`:'<p class="muted">Aucune mise à jour publiée.</p>'}</section>
+    <p class="muted" style="margin-top:12px">Les applications installées se mettent à jour automatiquement dès qu'elles sont connectées à Internet.</p>`:'<p class="muted">Aucune mise à jour publiée.</p>'}</section>
   <section class="box"><h2>Anciennes versions</h2>${old.length?'<ul class="vlist">'+old.map(v=>`<li><b>Version ${esc(v.version)}</b><span class="muted">${fdate(v.date)}</span><span class="tag old">Archivée</span><div class="notes">${nl(v.notes||"")}</div></li>`).join("")+'</ul>':'<p class="muted">Pas encore d\'historique.</p>'}</section>`;
 })().catch(e=>{$("main").innerHTML='<p class="muted">Erreur de chargement : '+esc(e.message)+'</p>'});
 </script>
