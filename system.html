@@ -128,7 +128,6 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
  .set .pane{padding:16px}
  .me span{font-size:12px}
  .seg button{padding:5px 9px}
- .notes-wrap nav{max-height:38%;overflow:auto;flex-direction:column!important}
 }
 @media (max-width:420px){.appgrid{grid-template-columns:repeat(4,1fr);gap:12px 4px}.ic i{width:52px;height:52px}#barClock .d{display:none}}
 /* Applications en plein écran */
@@ -189,10 +188,10 @@ const WP={sable:"linear-gradient(135deg,#f3d9b1 0%,#c98a3d 45%,#5a3a22 100%)",nu
 const APPS=[
  {id:"bible",nom:"Bible",icon:'<img src="/The-Bible-App/icon-192.png" alt="">',url:"/The-Bible-App/"},
  {id:"cantiques",nom:"Cantiques",icon:'<img src="/Songs-Book/icon-192.png" alt="">',url:"/Songs-Book/"},
- {id:"store",nom:"Applications",icon:ICO("grid"),url:"applications.html"},
+ {id:"store",nom:"Applications",icon:'<svg viewBox="0 0 100 100"><defs><linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2AA7FF"/><stop offset="1" stop-color="#0A5FE0"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(#gS)"/><g fill="#fff"><rect x="24" y="24" width="22" height="22" rx="6"/><rect x="54" y="24" width="22" height="22" rx="6" opacity=".85"/><rect x="24" y="54" width="22" height="22" rx="6" opacity=".85"/><rect x="54" y="54" width="22" height="22" rx="6" opacity=".7"/></g></svg>',url:"applications.html"},
  {id:"settings",nom:"Paramètres",icon:ICO("gear"),fn:settings},
- {id:"brochures",nom:"Brochures",icon:'<svg viewBox="0 0 100 100"><defs><linearGradient id="gB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#B07A45"/><stop offset="1" stop-color="#6E4521"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(#gB)"/><path d="M50 30C41 24 30 23 20 25v48c10-2 21-1 30 5z" fill="#FFF8EE"/><path d="M50 30c9-6 20-7 30-5v48c-10-2-21-1-30 5z" fill="#F3E3CC"/><path d="M27 37h15M27 46h15M27 55h11M58 37h15M58 46h15M58 55h11" stroke="#B07A45" stroke-width="3" stroke-linecap="round"/></svg>',fn:brochures},
- {id:"notes",nom:"Notes",icon:'<svg viewBox="0 0 100 100"><defs><linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE27A"/><stop offset="1" stop-color="#F7B731"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(#gN)"/><rect x="22" y="18" width="56" height="66" rx="8" fill="#fff"/><path d="M31 36h38M31 48h38M31 60h26" stroke="#E0A92A" stroke-width="4" stroke-linecap="round"/><path d="M61 76l16-16 6 6-16 16-8 2z" fill="#8B5A2B"/></svg>',fn:notes},
+ {id:"brochures",nom:"Brochures",icon:'<svg viewBox="0 0 100 100"><defs><linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8A3D"/><stop offset="1" stop-color="#E5482B"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(#gB)"/><path d="M50 30C42 25 31 24 20 26v46c11-2 22-1 30 4z" fill="#fff"/><path d="M50 30c8-5 19-6 30-4v46c-11-2-22-1-30 4z" fill="#FFE9DD"/><path d="M50 30v46" stroke="#E5482B" stroke-width="1.5" opacity=".5"/></svg>',fn:brochures},
+ {id:"notes",nom:"Notes",icon:'<svg viewBox="0 0 100 100"><defs><linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#ECECEC"/></linearGradient><linearGradient id="gN2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD95A"/><stop offset="1" stop-color="#F5B800"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(#gN)"/><path d="M0 22A22 22 0 0 1 22 0h56a22 22 0 0 1 22 22v12H0z" fill="url(#gN2)"/><g stroke="#D8D8DC" stroke-width="2"><path d="M14 50h72M14 64h72M14 78h72"/></g><g fill="#B9B9BE"><circle cx="20" cy="38" r="0"/></g><path d="M14 34h72" stroke="#E3A600" stroke-width="1.5" stroke-dasharray="3 3"/></svg>',fn:notes},
  {id:"about",nom:"À propos",icon:ICO("info"),fn:about},
  {id:"home",nom:"Site LifeCasts",icon:'<img src="favicon.png" alt="">',url:"index.html"}
 ];
@@ -287,17 +286,70 @@ function settings(el){
 }
 function brochures(el){el.innerHTML='<div style="max-width:560px;margin:20px auto;text-align:center"><div style="color:var(--accent)">'+ICO("book","64px")+'</div><h2 style="font-size:30px;letter-spacing:-.03em;margin:8px 0">Brochures LifeCasts</h2><p class="sub" style="font-size:16px">Des brochures tirées des bandes du Message de William Branham, imprimées et distribuées avec soin.</p><p style="margin-top:18px">Pour recevoir une brochure, écrivez-nous depuis la page de contact du site.</p><p style="margin-top:18px"><a class="btn" href="index.html#contact" target="_blank">Nous écrire</a></p></div>'}
 function about(el){el.innerHTML='<div style="text-align:center;padding:20px"><div class="mark" style="margin:0 auto"><img src="mark-dark.png" alt=""></div><h2 style="margin:14px 0 4px">LifeCasts System</h2><p class="sub">Version 1.0</p><p style="max-width:440px;margin:16px auto 0">Un espace unique pour les applications LifeCasts : Bible, Cantiques, vos réglages et votre compte.</p><p class="sub" style="margin-top:16px">© '+new Date().getFullYear()+' LifeCasts · <a href="confidentialite.html" target="_blank">Confidentialité</a> · <a href="conditions.html" target="_blank">Conditions</a></p></div>'}
-function bibleNotes(){try{let c="";try{c=localStorage.getItem("lc.current")||""}catch(e){}const o=JSON.parse(localStorage.getItem(c?"lsg.notes."+c:"lsg.notes")||localStorage.getItem("lsg.notes")||"{}");return Object.entries(o).map(([k,v])=>[k,typeof v==="string"?v:(v&&(v.t||v.text))||""]).filter(x=>x[1])}catch(e){return[]}}
+/* Notes de la Bible : fusionne toutes les clés lsg.notes / lsg.notes.<compte> de cet appareil (compte actuel en priorité) */
+function bibleNotes(){const out={};let c="";try{c=localStorage.getItem("lc.current")||""}catch(e){}
+ const keys=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^lsg\.notes(\.|$)/.test(k))keys.push(k)}}catch(e){}
+ keys.sort((a,b)=>(b==="lsg.notes."+c)-(a==="lsg.notes."+c));
+ keys.forEach(k=>{try{const o=JSON.parse(localStorage.getItem(k)||"{}");for(const r in o){const v=o[r],t=typeof v==="string"?v:(v&&(v.t||v.text))||"";if(t&&!(r in out))out[r]=t}}catch(e){}});
+ return Object.entries(out).map(([k,v])=>({id:"b:"+k,ref:k.replace("/"," ").replace("/",":"),t:v,ro:1}))}
 function notes(el){
- S.notes=S.notes||[];let cur=0;
- el.style.padding="0";el.innerHTML='<div class="set notes-wrap" style="margin:0"><nav style="gap:4px"><button class="btn" id="nNew" style="text-align:center;justify-content:center">+ Nouvelle note</button><div id="nList" style="display:flex;flex-direction:column;gap:2px;margin-top:6px"></div></nav><div class="pane" style="display:flex;flex-direction:column"><textarea class="qn" id="nTxt" placeholder="Écrivez…" style="font-size:16px"></textarea><div style="text-align:right"><button class="btn ghost" id="nDel">Supprimer</button></div></div></div>';
- const L=el.querySelector("#nList"),T=el.querySelector("#nTxt");
- function list(){L.innerHTML="";S.notes.forEach((n,i)=>{const b=E("button",{textContent:(n.split("\n")[0]||"Nouvelle note").slice(0,40)});if(i===cur)b.className="on";b.onclick=()=>{cur=i;load()};L.append(b)});const bn=bibleNotes();if(bn.length){L.append(E("div",{className:"sub",textContent:"Bible",style:"margin:10px 4px 2px;font-weight:600"}));bn.forEach(([k,v])=>{const b=E("button",{textContent:k.replace(/\//," ").replace(/\//,":")+" · "+v.slice(0,30)});b.onclick=()=>{cur=-1;T.value=k.replace(/\//," ").replace(/\//,":")+"\n\n"+v;T.readOnly=true;list();b.className="on"};L.append(b)})}}
- function load(){T.readOnly=false;if(!S.notes.length)S.notes.push("");T.value=S.notes[cur]||"";list()}
- T.oninput=()=>{if(cur<0)return;S.notes[cur]=T.value;save();list()};
- el.querySelector("#nNew").onclick=()=>{S.notes.unshift("");cur=0;save();load();T.focus()};
- el.querySelector("#nDel").onclick=()=>{if(cur<0)return;S.notes.splice(cur,1);cur=0;save();load()};
- load();
+ if(!q("nCss")){const st=E("style",{id:"nCss"});st.textContent=`
+.nx{display:flex;height:100%;font-size:14px;color:var(--fg,#1d1d1f);background:var(--win)}
+.nx aside{width:210px;flex:none;background:var(--soft);border-right:1px solid var(--line);padding:14px 10px;overflow:auto}
+.nx aside h4{margin:4px 8px 8px;font-size:12px;color:var(--muted);font-weight:600}
+.nx .fd{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;background:none;padding:7px 10px;border-radius:8px;font:inherit;color:inherit;cursor:pointer;text-align:left}
+.nx .fd svg{width:16px;height:16px;margin-right:8px;color:#E3A600;flex:none}.nx .fd span{display:flex;align-items:center}
+.nx .fd.on{background:#F5C400;color:#000}.nx .fd.on svg{color:#000}.nx .fd small{color:var(--muted)}.nx .fd.on small{color:#000}
+.nx .ls{width:290px;flex:none;border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.nx .hd{display:flex;align-items:center;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.nx .hd b{flex:1;font-size:17px}
+.nx .ib{border:0;background:none;cursor:pointer;color:#D9A400;padding:5px;border-radius:7px;display:grid;place-items:center}.nx .ib:hover{background:var(--soft)}.nx .ib svg{width:20px;height:20px}
+.nx .sr{margin:8px 12px;padding:7px 10px;border-radius:9px;border:0;background:var(--soft);font:inherit;color:inherit;outline:none}
+.nx .it{padding:10px 14px;margin:0 8px;border-radius:9px;cursor:pointer;border-bottom:1px solid var(--line)}
+.nx .it.on{background:#FCE38A;border-color:transparent;color:#000}.nx .it.on p{color:#444}
+.nx .it h5{margin:0 0 3px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nx .it p{margin:0;color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nx .it p em{font-style:normal;color:inherit;margin-right:6px;font-weight:500}
+.nx .gl{padding:10px 18px 4px;font-size:12px;font-weight:600;color:var(--muted)}
+.nx .ed{flex:1;display:flex;flex-direction:column;min-width:0}
+.nx .ed .dt{text-align:center;color:var(--muted);font-size:12px;padding:12px 0 2px}
+.nx .ed textarea{flex:1;border:0;outline:none;resize:none;background:none;color:inherit;padding:10px 32px 30px;font:16px/1.55 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+.nx .ed .ro{margin:6px 32px 0;font-size:12px;color:#B58800}
+.nx .em{margin:auto;color:var(--muted)}
+.nx .bk{display:none}
+@media (max-width:760px){.nx aside,.nx .ls,.nx .ed{width:100%;border:0}.nx[data-v="f"] .ls,.nx[data-v="f"] .ed,.nx[data-v="l"] aside,.nx[data-v="l"] .ed,.nx[data-v="e"] aside,.nx[data-v="e"] .ls{display:none}.nx .bk{display:flex;color:#D9A400;font-size:16px;align-items:center;gap:2px}.nx .ed textarea{padding:10px 18px}}`;document.head.append(st)}
+ const I={f:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  n:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  d:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>',
+  b:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M11 8v6M8 11h6"/></svg>',
+  k:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>'};
+ S.notes=(S.notes||[]).map((n,i)=>typeof n==="string"?{id:"n"+Date.now()+i,t:n,m:Date.now()}:n);save();
+ let fol="all",cur=null,qs="",BN=bibleNotes();
+ el.style.padding="0";
+ el.innerHTML='<div class="nx" data-v="l"><aside><h4>iCloud · LifeCasts</h4><div id="nF"></div></aside><section class="ls"><div class="hd"><button class="ib bk" data-go="f">'+I.k+'Dossiers</button><b id="nT"></b><button class="ib" id="nDel" title="Supprimer">'+I.d+'</button><button class="ib" id="nNew" title="Nouvelle note">'+I.n+'</button></div><input class="sr" id="nQ" placeholder="Rechercher"><div id="nL" style="overflow:auto;flex:1;padding-bottom:10px"></div></section><section class="ed"><div class="hd bk" style="border:0"><button class="ib bk" data-go="l">'+I.k+'Notes</button></div><div id="nE" style="display:flex;flex-direction:column;flex:1;min-height:0"></div></section></div>';
+ const X=el.querySelector(".nx"),F=q("nF"),Lw=q("nL"),Ed=q("nE");
+ X.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{X.dataset.v=b.dataset.go});
+ const title=n=>(n.ro?n.ref:(n.t.split("\n")[0]||"Nouvelle note")).trim()||"Nouvelle note";
+ const prev=n=>(n.ro?n.t:n.t.split("\n").slice(1).join(" ")).trim()||"Aucun texte supplémentaire";
+ const day=m=>{if(!m)return"";const d=new Date(m),t=new Date();return d.toDateString()===t.toDateString()?d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):d.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})};
+ const items=()=>{const mine=[...S.notes].sort((a,b)=>b.m-a.m);let a=fol==="mine"?mine:fol==="bible"?BN:mine.concat(BN);if(qs)a=a.filter(n=>(n.t+" "+(n.ref||"")).toLowerCase().includes(qs));return a};
+ function folders(){const f=[["all","Toutes les notes",S.notes.length+BN.length,I.f],["mine","Notes",S.notes.length,I.f],["bible","Bible",BN.length,I.b]];
+  F.innerHTML="";f.forEach(([k,t,c,ic])=>{const b=E("button",{className:"fd"+(k===fol?" on":"")});b.innerHTML="<span>"+ic+esc(t)+"</span><small>"+c+"</small>";b.onclick=()=>{fol=k;X.dataset.v="l";render()};F.append(b)})}
+ function list(){q("nT").textContent={all:"Toutes les notes",mine:"Notes",bible:"Bible"}[fol];Lw.innerHTML="";const a=items();
+  if(!a.length){Lw.innerHTML='<div class="gl" style="text-align:center;padding:30px">'+(fol==="bible"?"Aucune note de la Bible sur cet appareil.":"Aucune note")+"</div>";return}
+  let g="";a.forEach(n=>{const h=n.ro?"Bible":"Notes";if(fol==="all"&&h!==g){g=h;Lw.append(E("div",{className:"gl",textContent:h}))}
+   const d=E("div",{className:"it"+(cur&&cur.id===n.id?" on":"")});d.innerHTML="<h5>"+esc(title(n))+"</h5><p><em>"+(n.ro?"":day(n.m))+"</em>"+esc(prev(n).slice(0,90))+"</p>";d.onclick=()=>{cur=n;X.dataset.v="e";render()};Lw.append(d)})}
+ function editor(){q("nDel").style.visibility=cur&&!cur.ro?"visible":"hidden";
+  if(!cur){Ed.innerHTML='<div class="em">Aucune note sélectionnée</div>';return}
+  if(Ed.dataset.id===cur.id)return;Ed.dataset.id=cur.id;
+  Ed.innerHTML='<div class="dt">'+(cur.ro?"Note de la Bible · "+esc(cur.ref):new Date(cur.m).toLocaleString("fr-FR",{dateStyle:"long",timeStyle:"short"}))+'</div>'+(cur.ro?'<div class="ro">Lecture seule — modifiez cette note dans l\'app Bible.</div>':"")+'<textarea id="nTx"></textarea>';
+  const T=q("nTx");T.value=cur.ro?cur.ref+"\n\n"+cur.t:cur.t;T.readOnly=!!cur.ro;
+  T.oninput=()=>{if(cur.ro)return;cur.t=T.value;cur.m=Date.now();save();list()}}
+ function render(){BN=bibleNotes();folders();list();editor()}
+ q("nQ").oninput=e=>{qs=e.target.value.toLowerCase();list()};
+ q("nNew").onclick=()=>{const n={id:"n"+Date.now(),t:"",m:Date.now()};S.notes.push(n);save();if(fol==="bible")fol="mine";cur=n;X.dataset.v="e";render();q("nTx").focus()};
+ q("nDel").onclick=()=>{if(!cur||cur.ro)return;if(cur.t&&!confirm("Supprimer cette note ?"))return;S.notes=S.notes.filter(n=>n.id!==cur.id);save();cur=items()[0]||null;X.dataset.v="l";delete Ed.dataset.id;render()};
+ cur=items()[0]||null;if(innerWidth>760)X.dataset.v="e";render();
 }
 boot();
 /* Ouverture directe : system.html?app=bible */
