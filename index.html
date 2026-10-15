@@ -6,287 +6,188 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <title>LifeCasts</title>
 <meta name="description" content="LifeCasts : impression et distribution de brochures, et applications liées au ministère des bandes.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="lc-pages.css">
+<script src="lc-common.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
-/* ================= CONFIGURATION — à modifier ici uniquement ================= */
+/* ================= CONFIGURATION ================= */
 const LIFECASTS = {
-  // Colle ici l'ID client Google (se termine par .apps.googleusercontent.com)
   googleClientId: "922202570064-af1s9pn19o9fhvrf5604ol30erff79fu.apps.googleusercontent.com",
-  // Clé de stockage partagée avec les applications (même adresse github.io)
   storageKey: "lifecasts_user",
-  contactEmail: "",            // ex. "contact@exemple.com"
+  contactEmail: "",
   apps: [
-    { nom: "The Bible App", description: "La Bible, dans la famille d'applications LifeCasts.", url: "/The-Bible-App/" }
+    { id:"bible", nom:"Bible LifeCasts", accroche:"La Parole, partout. Même hors connexion.", description:"Louis Segond 1910, recherche, favoris synchronisés et mises à jour automatiques.", url:"/The-Bible-App/", icon:"/The-Bible-App/icon-192.png", fond:"linear-gradient(180deg,#fbf6ee,#f2e4cf)" },
+    { id:"cantiques", nom:"Cantiques", accroche:"Les chants d'autrefois, dans votre poche.", description:"Un recueil de cantiques avec favoris, recherche et synchronisation.", url:"/Songs-Book/", icon:"/Songs-Book/icon-192.png", fond:"linear-gradient(180deg,#f3f5fb,#e2e7f3)" }
   ]
 };
 </script>
 <style>
-:root{--ink:#17110E;--muted:#5E5148;--line:#E3D9CE;--dark:#2A1C14;--beige:#F2DBB8;--soft:#D9CBBB}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:'Montserrat',system-ui,sans-serif;color:var(--ink);background:#fff;font-size:16px;line-height:1.6}
-a{color:inherit}
-a:focus-visible,button:focus-visible{outline:3px solid #B8792B;outline-offset:2px}
-h1,h2,h3,p{margin:0}
-.wrap{max-width:1200px;margin:0 auto;padding-left:24px;padding-right:24px}
-.pill{display:inline-block;text-decoration:none;font-weight:600;font-size:15px;padding:13px 26px;border-radius:999px;border:0;cursor:pointer;font-family:inherit}
-.pill.dark{background:var(--ink);color:#fff}
-.pill.beige{background:var(--beige);color:var(--ink)}
-.pill.ghost{background:#fff;color:var(--ink);border:1px solid #B9A998}
-header .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-top:18px;padding-bottom:18px}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:20px}
-nav{display:flex;flex-wrap:wrap;gap:4px;font-size:15px;font-weight:500}
-nav a{padding:12px 14px;text-decoration:none}
-nav a:hover{color:#8A5A1F}
-.hero{background:radial-gradient(ellipse at 75% 40%,#4A3324 0%,#2A1C14 45%,#1A120D 100%);color:#fff;padding:88px 0}
-.hero .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:56px}
-.hero-text{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:24px;align-items:flex-start}
-.eyebrow{font-size:14px;font-weight:500;color:#E5D3BC;letter-spacing:.04em}
-h1{font-weight:600;font-size:clamp(40px,5.6vw,64px);line-height:1.08;letter-spacing:-.02em}
-.hero-text p{font-size:18px;color:var(--soft);max-width:500px}
-.card{flex:1 1 360px;min-width:0;max-width:440px;background:#fff;color:var(--ink);border-radius:24px;padding:32px;box-shadow:0 30px 70px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:18px}
-.card h2{font-weight:600;font-size:26px;line-height:1.2}
-.card p{color:var(--muted);font-size:15px}
+.hero-home{text-align:center;padding:72px 0 0;background:#fff;overflow:hidden}
+.hero-home h1{font-size:clamp(44px,8vw,80px);font-weight:700;letter-spacing:-.04em;line-height:1.05}
+.hero-home h2{font-size:clamp(21px,3vw,28px);font-weight:400;color:var(--ink);margin-top:8px}
+.ctas{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin-top:22px;align-items:center}
+.icons{display:flex;justify-content:center;gap:clamp(14px,3vw,28px);margin:56px auto 0;padding-bottom:64px}
+.icons img{width:clamp(72px,14vw,120px);height:clamp(72px,14vw,120px);border-radius:24%;box-shadow:0 18px 40px rgba(0,0,0,.18);background:var(--soft);transition:transform .4s}
+.icons img:hover{transform:translateY(-6px) scale(1.04)}
+.icons .sys{display:grid;place-items:center;width:clamp(72px,14vw,120px);height:clamp(72px,14vw,120px);border-radius:24%;background:linear-gradient(135deg,#2a1c14,#9a5b1e);box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.icons .sys img{width:55%;height:auto;box-shadow:none;background:none;filter:invert(1)}
+.panel{margin:12px;border-radius:28px;text-align:center;padding:64px 22px 0;overflow:hidden}
+.panel h3{font-size:clamp(36px,6vw,56px);font-weight:700;letter-spacing:-.035em;line-height:1.07}
+.panel p.lead{font-size:clamp(19px,2.6vw,26px);margin-top:6px}
+.panel p.sub{color:var(--muted);max-width:560px;margin:14px auto 0}
+.panel .big-icon{width:160px;height:160px;border-radius:36px;margin:40px auto -40px;display:block;box-shadow:0 30px 60px rgba(0,0,0,.25)}
+.panel.dark{background:#000;color:#f5f5f7}
+.panel.dark p.sub{color:#a1a1a6}
+.panel.dark a{color:var(--accent2)}
+.window{max-width:760px;margin:44px auto 0;border-radius:18px 18px 0 0;background:linear-gradient(135deg,#3b2a1f,#9a5b1e 60%,#e5c08f);padding:16px 16px 0;box-shadow:0 -10px 50px rgba(201,138,61,.25)}
+.window .bar{display:flex;gap:6px;padding:0 0 12px}
+.window .bar i{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.5)}
+.window .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;background:rgba(255,255,255,.18);backdrop-filter:blur(12px);border-radius:14px 14px 0 0;padding:22px}
+.window .grid div{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#fff}
+.window .grid b{width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,.9);display:grid;place-items:center;font-size:26px;overflow:hidden}
+.window .grid b img{width:100%;height:100%}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:0 12px}
+.duo .panel{margin:0;padding:56px 26px 56px}
+.duo h3{font-size:clamp(30px,4.5vw,40px)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;max-width:900px;margin:40px auto 0;text-align:left}
+.steps b{display:block;font-size:24px;letter-spacing:-.02em}
+.steps small{color:var(--accent);font-weight:600;font-size:14px}
+.steps p{color:var(--muted);font-size:15px;margin-top:4px}
+.account{max-width:420px;margin:28px auto 0;background:#fff;border-radius:22px;padding:28px;box-shadow:0 8px 30px rgba(0,0,0,.08);text-align:left;display:flex;flex-direction:column;gap:14px}
 .user{display:flex;align-items:center;gap:14px}
-.user img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#F3ECE4}
-.user strong{display:block;font-size:17px}
-.user span{color:var(--muted);font-size:14px;word-break:break-all}
-.notice{background:#FBF1E2;border-radius:12px;padding:12px 14px;font-size:14px;color:#5A3A10}
+.user img{width:52px;height:52px;border-radius:50%;object-fit:cover;background:#e8e8ed}
+.user strong{display:block}.user span{color:var(--muted);font-size:14px;word-break:break-all}
+.notice{background:#fbf1e2;border-radius:12px;padding:10px 14px;font-size:14px;color:#5a3a10}
 #gbtn{min-height:44px}
-section.block{padding:88px 0 56px}
-.center{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;margin-bottom:56px}
-h2.big{font-weight:600;font-size:clamp(32px,4.4vw,48px);line-height:1.1;letter-spacing:-.02em}
-.center p{color:var(--muted);max-width:620px}
-.cols{display:flex;flex-wrap:wrap;gap:32px}
-.cols>div{flex:1 1 260px;min-width:0;border-left:1px solid var(--line);padding-left:28px;display:flex;flex-direction:column;gap:8px}
-.cols small{font-size:14px;color:var(--muted)}
-.cols b{font-weight:600;font-size:34px;line-height:1.1;letter-spacing:-.01em}
-.cols p{color:var(--muted);font-size:15px}
-.grid{display:flex;flex-wrap:wrap;gap:24px;padding-bottom:96px}
-.grid>*{flex:1 1 420px;min-width:0}
-.tile{background:var(--dark);color:#fff;border-radius:28px;padding:36px;display:flex;flex-direction:column;gap:14px;align-items:flex-start}
-.tile.black{background:var(--ink)}
-.tile h3{font-weight:600;font-size:26px;line-height:1.2}
-.tile p{color:var(--soft);font-size:15px}
-.tile small{font-size:14px;color:#E5D3BC}
-.stack{display:flex;flex-direction:column;gap:24px}
-.stack .tile{flex:1}
-.applist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;width:100%}
-.applist a{display:flex;justify-content:space-between;align-items:center;gap:16px;text-decoration:none;background:#3A2A20;border-radius:16px;padding:16px 20px}
-.applist a:hover{background:#463327}
-.applist strong{display:block}
-.applist span{color:var(--soft);font-size:14px}
-footer{background:#14100D;color:#fff;padding:64px 0 32px}
-.fcols{display:flex;flex-wrap:wrap;gap:40px;font-size:15px;margin-bottom:48px}
-.fcols>div{flex:1 1 150px;display:flex;flex-direction:column;gap:10px}
-.fcols>div.wide{flex:2 1 280px}
-.fcols b{font-weight:600}
-.fcols a,.fcols span{color:#C9BBAB;text-decoration:none}
-.fcols a:hover{color:#fff}
-.legal{border-top:1px solid #3A2F27;padding-top:24px;text-align:center;font-size:14px;color:#C9BBAB}
-.legal a{color:#C9BBAB;text-decoration:underline}
-.legal a:hover{color:#fff}
-[hidden]{display:none!important}
+.navcta{font-size:12px;padding:5px 12px;white-space:nowrap;flex:none}
+footer .fl{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;margin-bottom:10px}
 </style>
 </head>
 <body>
 
-<header>
-<div class="wrap">
-<a class="logo" href="#accueil">
-<img src="mark-dark.png" height="34" alt="">
-LifeCasts
-</a>
+<header><div class="wrap">
+<a class="logo" href="#accueil"><img src="mark-dark.png" alt="">LifeCasts</a>
 <nav aria-label="Navigation principale">
+<a href="#applications">Applications</a>
+<a href="#system">LifeCasts System</a>
 <a href="#mission">Mission</a>
 <a href="#brochures">Brochures</a>
-<a href="applications.html">Applications</a>
-<a href="#contact">Contact</a>
+<a href="applications.html">Versions</a>
 </nav>
-<a class="pill dark" href="#compte" id="navBtn">Se connecter</a>
-</div>
-</header>
+<a class="pill small navcta" href="system.html" id="navBtn">Se connecter</a>
+</div></header>
 
-<main>
-<section class="hero" id="accueil">
-<div class="wrap">
-<div class="hero-text">
-<div class="eyebrow">Soyez les bienvenus · Ministère des bandes</div>
-<h1>Bienvenue sur LifeCasts</h1>
-<p>LifeCasts s'appuie sur les bandes du Message de William Branham : impression et distribution de brochures, et conception d'applications, étape par étape.</p>
-<a class="pill beige" href="#mission">Découvrir LifeCasts</a>
-</div>
+<main style="padding:0">
+<section class="hero-home" id="accueil"><div class="wrap">
+<h1>LifeCasts.</h1>
+<h2>Le ministère des bandes, imprimé, distribué, et dans vos applications.</h2>
+<div class="ctas"><a class="pill accent" href="system.html">Ouvrir LifeCasts System</a><a class="more" href="#mission">En savoir plus</a></div>
+<div class="icons" id="heroIcons"></div>
+</div></section>
 
-<div class="card" id="compte" aria-live="polite">
-<!-- Visiteur non connecté -->
-<div id="loggedOut" style="display:flex;flex-direction:column;gap:18px">
-<h2>Connexion</h2>
-<p>Un seul compte pour le site et toutes les applications LifeCasts.</p>
-<div id="gbtn"></div>
-<div class="notice" id="setupNotice" hidden>La connexion Google n'est pas encore configurée : l'ID client Google doit être ajouté dans le fichier du site.</div>
-<div class="notice" id="errNotice" hidden>La connexion n'a pas abouti. Merci de réessayer.</div>
-</div>
-<!-- Visiteur connecté -->
-<div id="loggedIn" hidden style="display:flex;flex-direction:column;gap:18px">
-<h2>Heureux de vous revoir</h2>
-<div class="user">
-<img id="uPic" alt="" referrerpolicy="no-referrer">
-<div><strong id="uName"></strong><span id="uMail"></span></div>
-</div>
-<a class="pill dark" href="#applications" style="text-align:center">Ouvrir une application</a>
-<button class="pill ghost" type="button" id="logoutBtn">Se déconnecter</button>
-</div>
-</div>
-</div>
+<div id="applications"></div>
+
+<section class="panel dark" id="system">
+<div class="eyebrow" style="color:var(--accent2)">Nouveau</div>
+<h3>LifeCasts System.</h3>
+<p class="lead">Toutes vos applications. Un seul espace.</p>
+<p class="sub">Connectez-vous une fois et retrouvez vos applications, vos paramètres et votre compte, depuis n'importe quel navigateur.</p>
+<div class="ctas"><a class="pill accent" href="system.html">Ouvrir</a><a class="more" href="#compte">Se connecter</a></div>
+<div class="window"><div class="bar"><i></i><i></i><i></i></div><div class="grid" id="winGrid"></div></div>
 </section>
 
-<section class="block" id="mission">
-<div class="wrap">
-<div class="center">
-<h2 class="big">Notre mission</h2>
-<p>Impression et distribution de brochures, conception d'applications : voici ce que fait LifeCasts.</p>
-</div>
-<div class="cols">
-<div><small>Étape une</small><b>Imprimer</b><p>Des brochures tirées des bandes, claires et durables.</p></div>
+<section style="padding:88px 0 72px;text-align:center" id="mission"><div class="wrap">
+<div class="eyebrow">Notre mission</div>
+<h3 style="font-size:clamp(34px,5.5vw,52px);font-weight:700;letter-spacing:-.035em;line-height:1.08">Étape par étape,<br>avec vous.</h3>
+<div class="steps">
+<div><small>Étape une</small><b>Imprimer</b><p>Des brochures tirées des bandes du Message de William Branham, claires et durables.</p></div>
 <div><small>Étape deux</small><b>Distribuer</b><p>Les acheminer vers celles et ceux qui les demandent.</p></div>
 <div><small>Étape trois</small><b>Concevoir</b><p>Des applications qui prolongent le ministère des bandes.</p></div>
 </div>
-</div>
-</section>
+</div></section>
 
-<div class="wrap grid">
-<article class="tile" id="applications">
-<small>Applications</small>
-<h3>La famille d'applications LifeCasts</h3>
-<ul class="applist" id="appList"></ul>
-<p style="margin-top:16px"><a class="pill beige" href="applications.html">Fiches, mises à jour et versions →</a></p>
-</article>
-<div class="stack">
-<article class="tile" id="brochures">
-<small>Brochures</small>
-<h3>Des brochures imprimées et distribuées avec soin</h3>
-<p>Pour recevoir une brochure, écrivez-nous.</p>
-<a class="pill beige" href="#contact">Nous écrire</a>
-</article>
-<article class="tile black">
-<h3 style="font-size:22px">Un concept progressif : nous avançons étape par étape, avec vous.</h3>
-</article>
+<div class="duo" id="brochures">
+<section class="panel" style="background:var(--soft)"><div class="eyebrow">Brochures</div><h3>Imprimées et distribuées avec soin.</h3><p class="sub">Pour recevoir une brochure, écrivez-nous.</p><div class="ctas"><a class="pill" href="#contact" id="mailBtn">Nous écrire</a></div></section>
+<section class="panel" style="background:linear-gradient(160deg,#2a1c14,#5a3a22)" ><div class="eyebrow" style="color:var(--beige)">Compte LifeCasts</div><h3 style="color:#fff">Un seul compte.<br>Partout.</h3><p class="sub" style="color:#e5d3bc">Le même compte pour le site, LifeCasts System et toutes les applications.</p></section>
+</div>
+
+<section style="padding:80px 0;text-align:center;background:#fff" id="compte"><div class="wrap">
+<h3 style="font-size:clamp(30px,4.5vw,40px);font-weight:700;letter-spacing:-.03em">Votre compte.</h3>
+<div class="account" aria-live="polite">
+<div id="loggedOut" style="display:flex;flex-direction:column;gap:14px">
+<p class="muted" style="font-size:15px">Connectez-vous pour synchroniser vos favoris entre vos appareils.</p>
+<div id="gbtn"></div>
+<div class="notice" id="setupNotice" hidden>La connexion Google n'est pas encore configurée.</div>
+<div class="notice" id="errNotice" hidden>La connexion n'a pas abouti. Merci de réessayer.</div>
+</div>
+<div id="loggedIn" hidden style="display:flex;flex-direction:column;gap:14px">
+<div class="user"><img id="uPic" alt="" referrerpolicy="no-referrer"><div><strong id="uName"></strong><span id="uMail"></span></div></div>
+<a class="pill accent" href="system.html" style="text-align:center">Ouvrir LifeCasts System</a>
+<button class="pill ghost" type="button" id="logoutBtn">Se déconnecter</button>
 </div>
 </div>
+</div></section>
 </main>
 
-<footer id="contact">
-<div class="wrap">
-<div class="fcols">
-<div><b>LifeCasts</b><a href="#mission">Mission</a><a href="#brochures">Brochures</a></div>
-<div><b>Services</b><a href="#applications">Applications</a><a href="#compte">Compte</a></div>
-<div class="wide"><b>Une question, une demande de brochure ?</b><span>Écrivez-nous, nous vous répondrons avec plaisir.</span><a id="mailLink" hidden></a></div>
-</div>
-<div class="legal">© <span id="year"></span> LifeCasts · <a href="confidentialite.html">Confidentialité</a> · <a href="conditions.html">Conditions d'utilisation</a></div>
-</div>
-</footer>
+<footer id="contact"><div class="wrap">
+<div class="fl"><a href="#mission">Mission</a><a href="#brochures">Brochures</a><a href="system.html">LifeCasts System</a><a href="applications.html">Applications et versions</a><a href="confidentialite.html">Confidentialité</a><a href="conditions.html">Conditions d'utilisation</a><a id="mailLink" hidden></a></div>
+<div>Une question, une demande de brochure ? Écrivez-nous, nous vous répondrons avec plaisir.</div>
+<div style="margin-top:8px">© <span id="year"></span> LifeCasts. Tous droits réservés.</div>
+</div></footer>
 
 <script>
 (function () {
   const $ = (id) => document.getElementById(id);
   const KEY = LIFECASTS.storageKey;
-
-  /* --- Session partagée (localStorage) --- */
-  function getUser() {
-    try {
-      const u = JSON.parse(localStorage.getItem(KEY));
-      return u && u.email ? u : null;
-    } catch (e) { return null; }
+  function getUser(){try{const u=JSON.parse(localStorage.getItem(KEY));return u&&u.email?u:null}catch(e){return null}}
+  function setUser(u){try{localStorage.setItem(KEY,JSON.stringify(u))}catch(e){}}
+  function clearUser(){try{localStorage.removeItem(KEY)}catch(e){}}
+  /* Retour vers une application : index.html?retour=/The-Bible-App/ */
+  function returnPath(){const r=new URLSearchParams(location.search).get("retour");return r&&r.startsWith("/")&&!r.startsWith("//")&&!r.includes("\\")?r:null}
+  function decodeJwt(t){const b=t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/");return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b),c=>c.charCodeAt(0))))}
+  function render(){
+    const u=getUser();
+    $("loggedOut").hidden=!!u;$("loggedOut").style.display=u?"none":"flex";
+    $("loggedIn").hidden=!u;$("loggedIn").style.display=u?"flex":"none";
+    $("navBtn").textContent=u?"LifeCasts System":"Se connecter";
+    if(u){$("uName").textContent=u.name||"";$("uMail").textContent=u.email;if(u.picture)$("uPic").src=u.picture;else $("uPic").removeAttribute("src")}
   }
-  function setUser(u) { try { localStorage.setItem(KEY, JSON.stringify(u)); } catch (e) {} }
-  function clearUser() { try { localStorage.removeItem(KEY); } catch (e) {} }
-
-  /* --- Retour vers une application : index.html?retour=/The-Bible-App/ --- */
-  function returnPath() {
-    const r = new URLSearchParams(location.search).get("retour");
-    // uniquement un chemin interne au même site
-    return r && r.startsWith("/") && !r.startsWith("//") && !r.includes("\\") ? r : null;
+  function onCredential(resp){
+    try{const p=decodeJwt(resp.credential);
+      setUser({id:p.sub,name:p.name,email:p.email,picture:p.picture,provider:"google",since:Date.now()});
+      $("errNotice").hidden=true;const back=returnPath();if(back){location.href=back;return}render();
+    }catch(e){$("errNotice").hidden=false}
   }
-
-  function decodeJwt(token) {
-    const b64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-    const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
-    return JSON.parse(new TextDecoder().decode(bytes));
+  function initGoogle(){
+    if(!LIFECASTS.googleClientId){$("setupNotice").hidden=false;return}
+    if(!(window.google&&google.accounts&&google.accounts.id)){setTimeout(initGoogle,200);return}
+    google.accounts.id.initialize({client_id:LIFECASTS.googleClientId,callback:onCredential,auto_select:false});
+    google.accounts.id.renderButton($("gbtn"),{theme:"outline",size:"large",shape:"pill",text:"continue_with",locale:"fr",width:300});
   }
+  $("logoutBtn").addEventListener("click",function(){clearUser();if(window.google&&google.accounts&&google.accounts.id)google.accounts.id.disableAutoSelect();render()});
+  window.addEventListener("storage",(e)=>{if(e.key===KEY)render()});
 
-  function render() {
-    const u = getUser();
-    $("loggedOut").hidden = !!u;
-    $("loggedOut").style.display = u ? "none" : "flex";
-    $("loggedIn").hidden = !u;
-    $("loggedIn").style.display = u ? "flex" : "none";
-    $("navBtn").textContent = u ? "Mon compte" : "Se connecter";
-    if (u) {
-      $("uName").textContent = u.name || "";
-      $("uMail").textContent = u.email;
-      if (u.picture) $("uPic").src = u.picture; else $("uPic").removeAttribute("src");
-    }
-  }
-
-  function onCredential(resp) {
-    try {
-      const p = decodeJwt(resp.credential);
-      setUser({ id: p.sub, name: p.name, email: p.email, picture: p.picture, provider: "google", since: Date.now() });
-      $("errNotice").hidden = true;
-      const back = returnPath();
-      if (back) { location.href = back; return; }
-      render();
-    } catch (e) { $("errNotice").hidden = false; }
-  }
-
-  function initGoogle() {
-    if (!LIFECASTS.googleClientId) { $("setupNotice").hidden = false; return; }
-    if (!(window.google && google.accounts && google.accounts.id)) { setTimeout(initGoogle, 200); return; }
-    google.accounts.id.initialize({ client_id: LIFECASTS.googleClientId, callback: onCredential, auto_select: false });
-    google.accounts.id.renderButton($("gbtn"), { theme: "outline", size: "large", shape: "pill", text: "continue_with", locale: "fr", width: 300 });
-  }
-
-  $("logoutBtn").addEventListener("click", function () {
-    clearUser();
-    if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
-    render();
+  /* Présentation des applications */
+  const E=(t,p)=>{const e=document.createElement(t);Object.assign(e,p||{});return e};
+  LIFECASTS.apps.forEach(a=>{$("heroIcons").append(E("img",{src:a.icon,alt:a.nom}))});
+  const s=E("div",{className:"sys"});s.append(E("img",{src:"mark-dark.png",alt:"LifeCasts System"}));$("heroIcons").append(s);
+  LIFECASTS.apps.forEach(a=>{
+    const p=E("section",{className:"panel"});p.style.background=a.fond;
+    p.append(E("h3",{textContent:a.nom+"."}),E("p",{className:"lead",textContent:a.accroche}),E("p",{className:"sub",textContent:a.description}));
+    const c=E("div",{className:"ctas"});c.append(E("a",{className:"pill",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"more",href:"applications.html?id="+a.id,textContent:"Fiche et versions"}));
+    const v=E("div",{className:"muted",textContent:" "});v.style.marginTop="10px";
+    p.append(c,v,E("img",{className:"big-icon",src:a.icon,alt:""}));p.style.paddingBottom="80px";
+    $("applications").append(p);
+    const repo=REPOS[a.id];if(repo)ghVersions(repo).then(vs=>{if(vs[0])v.textContent="Version "+vs[0].version}).catch(()=>{});
   });
+  const items=[...LIFECASTS.apps.map(a=>[a.nom,'<img src="'+a.icon+'" alt="">']),["Paramètres","⚙️"],["Compte","👤"],["Applications","🧩"],["Brochures","📖"],["À propos","ℹ️"],["Contact","✉️"]];
+  $("winGrid").innerHTML=items.map(i=>'<div><b>'+i[1]+'</b>'+i[0]+'</div>').join("");
 
-  // Synchronise si la session change dans un autre onglet ou une application
-  window.addEventListener("storage", (e) => { if (e.key === KEY) render(); });
-
-  /* --- Liste des applications --- */
-  LIFECASTS.apps.forEach(function (a) {
-    const li = document.createElement("li");
-    const link = document.createElement("a");
-    link.href = a.url;
-    const txt = document.createElement("div");
-    const s = document.createElement("strong"); s.textContent = a.nom;
-    const d = document.createElement("span"); d.textContent = a.description;
-    txt.append(s, d);
-    const arrow = document.createElement("span"); arrow.textContent = "Ouvrir →"; arrow.style.whiteSpace = "nowrap";
-    link.append(txt, arrow);
-    li.append(link);
-    $("appList").append(li);
-  });
-
-  if (LIFECASTS.contactEmail) {
-    const m = $("mailLink");
-    m.href = "mailto:" + LIFECASTS.contactEmail;
-    m.textContent = LIFECASTS.contactEmail;
-    m.hidden = false;
-    document.querySelectorAll('a[href="#contact"].pill').forEach((b) => (b.href = m.href));
-  }
-  $("year").textContent = new Date().getFullYear();
-
-  // Déjà connecté et renvoyé par une application : retour immédiat
-  const back = returnPath();
-  if (back && getUser()) { location.replace(back); return; }
-
-  render();
-  initGoogle();
+  if(LIFECASTS.contactEmail){const m=$("mailLink");m.href="mailto:"+LIFECASTS.contactEmail;m.textContent=LIFECASTS.contactEmail;m.hidden=false;$("mailBtn").href=m.href}
+  $("year").textContent=new Date().getFullYear();
+  const back=returnPath();if(back&&getUser()){location.replace(back);return}
+  render();initGoogle();
 })();
 </script>
 </body>

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2a1c14">
+<link rel="icon" type="image/png" href="favicon.png">
+<title>LifeCasts System</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<script src="lc-common.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Helvetica Neue",Arial,sans-serif;--glass:rgba(255,255,255,.72);--glass2:rgba(255,255,255,.55);--ink:#1d1d1f;--muted:#6e6e73;--line:rgba(0,0,0,.1);--accent:#9a5b1e;--win:#fff;--soft:#f5f5f7}
+:root[data-theme="dark"]{--glass:rgba(40,40,44,.72);--glass2:rgba(40,40,44,.55);--ink:#f5f5f7;--muted:#a1a1a6;--line:rgba(255,255,255,.12);--accent:#d9a05b;--win:#1c1c1e;--soft:#2c2c2e}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden}
+body{font-family:var(--font);color:var(--ink);font-size:15px;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;background:#2a1c14}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+a{color:var(--accent)}
+#wall{position:fixed;inset:0;background:var(--wp);background-size:cover;background-position:center;transition:background .6s}
+#wall::after{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(0,0,0,.25),transparent 60%)}
+.glass{background:var(--glass);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px)}
+
+/* Écran de connexion */
+#login{position:fixed;inset:0;display:grid;place-items:center;padding:16px;z-index:5}
+#login .box{width:min(400px,100%);border-radius:28px;padding:36px 28px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 30px 80px rgba(0,0,0,.3)}
+.mark{width:84px;height:84px;border-radius:22px;background:linear-gradient(135deg,#2a1c14,#9a5b1e);display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.mark img{width:56%;filter:invert(1)}
+#login h1{margin:4px 0 0;font-size:26px;letter-spacing:-.03em}
+#login p{margin:0;color:var(--muted)}
+#gbtn{min-height:44px;margin-top:8px}
+.guest{font-size:14px;color:var(--accent);margin-top:4px}
+
+/* Barre de menus */
+#bar{position:fixed;top:0;left:0;right:0;height:calc(34px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 12px 0;display:flex;align-items:center;gap:14px;z-index:30;font-size:13px;font-weight:500}
+#bar .ttl{font-weight:700}
+#bar .sp{flex:1}
+#bar button{padding:4px 8px;border-radius:6px}
+#bar button:hover{background:var(--line)}
+#bar img.av{width:22px;height:22px;border-radius:50%;vertical-align:middle;background:var(--soft);object-fit:cover}
+#menu{position:fixed;top:calc(40px + env(safe-area-inset-top));right:10px;z-index:40;width:250px;border-radius:14px;padding:6px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+#menu button,#menu a{display:block;width:100%;text-align:left;padding:9px 12px;border-radius:8px;text-decoration:none;color:var(--ink)}
+#menu button:hover,#menu a:hover{background:var(--accent);color:#fff}
+#menu hr{border:0;border-top:1px solid var(--line);margin:4px 8px}
+
+/* Bureau (style iCloud) */
+#desk{position:fixed;inset:calc(34px + env(safe-area-inset-top)) 0 0 0;overflow:auto;padding:28px 16px 130px}
+.hello{max-width:980px;margin:0 auto 22px;color:#fff;text-shadow:0 1px 12px rgba(0,0,0,.3)}
+.hello h1{margin:0;font-size:clamp(28px,5vw,40px);letter-spacing:-.03em}
+.hello p{margin:2px 0 0;opacity:.85}
+.tiles{max-width:980px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.tile{border-radius:22px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:12px;min-height:200px}
+.tile h2{margin:0;font-size:17px;display:flex;align-items:center;gap:8px}
+.sub,.tile .sub{color:var(--muted);font-size:13px}
+.appgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:14px 6px}
+.ic{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;text-align:center}
+.ic i{width:58px;height:58px;border-radius:14px;display:grid;place-items:center;font-size:28px;font-style:normal;background:var(--win);box-shadow:0 3px 10px rgba(0,0,0,.15);overflow:hidden;transition:transform .2s}
+.ic i img{width:100%;height:100%;object-fit:cover}
+.ic:hover i{transform:scale(1.07)}
+.ic:active i{transform:scale(.94)}
+.me{display:flex;align-items:center;gap:14px}
+.me img{width:60px;height:60px;border-radius:50%;object-fit:cover;background:var(--soft)}
+.me b{display:block;font-size:17px}.me span{color:var(--muted);font-size:13px;word-break:break-all}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line)}
+.list li:first-child{border-top:0}
+.list img{width:36px;height:36px;border-radius:9px}
+.list .r{margin-left:auto;font-size:12px;color:var(--muted)}
+.chip{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:rgba(47,122,61,.15);color:#2f7a3d}
+.clock{font-size:52px;font-weight:200;letter-spacing:-.04em;line-height:1}
+textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;font:inherit;color:inherit;outline:none}
+
+/* Dock */
+#dock{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;gap:10px;padding:8px 10px;border-radius:22px;box-shadow:0 10px 40px rgba(0,0,0,.25);max-width:calc(100vw - 20px);overflow-x:auto;scrollbar-width:none}
+#dock .ic i{width:50px;height:50px;border-radius:12px;font-size:24px}
+#dock .ic span{display:none}
+#dock .ic{position:relative}
+#dock .ic.run::after{content:"";position:absolute;bottom:-5px;width:4px;height:4px;border-radius:50%;background:var(--ink)}
+
+/* Fenêtres */
+.win{position:fixed;z-index:25;background:var(--win);border-radius:14px;box-shadow:0 30px 90px rgba(0,0,0,.4);display:flex;flex-direction:column;overflow:hidden;animation:pop .22s ease-out;top:60px;left:50%;width:min(1000px,94vw);height:calc(100vh - 170px);transform:translateX(-50%)}
+.win.max{top:calc(34px + env(safe-area-inset-top));left:0;width:100vw;height:calc(100vh - 34px - env(safe-area-inset-top));transform:none;border-radius:0}
+@keyframes pop{from{opacity:0;scale:.94}to{opacity:1;scale:1}}
+.win .tb{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--line);background:var(--soft);flex:none;user-select:none}
+.win .tb b{flex:1;text-align:center;font-size:13px;margin-right:52px}
+.dots{display:flex;gap:8px}
+.dots button{width:13px;height:13px;border-radius:50%}
+.dots .c{background:#ff5f57}.dots .m{background:#febc2e}.dots .x{background:#28c840}
+.win iframe{border:0;flex:1;width:100%;background:#fff}
+.win .body{flex:1;overflow:auto;padding:22px}
+@media (max-width:700px){.win{top:calc(34px + env(safe-area-inset-top));left:0;width:100vw;height:calc(100vh - 34px - env(safe-area-inset-top));transform:none;border-radius:0}.dots .x{display:none}.win .tb b{margin-right:30px}}
+
+/* Paramètres */
+.set{display:flex;height:100%;margin:-22px}
+.set nav{width:210px;flex:none;border-right:1px solid var(--line);padding:12px;background:var(--soft);display:flex;flex-direction:column;gap:2px}
+.set nav button{text-align:left;padding:8px 10px;border-radius:8px;display:flex;gap:8px;align-items:center}
+.set nav button.on{background:var(--accent);color:#fff}
+.set .pane{flex:1;overflow:auto;padding:24px}
+.set h3{margin:0 0 14px;font-size:22px}
+.grp{background:var(--soft);border-radius:12px;padding:4px 14px;margin-bottom:18px}
+.grp>div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+.grp>div:first-child{border-top:0}
+.seg{display:flex;background:var(--line);border-radius:9px;padding:2px}
+.seg button{padding:5px 12px;border-radius:7px;font-size:13px}
+.seg button.on{background:var(--win);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.wps{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
+.wps button{height:72px;border-radius:12px;border:3px solid transparent}
+.wps button.on{border-color:var(--accent)}
+.btn{display:inline-block;padding:8px 16px;border-radius:99px;background:var(--accent);color:#fff;font-weight:500;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+@media (max-width:700px){.set{flex-direction:column}.set nav{width:auto;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.set nav button{white-space:nowrap}}
+</style>
+</head>
+<body>
+<div id="wall"></div>
+
+<!-- Connexion -->
+<section id="login" hidden>
+<div class="box glass">
+<div class="mark"><img src="mark-dark.png" alt=""></div>
+<h1>LifeCasts System</h1>
+<p>Connectez-vous avec votre compte LifeCasts.</p>
+<div id="gbtn"></div>
+<p class="sub" id="lerr" hidden style="color:#c4302b">La connexion n'a pas abouti.</p>
+<button class="guest" id="guestBtn">Continuer sans compte ›</button>
+<a class="guest" href="index.html" style="text-decoration:none">← Retour à l'accueil</a>
+</div>
+</section>
+
+<!-- Système -->
+<div id="os" hidden>
+<div id="bar" class="glass">
+<button id="logoBtn" title="LifeCasts"><img src="mark-dark.png" alt="" style="height:15px;vertical-align:middle" id="barMark"></button>
+<span class="ttl" id="appTitle">LifeCasts System</span>
+<span class="sp"></span>
+<span id="barClock"></span>
+<button id="meBtn"><img class="av" id="barAv" alt=""></button>
+</div>
+<div id="menu" class="glass" hidden></div>
+
+<main id="desk">
+<div class="hello"><h1 id="hello"></h1><p id="today"></p></div>
+<div class="tiles">
+<section class="tile glass" style="grid-column:span 1"><h2>Applications</h2><div class="appgrid" id="gridApps"></div></section>
+<section class="tile glass"><h2>Compte</h2><div class="me"><img id="meAv" alt="" referrerpolicy="no-referrer"><div><b id="meName"></b><span id="meMail"></span></div></div><div class="sub">Vos favoris et réglages sont synchronisés avec les applications LifeCasts.</div><div><button class="btn ghost" data-open="settings">Gérer le compte</button></div></section>
+<section class="tile glass"><h2>Mises à jour</h2><ul class="list" id="upd"><li class="sub">Chargement…</li></ul><div class="sub">Les applications se mettent à jour automatiquement.</div></section>
+<section class="tile glass"><h2>Horloge</h2><div class="clock" id="bigClock"></div><div class="sub" id="bigDate"></div></section>
+<section class="tile glass"><h2>Note rapide</h2><textarea class="qn" id="qn" placeholder="Écrivez une note… elle reste sur cet appareil."></textarea></section>
+</div>
+</main>
+<div id="dock" class="glass"></div>
+</div>
+
+<script>
+(function(){
+const CLIENT="922202570064-af1s9pn19o9fhvrf5604ol30erff79fu.apps.googleusercontent.com",KEY="lifecasts_user",SK="lcsys";
+const q=id=>document.getElementById(id),E=(t,p)=>Object.assign(document.createElement(t),p||{});
+const S=(()=>{try{return JSON.parse(localStorage.getItem(SK))||{}}catch(e){return{}}})();
+const save=()=>{try{localStorage.setItem(SK,JSON.stringify(S))}catch(e){}};
+const WP={sable:"linear-gradient(135deg,#f3d9b1 0%,#c98a3d 45%,#5a3a22 100%)",nuit:"linear-gradient(160deg,#0f0c29,#302b63 55%,#24243e)",aube:"linear-gradient(160deg,#ffd6a5,#fdffb6 40%,#a0c4ff)",foret:"linear-gradient(160deg,#134e5e,#71b280)",braise:"linear-gradient(160deg,#2a1c14,#9a5b1e 60%,#e5c08f)",ocean:"linear-gradient(160deg,#4facfe,#00f2fe)"};
+
+/* Applications du système */
+const APPS=[
+ {id:"bible",nom:"Bible",icon:'<img src="/The-Bible-App/icon-192.png" alt="">',url:"/The-Bible-App/"},
+ {id:"cantiques",nom:"Cantiques",icon:'<img src="/Songs-Book/icon-192.png" alt="">',url:"/Songs-Book/"},
+ {id:"store",nom:"Applications",icon:"🧩",url:"applications.html"},
+ {id:"settings",nom:"Paramètres",icon:"⚙️",fn:settings},
+ {id:"brochures",nom:"Brochures",icon:"📖",fn:brochures},
+ {id:"notes",nom:"Notes",icon:"📝",fn:notes},
+ {id:"about",nom:"À propos",icon:"ℹ️",fn:about},
+ {id:"home",nom:"Site LifeCasts",icon:'<img src="favicon.png" alt="">',url:"index.html"}
+];
+const user=()=>{try{const u=JSON.parse(localStorage.getItem(KEY));return u&&u.email?u:null}catch(e){return null}};
+
+/* Thème + fond */
+function theme(){const t=S.theme||"auto",d=t==="dark"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light";q("barMark").style.filter=d?"invert(1)":"";document.documentElement.style.setProperty("--wp",WP[S.wp]||WP.braise)}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",theme);theme();
+
+/* Connexion */
+function decodeJwt(t){const b=t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/");return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b),c=>c.charCodeAt(0))))}
+function initGoogle(){if(!(window.google&&google.accounts&&google.accounts.id))return setTimeout(initGoogle,200);
+ google.accounts.id.initialize({client_id:CLIENT,auto_select:false,callback:r=>{try{const p=decodeJwt(r.credential);localStorage.setItem(KEY,JSON.stringify({id:p.sub,name:p.name,email:p.email,picture:p.picture,provider:"google",since:Date.now()}));S.guest=false;save();boot()}catch(e){q("lerr").hidden=false}}});
+ google.accounts.id.renderButton(q("gbtn"),{theme:"outline",size:"large",shape:"pill",text:"continue_with",locale:"fr",width:280})}
+q("guestBtn").onclick=()=>{S.guest=true;save();boot()};
+function logout(){try{localStorage.removeItem(KEY)}catch(e){}S.guest=false;save();if(window.google&&google.accounts)google.accounts.id.disableAutoSelect();closeAll();boot()}
+window.addEventListener("storage",e=>{if(e.key===KEY)boot()});
+
+function boot(){
+ const u=user(),on=!!u||S.guest;q("login").hidden=on;q("os").hidden=!on;if(!on){initGoogle();return}
+ const prenom=u&&u.name?u.name.split(" ")[0]:"";
+ const h=new Date().getHours();q("hello").textContent=(h<18&&h>=5?"Bonjour":"Bonsoir")+(prenom?", "+prenom:"")+".";
+ q("today").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+ const pic=u&&u.picture||"favicon.png";q("barAv").src=pic;q("meAv").src=pic;
+ q("meName").textContent=u?u.name||"Utilisateur":"Invité";q("meMail").textContent=u?u.email:"Connectez-vous pour synchroniser vos données.";
+}
+
+/* Icônes : grille + dock */
+function icon(a,label){const b=E("button",{className:"ic",title:a.nom});b.dataset.app=a.id;b.innerHTML="<i>"+a.icon+"</i>"+(label?"<span>"+a.nom+"</span>":"");b.onclick=()=>open(a.id);return b}
+APPS.forEach(a=>{q("gridApps").append(icon(a,true));if(a.id!=="about")q("dock").append(icon(a,false))});
+document.addEventListener("click",e=>{const o=e.target.closest("[data-open]");if(o)open(o.dataset.open)});
+
+/* Fenêtres */
+const wins={};
+function open(id){
+ const a=APPS.find(x=>x.id===id);if(!a)return;q("menu").hidden=true;
+ if(wins[id]){front(id);return}
+ const w=E("div",{className:"win"});w.style.zIndex=26+Object.keys(wins).length;
+ const tb=E("div",{className:"tb"});tb.innerHTML='<div class="dots"><button class="c" title="Fermer"></button><button class="m" title="Réduire"></button><button class="x" title="Agrandir"></button></div><b>'+a.nom+'</b>';
+ w.append(tb);
+ if(a.url){w.append(E("iframe",{src:a.url,title:a.nom,allow:"clipboard-write"}))}else{const b=E("div",{className:"body"});a.fn(b);w.append(b)}
+ tb.querySelector(".c").onclick=()=>close(id);
+ tb.querySelector(".m").onclick=()=>{w.hidden=true;title()};
+ tb.querySelector(".x").onclick=()=>w.classList.toggle("max");
+ tb.ondblclick=e=>{if(!e.target.closest("button"))w.classList.toggle("max")};
+ w.onmousedown=()=>front(id);
+ document.body.append(w);wins[id]=w;front(id);dockState();
+}
+function front(id){const w=wins[id];if(!w)return;w.hidden=false;const z=Math.max(26,...Object.values(wins).map(x=>+x.style.zIndex||0));w.style.zIndex=z+1;title()}
+function close(id){wins[id].remove();delete wins[id];dockState();title()}
+function closeAll(){Object.keys(wins).forEach(close)}
+function title(){const vis=Object.entries(wins).filter(([,w])=>!w.hidden).sort((a,b)=>b[1].style.zIndex-a[1].style.zIndex)[0];q("appTitle").textContent=vis?APPS.find(a=>a.id===vis[0]).nom:"LifeCasts System"}
+function dockState(){document.querySelectorAll("#dock .ic").forEach(b=>b.classList.toggle("run",!!wins[b.dataset.app]))}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){const t=Object.entries(wins).filter(([,w])=>!w.hidden).sort((a,b)=>b[1].style.zIndex-a[1].style.zIndex)[0];if(t)close(t[0])}});
+
+/* Menu */
+function menu(html){const m=q("menu");if(!m.hidden&&m.dataset.k===html.slice(0,20)){m.hidden=true;return}m.innerHTML=html;m.dataset.k=html.slice(0,20);m.hidden=false}
+q("meBtn").onclick=e=>{e.stopPropagation();const u=user();menu('<div style="padding:9px 12px"><b>'+esc(u?u.name||"":"Invité")+'</b><div style="font-size:12px;color:var(--muted)">'+esc(u?u.email:"Non connecté")+'</div></div><hr><button data-open="settings">Paramètres…</button><a href="index.html">Site LifeCasts</a><hr><button id="mOut">'+(u?"Se déconnecter":"Se connecter")+'</button>');q("mOut").onclick=logout};
+q("logoBtn").onclick=e=>{e.stopPropagation();menu('<button data-open="about">À propos de LifeCasts System</button><button data-open="settings">Paramètres…</button><hr><button id="mHome">Afficher le bureau</button><button id="mClose">Tout fermer</button>');q("mHome").onclick=()=>{Object.values(wins).forEach(w=>w.hidden=true);title();q("menu").hidden=true};q("mClose").onclick=()=>{closeAll();q("menu").hidden=true}};
+document.addEventListener("click",e=>{if(!e.target.closest("#menu"))q("menu").hidden=true});
+
+/* Horloge */
+function tick(){const d=new Date();q("barClock").textContent=d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})+"  "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});q("bigClock").textContent=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});q("bigDate").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+tick();setInterval(tick,10000);
+
+/* Note rapide */
+q("qn").value=S.qn||"";q("qn").oninput=e=>{S.qn=e.target.value;save()};
+
+/* Mises à jour (lues sur GitHub) */
+const VER={};
+Promise.all(APPS.filter(a=>REPOS[a.id]).map(async a=>{try{const v=(await ghVersions(REPOS[a.id]))[0];VER[a.id]=v;return [a,v]}catch(e){return [a,null]}})).then(r=>{
+ q("upd").innerHTML=r.map(([a,v])=>'<li>'+a.icon.replace("<img",'<img style="width:36px;height:36px;border-radius:9px"')+'<div><b>'+a.nom+'</b><div class="sub">'+(v?"Version "+esc(v.version):"Version inconnue")+'</div></div><span class="r">'+(v?'<span class="chip">À jour</span>':"")+'</span></li>').join("")});
+
+/* ===== Applications intégrées ===== */
+function settings(el){
+ const P={compte:["👤","Compte"],apparence:["🎨","Apparence"],fond:["🖼️","Fond d'écran"],stockage:["💾","Données"],apropos:["ℹ️","À propos"]};
+ el.innerHTML='<div class="set"><nav></nav><div class="pane"></div></div>';
+ const nav=el.querySelector("nav"),pane=el.querySelector(".pane");
+ function show(k){nav.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));const u=user();
+  if(k==="compte")pane.innerHTML='<h3>Compte</h3><div class="grp"><div><div class="me"><img src="'+esc(u&&u.picture||"favicon.png")+'" referrerpolicy="no-referrer" alt=""><div><b>'+esc(u?u.name||"":"Invité")+'</b><span>'+esc(u?u.email:"Non connecté")+'</span></div></div></div><div><span>Connexion</span><span class="sub">'+(u?"Google":"—")+'</span></div><div><span>Membre depuis</span><span class="sub">'+(u&&u.since?new Date(u.since).toLocaleDateString("fr-FR"):"—")+'</span></div></div><button class="btn" id="sOut">'+(u?"Se déconnecter":"Se connecter")+'</button>';
+  if(k==="apparence")pane.innerHTML='<h3>Apparence</h3><div class="grp"><div><span>Thème</span><div class="seg">'+[["light","Clair"],["dark","Sombre"],["auto","Auto"]].map(t=>'<button data-t="'+t[0]+'" class="'+((S.theme||"auto")===t[0]?"on":"")+'">'+t[1]+'</button>').join("")+'</div></div></div>';
+  if(k==="fond")pane.innerHTML='<h3>Fond d\'écran</h3><div class="wps">'+Object.entries(WP).map(([n,g])=>'<button data-w="'+n+'" class="'+((S.wp||"braise")===n?"on":"")+'" style="background:'+g+'" title="'+n+'"></button>').join("")+'</div>';
+  if(k==="stockage")pane.innerHTML='<h3>Données</h3><div class="grp"><div><span>Note rapide</span><span class="sub">'+((S.qn||"").length)+' caractères</span></div><div><span>Notes</span><span class="sub">'+((S.notes||[]).length)+' note(s)</span></div></div><button class="btn ghost" id="sReset">Réinitialiser LifeCasts System sur cet appareil</button>';
+  if(k==="apropos")pane.innerHTML='<h3>À propos</h3><div class="grp"><div><span>Système</span><span class="sub">LifeCasts System 1.0</span></div>'+APPS.filter(a=>REPOS[a.id]).map(a=>'<div><span>'+a.nom+'</span><span class="sub">'+(VER[a.id]?"v"+esc(VER[a.id].version):"—")+'</span></div>').join("")+'</div><p class="sub">Les applications se mettent à jour automatiquement depuis GitHub.</p>';
+  const o=pane.querySelector("#sOut");if(o)o.onclick=logout;
+  pane.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{S.theme=b.dataset.t;save();theme();show(k)});
+  pane.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{S.wp=b.dataset.w;save();theme();show(k)});
+  const r=pane.querySelector("#sReset");if(r)r.onclick=()=>{if(confirm("Effacer les réglages et notes de LifeCasts System sur cet appareil ?")){localStorage.removeItem(SK);location.reload()}};
+ }
+ Object.entries(P).forEach(([k,[i,t]])=>{const b=E("button",{innerHTML:"<span>"+i+"</span>"+t});b.dataset.k=k;b.onclick=()=>show(k);nav.append(b)});
+ show("compte");
+}
+function brochures(el){el.innerHTML='<div style="max-width:560px;margin:20px auto;text-align:center"><div style="font-size:64px">📖</div><h2 style="font-size:30px;letter-spacing:-.03em;margin:8px 0">Brochures LifeCasts</h2><p class="sub" style="font-size:16px">Des brochures tirées des bandes du Message de William Branham, imprimées et distribuées avec soin.</p><p style="margin-top:18px">Pour recevoir une brochure, écrivez-nous depuis la page de contact du site.</p><p style="margin-top:18px"><a class="btn" href="index.html#contact" target="_blank">Nous écrire</a></p></div>'}
+function about(el){el.innerHTML='<div style="text-align:center;padding:20px"><div class="mark" style="margin:0 auto"><img src="mark-dark.png" alt=""></div><h2 style="margin:14px 0 4px">LifeCasts System</h2><p class="sub">Version 1.0</p><p style="max-width:440px;margin:16px auto 0">Un espace unique pour les applications LifeCasts : Bible, Cantiques, vos réglages et votre compte.</p><p class="sub" style="margin-top:16px">© '+new Date().getFullYear()+' LifeCasts · <a href="confidentialite.html" target="_blank">Confidentialité</a> · <a href="conditions.html" target="_blank">Conditions</a></p></div>'}
+function notes(el){
+ S.notes=S.notes||[];let cur=0;
+ el.style.padding="0";el.innerHTML='<div class="set" style="margin:0"><nav style="gap:4px"><button class="btn" id="nNew" style="text-align:center;justify-content:center">+ Nouvelle note</button><div id="nList" style="display:flex;flex-direction:column;gap:2px;margin-top:6px"></div></nav><div class="pane" style="display:flex;flex-direction:column"><textarea class="qn" id="nTxt" placeholder="Écrivez…" style="font-size:16px"></textarea><div style="text-align:right"><button class="btn ghost" id="nDel">Supprimer</button></div></div></div>';
+ const L=el.querySelector("#nList"),T=el.querySelector("#nTxt");
+ function list(){L.innerHTML="";S.notes.forEach((n,i)=>{const b=E("button",{textContent:(n.split("\n")[0]||"Nouvelle note").slice(0,40)});if(i===cur)b.className="on";b.onclick=()=>{cur=i;load()};L.append(b)})}
+ function load(){if(!S.notes.length)S.notes.push("");T.value=S.notes[cur]||"";list()}
+ T.oninput=()=>{S.notes[cur]=T.value;save();list()};
+ el.querySelector("#nNew").onclick=()=>{S.notes.unshift("");cur=0;save();load();T.focus()};
+ el.querySelector("#nDel").onclick=()=>{S.notes.splice(cur,1);cur=0;save();load()};
+ load();
+}
+boot();
+/* Ouverture directe : system.html?app=bible */
+const want=new URLSearchParams(location.search).get("app");if(want){if(!user()&&!S.guest){S.guest=true;save();boot()}setTimeout(()=>open(want),50)}
+})();
+</script>
+</body>
+</html>
