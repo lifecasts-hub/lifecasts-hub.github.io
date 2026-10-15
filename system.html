@@ -325,9 +325,9 @@ function notes(el){
   k:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>'};
  S.notes=(S.notes||[]).map((n,i)=>typeof n==="string"?{id:"n"+Date.now()+i,t:n,m:Date.now()}:n);save();
  let fol="all",cur=null,qs="",BN=bibleNotes();
- el.style.padding="0";
+ el.style.padding="0";const qq=i=>el.querySelector("#"+i);
  el.innerHTML='<div class="nx" data-v="l"><aside><h4>iCloud · LifeCasts</h4><div id="nF"></div></aside><section class="ls"><div class="hd"><button class="ib bk" data-go="f">'+I.k+'Dossiers</button><b id="nT"></b><button class="ib" id="nDel" title="Supprimer">'+I.d+'</button><button class="ib" id="nNew" title="Nouvelle note">'+I.n+'</button></div><input class="sr" id="nQ" placeholder="Rechercher"><div id="nL" style="overflow:auto;flex:1;padding-bottom:10px"></div></section><section class="ed"><div class="hd bk" style="border:0"><button class="ib bk" data-go="l">'+I.k+'Notes</button></div><div id="nE" style="display:flex;flex-direction:column;flex:1;min-height:0"></div></section></div>';
- const X=el.querySelector(".nx"),F=q("nF"),Lw=q("nL"),Ed=q("nE");
+ const X=el.querySelector(".nx"),F=qq("nF"),Lw=qq("nL"),Ed=qq("nE");
  X.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{X.dataset.v=b.dataset.go});
  const title=n=>(n.ro?n.ref:(n.t.split("\n")[0]||"Nouvelle note")).trim()||"Nouvelle note";
  const prev=n=>(n.ro?n.t:n.t.split("\n").slice(1).join(" ")).trim()||"Aucun texte supplémentaire";
@@ -335,20 +335,20 @@ function notes(el){
  const items=()=>{const mine=[...S.notes].sort((a,b)=>b.m-a.m);let a=fol==="mine"?mine:fol==="bible"?BN:mine.concat(BN);if(qs)a=a.filter(n=>(n.t+" "+(n.ref||"")).toLowerCase().includes(qs));return a};
  function folders(){const f=[["all","Toutes les notes",S.notes.length+BN.length,I.f],["mine","Notes",S.notes.length,I.f],["bible","Bible",BN.length,I.b]];
   F.innerHTML="";f.forEach(([k,t,c,ic])=>{const b=E("button",{className:"fd"+(k===fol?" on":"")});b.innerHTML="<span>"+ic+esc(t)+"</span><small>"+c+"</small>";b.onclick=()=>{fol=k;X.dataset.v="l";render()};F.append(b)})}
- function list(){q("nT").textContent={all:"Toutes les notes",mine:"Notes",bible:"Bible"}[fol];Lw.innerHTML="";const a=items();
+ function list(){qq("nT").textContent={all:"Toutes les notes",mine:"Notes",bible:"Bible"}[fol];Lw.innerHTML="";const a=items();
   if(!a.length){Lw.innerHTML='<div class="gl" style="text-align:center;padding:30px">'+(fol==="bible"?"Aucune note de la Bible sur cet appareil.":"Aucune note")+"</div>";return}
   let g="";a.forEach(n=>{const h=n.ro?"Bible":"Notes";if(fol==="all"&&h!==g){g=h;Lw.append(E("div",{className:"gl",textContent:h}))}
    const d=E("div",{className:"it"+(cur&&cur.id===n.id?" on":"")});d.innerHTML="<h5>"+esc(title(n))+"</h5><p><em>"+(n.ro?"":day(n.m))+"</em>"+esc(prev(n).slice(0,90))+"</p>";d.onclick=()=>{cur=n;X.dataset.v="e";render()};Lw.append(d)})}
- function editor(){q("nDel").style.visibility=cur&&!cur.ro?"visible":"hidden";
+ function editor(){qq("nDel").style.visibility=cur&&!cur.ro?"visible":"hidden";
   if(!cur){Ed.innerHTML='<div class="em">Aucune note sélectionnée</div>';return}
   if(Ed.dataset.id===cur.id)return;Ed.dataset.id=cur.id;
   Ed.innerHTML='<div class="dt">'+(cur.ro?"Note de la Bible · "+esc(cur.ref):new Date(cur.m).toLocaleString("fr-FR",{dateStyle:"long",timeStyle:"short"}))+'</div>'+(cur.ro?'<div class="ro">Lecture seule — modifiez cette note dans l\'app Bible.</div>':"")+'<textarea id="nTx"></textarea>';
-  const T=q("nTx");T.value=cur.ro?cur.ref+"\n\n"+cur.t:cur.t;T.readOnly=!!cur.ro;
+  const T=qq("nTx");T.value=cur.ro?cur.ref+"\n\n"+cur.t:cur.t;T.readOnly=!!cur.ro;
   T.oninput=()=>{if(cur.ro)return;cur.t=T.value;cur.m=Date.now();save();list()}}
  function render(){BN=bibleNotes();folders();list();editor()}
- q("nQ").oninput=e=>{qs=e.target.value.toLowerCase();list()};
- q("nNew").onclick=()=>{const n={id:"n"+Date.now(),t:"",m:Date.now()};S.notes.push(n);save();if(fol==="bible")fol="mine";cur=n;X.dataset.v="e";render();q("nTx").focus()};
- q("nDel").onclick=()=>{if(!cur||cur.ro)return;if(cur.t&&!confirm("Supprimer cette note ?"))return;S.notes=S.notes.filter(n=>n.id!==cur.id);save();cur=items()[0]||null;X.dataset.v="l";delete Ed.dataset.id;render()};
+ qq("nQ").oninput=e=>{qs=e.target.value.toLowerCase();list()};
+ qq("nNew").onclick=()=>{const n={id:"n"+Date.now(),t:"",m:Date.now()};S.notes.push(n);save();if(fol==="bible")fol="mine";cur=n;X.dataset.v="e";render();qq("nTx").focus()};
+ qq("nDel").onclick=()=>{if(!cur||cur.ro)return;if(cur.t&&!confirm("Supprimer cette note ?"))return;S.notes=S.notes.filter(n=>n.id!==cur.id);save();cur=items()[0]||null;X.dataset.v="l";delete Ed.dataset.id;render()};
  cur=items()[0]||null;if(innerWidth>760)X.dataset.v="e";render();
 }
 boot();
