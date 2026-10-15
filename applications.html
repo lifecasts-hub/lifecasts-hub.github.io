@@ -41,7 +41,7 @@ const id=new URLSearchParams(location.search).get("id");
     apps.sort((a,b)=>(a.ordre||0)-(b.ordre||0));
     await Promise.all(apps.map(async a=>{const r=a.repo||REPOS[a.id];a.latest=null;if(r)try{a.latest=(await ghVersions(r))[0]||null;a.dl=await ghDownloads(r)}catch(e){}}));
     $("main").innerHTML=apps.length?'<div class="cards">'+apps.map(a=>`<div class="card">
-      <h3>${esc(a.nom)}</h3><p>${esc(a.description)}</p>
+      <div style="display:flex;align-items:center;gap:14px"><img src="/${(a.repo||REPOS[a.id]||"").split("/")[1]}/icon-192.png" alt="" onerror="this.remove()" style="width:56px;height:56px;border-radius:13px;box-shadow:0 1px 4px rgba(0,0,0,.15)"><h3 style="margin:0">${esc(a.nom)}</h3></div><p>${esc(a.description)}</p>
       <div>${a.latest?`<span class="tag">Version ${esc(a.latest.version)}</span> <span class="muted">· ${a.latest.date?fdate(a.latest.date):""}</span>`:'<span class="tag old">Bientôt</span>'}</div>
       ${(a.dl||[]).length?`<div style="display:flex;flex-wrap:wrap;gap:8px">${a.dl.map(x=>`<a class="pill accent small" href="${esc(x.url)}" download>${esc(x.label)}</a>`).join("")}</div>`:""}
       <a class="muted" href="applications.html?id=${encodeURIComponent(a.id)}">Voir la fiche et les versions →</a></div>`).join("")+'</div>':'<p class="muted">Aucune application publiée pour l\'instant.</p>';
