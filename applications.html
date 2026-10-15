@@ -32,11 +32,12 @@ const id=new URLSearchParams(location.search).get("id");
   if(!id){
     const qs=await db.collection("apps").get();
     const apps=qs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.ordre||0)-(b.ordre||0));
-    await Promise.all(apps.map(async a=>{const r=a.repo||REPOS[a.id];if(r)try{a.latest=(await ghVersions(r))[0]||a.latest}catch(e){}}));
-    $("main").innerHTML=apps.length?'<div class="cards">'+apps.map(a=>`<a class="card" href="applications.html?id=${encodeURIComponent(a.id)}">
+    await Promise.all(apps.map(async a=>{const r=a.repo||REPOS[a.id];a.latest=null;if(r)try{a.latest=(await ghVersions(r))[0]||null;a.dl=await ghDownloads(r)}catch(e){}}));
+    $("main").innerHTML=apps.length?'<div class="cards">'+apps.map(a=>`<div class="card">
       <h3>${esc(a.nom)}</h3><p>${esc(a.description)}</p>
       <div>${a.latest?`<span class="tag">Version ${esc(a.latest.version)}</span> <span class="muted">· ${fdate(a.latest.date)}</span>`:'<span class="tag old">Bientôt</span>'}</div>
-      <span class="muted">Voir la fiche →</span></a>`).join("")+'</div>':'<p class="muted">Aucune application publiée pour l\'instant.</p>';
+      ${(a.dl||[]).length?`<div style="display:flex;flex-wrap:wrap;gap:8px">${a.dl.map(x=>`<a class="pill accent small" href="${esc(x.url)}" download>${esc(x.label)}</a>`).join("")}</div>`:""}
+      <a class="muted" href="applications.html?id=${encodeURIComponent(a.id)}">Voir la fiche et les versions →</a></div>`).join("")+'</div>':'<p class="muted">Aucune application publiée pour l\'instant.</p>';
     return;
   }
   const d=await db.collection("apps").doc(id).get();
@@ -45,10 +46,9 @@ const id=new URLSearchParams(location.search).get("id");
   $("hEye").textContent="Application";$("hTitle").textContent=a.nom;$("hDesc").textContent=a.description||"";
   let vs=[];const repo=a.repo||REPOS[id];
   if(repo)try{vs=await ghVersions(repo)}catch(e){}
-  try{const fs=(await db.collection("apps").doc(id).collection("versions").get()).docs.map(x=>x.data());fs.forEach(v=>{if(!vs.some(g=>g.version===v.version))vs.push(v)})}catch(e){}
   vs.sort((x,y)=>vcmp(y.version,x.version));
   let dl=[];if(repo)try{dl=await ghDownloads(repo)}catch(e){}
-  const L=vs[0]||a.latest,old=vs.filter(v=>!L||v.version!==L.version);
+  const L=vs[0],old=vs.filter(v=>!L||v.version!==L.version);
   $("main").innerHTML=`
   <p style="margin-bottom:20px"><a href="applications.html" class="muted">← Toutes les applications</a></p>
   ${a.details?`<section class="box"><h2>À propos</h2><p>${nl(a.details)}</p>${a.web?`<p style="margin-top:14px"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></p>`:""}</section>`:(a.web?`<section class="box"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></section>`:"")}
