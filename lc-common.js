@@ -15,7 +15,7 @@ function vcmp(a,b){a=String(a).split(".").map(Number);b=String(b).split(".").map
 function nl(s){return esc(s).replace(/\n/g,"<br>")}
 
 /* Versions lues sur GitHub : chaque commit « vX.Y : nouveautés » qui modifie index.html = une version */
-const REPOS={bible:"lifecasts-hub/The-Bible-App",cantiques:"lifecasts-hub/Songs-Book"};
+const REPOS={bible:"lifecasts-hub/The-Bible-App",cantiques:"lifecasts-hub/Songs-Book",notes:"lifecasts-hub/The-Notes-App"};
 async function ghVersions0(repo){
   const r=await fetch("https://api.github.com/repos/"+repo+"/commits?path=index.html&per_page=100");if(!r.ok)throw new Error("GitHub indisponible");
   const out=[],seen=new Set();
