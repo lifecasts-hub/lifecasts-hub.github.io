@@ -33,7 +33,11 @@ const id=new URLSearchParams(location.search).get("id");
   if(!id){
     let qs={docs:[]};try{if(db)qs=await db.collection("apps").get()}catch(e){}
     const apps=qs.docs.map(d=>({id:d.id,...d.data()}));
-    Object.keys(REPOS).forEach(i=>{if(!apps.some(x=>x.id===i))apps.push({id:i,...DEF[i]})});
+    const nm=x=>(x.nom||x.name||"").toLowerCase();
+    Object.keys(REPOS).forEach(i=>{const k=i==="bible"?"bible":"cantique";const m=apps.filter(x=>x.id===i||x.repo===REPOS[i]||nm(x).includes(k));
+      if(!m.length){apps.push({id:i,...DEF[i]});return}
+      m.forEach(x=>{if(!x.repo)x.repo=REPOS[i]});
+      m.slice(1).forEach(x=>apps.splice(apps.indexOf(x),1))});
     apps.sort((a,b)=>(a.ordre||0)-(b.ordre||0));
     await Promise.all(apps.map(async a=>{const r=a.repo||REPOS[a.id];a.latest=null;if(r)try{a.latest=(await ghVersions(r))[0]||null;a.dl=await ghDownloads(r)}catch(e){}}));
     $("main").innerHTML=apps.length?'<div class="cards">'+apps.map(a=>`<div class="card">
