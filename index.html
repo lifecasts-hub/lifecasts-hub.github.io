@@ -44,13 +44,13 @@ const LIFECASTS = {
 .window .bar{display:flex;gap:6px;padding:0 0 12px}
 .window .bar i{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.5)}
 .window .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;background:rgba(255,255,255,.18);backdrop-filter:blur(12px);border-radius:14px 14px 0 0;padding:22px}
-.window .grid div{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#fff}
-.window .grid b{width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,.9);display:grid;place-items:center;font-size:26px;overflow:hidden}
+.window .grid div{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#fff}
+.window .grid b{width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,.9);display:grid;place-items:center;font-size:26px;overflow:hidden;color:#9a5b1e}
 .window .grid b img{width:100%;height:100%}
-.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:0 12px}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px;margin:0 12px}
 .duo .panel{margin:0;padding:56px 26px 56px}
 .duo h3{font-size:clamp(30px,4.5vw,40px)}
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;max-width:900px;margin:40px auto 0;text-align:left}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:28px;max-width:900px;margin:40px auto 0;text-align:left}
 .steps b{display:block;font-size:24px;letter-spacing:-.02em}
 .steps small{color:var(--accent);font-weight:600;font-size:14px}
 .steps p{color:var(--muted);font-size:15px;margin-top:4px}
@@ -62,6 +62,20 @@ const LIFECASTS = {
 #gbtn{min-height:44px}
 .navcta{font-size:12px;padding:5px 12px;white-space:nowrap;flex:none}
 footer .fl{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;margin-bottom:10px}
+html,body{overflow-x:hidden}
+.hero-home h1,.panel h3{overflow-wrap:anywhere}
+@media (max-width:600px){
+ header nav{display:none}
+ .window{margin-top:32px;padding:10px 10px 0}
+ .window .grid{gap:10px 6px;padding:14px 10px}
+ .window .grid b{width:44px;height:44px;border-radius:11px;font-size:20px}
+ .window .grid div{font-size:10.5px}
+ .panel{margin:8px;padding:44px 16px 0}
+ .panel .big-icon{width:120px;height:120px;border-radius:28px}
+ .duo{margin:0 8px}.duo .panel{padding:40px 18px}
+ .account{padding:20px}
+ .ctas{gap:14px}
+}
 </style>
 </head>
 <body>
@@ -181,7 +195,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;margi
     $("applications").append(p);
     const repo=REPOS[a.id];if(repo)ghVersions(repo).then(vs=>{if(vs[0])v.textContent="Version "+vs[0].version}).catch(()=>{});
   });
-  const items=[...LIFECASTS.apps.map(a=>[a.nom,'<img src="'+a.icon+'" alt="">']),["Paramètres","⚙️"],["Compte","👤"],["Applications","🧩"],["Brochures","📖"],["À propos","ℹ️"],["Contact","✉️"]];
+  const items=[...LIFECASTS.apps.map(a=>[a.nom,'<img src="'+a.icon+'" alt="">']),["Paramètres",ICO("gear")],["Compte",ICO("user")],["Applications",ICO("grid")],["Brochures",ICO("book")],["À propos",ICO("info")],["Contact",ICO("mail")]];
   $("winGrid").innerHTML=items.map(i=>'<div><b>'+i[1]+'</b>'+i[0]+'</div>').join("");
 
   if(LIFECASTS.contactEmail){const m=$("mailLink");m.href="mailto:"+LIFECASTS.contactEmail;m.textContent=LIFECASTS.contactEmail;m.hidden=false;$("mailBtn").href=m.href}

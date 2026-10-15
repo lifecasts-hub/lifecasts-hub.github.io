@@ -34,12 +34,13 @@ a{color:var(--accent)}
 
 /* Barre de menus */
 #bar{position:fixed;top:0;left:0;right:0;height:calc(34px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 12px 0;display:flex;align-items:center;gap:14px;z-index:30;font-size:13px;font-weight:500}
-#bar .ttl{font-weight:700}
+#bar .ttl{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#barClock{white-space:nowrap}
 #bar .sp{flex:1}
 #bar button{padding:4px 8px;border-radius:6px}
 #bar button:hover{background:var(--line)}
 #bar img.av{width:22px;height:22px;border-radius:50%;vertical-align:middle;background:var(--soft);object-fit:cover}
-#menu{position:fixed;top:calc(40px + env(safe-area-inset-top));right:10px;z-index:40;width:250px;border-radius:14px;padding:6px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+#menu{position:fixed;top:calc(40px + env(safe-area-inset-top));right:10px;z-index:40;width:min(250px,calc(100vw - 20px));border-radius:14px;padding:6px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
 #menu button,#menu a{display:block;width:100%;text-align:left;padding:9px 12px;border-radius:8px;text-decoration:none;color:var(--ink)}
 #menu button:hover,#menu a:hover{background:var(--accent);color:#fff}
 #menu hr{border:0;border-top:1px solid var(--line);margin:4px 8px}
@@ -49,19 +50,21 @@ a{color:var(--accent)}
 .hello{max-width:980px;margin:0 auto 22px;color:#fff;text-shadow:0 1px 12px rgba(0,0,0,.3)}
 .hello h1{margin:0;font-size:clamp(28px,5vw,40px);letter-spacing:-.03em}
 .hello p{margin:2px 0 0;opacity:.85}
-.tiles{max-width:980px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
-.tile{border-radius:22px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:12px;min-height:200px}
+.tiles{max-width:980px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr));gap:18px}
+.tile{min-width:0;border-radius:22px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:12px;min-height:200px}
 .tile h2{margin:0;font-size:17px;display:flex;align-items:center;gap:8px}
 .sub,.tile .sub{color:var(--muted);font-size:13px}
 .appgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:14px 6px}
 .ic{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;text-align:center}
-.ic i{width:58px;height:58px;border-radius:14px;display:grid;place-items:center;font-size:28px;font-style:normal;background:var(--win);box-shadow:0 3px 10px rgba(0,0,0,.15);overflow:hidden;transition:transform .2s}
+.ic span{max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ic i{color:var(--accent);width:58px;height:58px;border-radius:14px;display:grid;place-items:center;font-size:28px;font-style:normal;background:var(--win);box-shadow:0 3px 10px rgba(0,0,0,.15);overflow:hidden;transition:transform .2s}
 .ic i img{width:100%;height:100%;object-fit:cover}
 .ic:hover i{transform:scale(1.07)}
 .ic:active i{transform:scale(.94)}
 .me{display:flex;align-items:center;gap:14px}
 .me img{width:60px;height:60px;border-radius:50%;object-fit:cover;background:var(--soft)}
-.me b{display:block;font-size:17px}.me span{color:var(--muted);font-size:13px;word-break:break-all}
+.me b{display:block;font-size:17px}.me span{color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+.me>div{min-width:0}
 .list{list-style:none;margin:0;padding:0}
 .list li{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line)}
 .list li:first-child{border-top:0}
@@ -79,7 +82,7 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
 #dock .ic.run::after{content:"";position:absolute;bottom:-5px;width:4px;height:4px;border-radius:50%;background:var(--ink)}
 
 /* Fenêtres */
-.win{position:fixed;z-index:25;background:var(--win);border-radius:14px;box-shadow:0 30px 90px rgba(0,0,0,.4);display:flex;flex-direction:column;overflow:hidden;animation:pop .22s ease-out;top:60px;left:50%;width:min(1000px,94vw);height:calc(100vh - 170px);transform:translateX(-50%)}
+.win{position:fixed;z-index:25;background:var(--win);border-radius:14px;box-shadow:0 30px 90px rgba(0,0,0,.4);display:flex;flex-direction:column;overflow:hidden;animation:pop .22s ease-out;top:60px;left:50%;width:min(1000px,94vw);height:calc(100vh - 170px);height:calc(100dvh - 170px);transform:translateX(-50%)}
 .win.max{top:calc(34px + env(safe-area-inset-top));left:0;width:100vw;height:calc(100vh - 34px - env(safe-area-inset-top));transform:none;border-radius:0}
 @keyframes pop{from{opacity:0;scale:.94}to{opacity:1;scale:1}}
 .win .tb{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--line);background:var(--soft);flex:none;user-select:none}
@@ -96,10 +99,10 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
 .set nav{width:210px;flex:none;border-right:1px solid var(--line);padding:12px;background:var(--soft);display:flex;flex-direction:column;gap:2px}
 .set nav button{text-align:left;padding:8px 10px;border-radius:8px;display:flex;gap:8px;align-items:center}
 .set nav button.on{background:var(--accent);color:#fff}
-.set .pane{flex:1;overflow:auto;padding:24px}
+.set .pane{min-width:0;min-height:0;flex:1;overflow:auto;padding:24px}
 .set h3{margin:0 0 14px;font-size:22px}
 .grp{background:var(--soft);border-radius:12px;padding:4px 14px;margin-bottom:18px}
-.grp>div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+.grp>div{min-width:0;flex-wrap:wrap;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
 .grp>div:first-child{border-top:0}
 .seg{display:flex;background:var(--line);border-radius:9px;padding:2px}
 .seg button{padding:5px 12px;border-radius:7px;font-size:13px}
@@ -110,6 +113,24 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
 .btn{display:inline-block;padding:8px 16px;border-radius:99px;background:var(--accent);color:#fff;font-weight:500;text-decoration:none}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
 @media (max-width:700px){.set{flex-direction:column}.set nav{width:auto;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.set nav button{white-space:nowrap}}
+@media (max-width:700px){
+ .win,.win.max{height:calc(100vh - 34px - env(safe-area-inset-top));height:calc(100dvh - 34px - env(safe-area-inset-top))}
+ #desk{padding:20px 12px 110px}
+ .tile{padding:16px;min-height:0}
+ .clock{font-size:44px}
+ #dock{gap:6px;padding:6px 8px;border-radius:18px}
+ #dock .ic i{width:42px;height:42px;border-radius:10px;font-size:20px}
+ #bar{gap:6px;padding-left:8px;padding-right:8px}
+ #barClock{font-size:12px}
+ .win .body{padding:16px}
+ .set{margin:-16px}
+ .set nav{padding:8px;flex:none}
+ .set .pane{padding:16px}
+ .me span{font-size:12px}
+ .seg button{padding:5px 9px}
+ .notes-wrap nav{max-height:38%;overflow:auto;flex-direction:column!important}
+}
+@media (max-width:420px){.appgrid{grid-template-columns:repeat(4,1fr);gap:12px 4px}.ic i{width:52px;height:52px}#barClock .d{display:none}}
 </style>
 </head>
 <body>
@@ -164,11 +185,11 @@ const WP={sable:"linear-gradient(135deg,#f3d9b1 0%,#c98a3d 45%,#5a3a22 100%)",nu
 const APPS=[
  {id:"bible",nom:"Bible",icon:'<img src="/The-Bible-App/icon-192.png" alt="">',url:"/The-Bible-App/"},
  {id:"cantiques",nom:"Cantiques",icon:'<img src="/Songs-Book/icon-192.png" alt="">',url:"/Songs-Book/"},
- {id:"store",nom:"Applications",icon:"🧩",url:"applications.html"},
- {id:"settings",nom:"Paramètres",icon:"⚙️",fn:settings},
- {id:"brochures",nom:"Brochures",icon:"📖",fn:brochures},
- {id:"notes",nom:"Notes",icon:"📝",fn:notes},
- {id:"about",nom:"À propos",icon:"ℹ️",fn:about},
+ {id:"store",nom:"Applications",icon:ICO("grid"),url:"applications.html"},
+ {id:"settings",nom:"Paramètres",icon:ICO("gear"),fn:settings},
+ {id:"brochures",nom:"Brochures",icon:ICO("book"),fn:brochures},
+ {id:"notes",nom:"Notes",icon:ICO("note"),fn:notes},
+ {id:"about",nom:"À propos",icon:ICO("info"),fn:about},
  {id:"home",nom:"Site LifeCasts",icon:'<img src="favicon.png" alt="">',url:"index.html"}
 ];
 const user=()=>{try{const u=JSON.parse(localStorage.getItem(KEY));return u&&u.email?u:null}catch(e){return null}};
@@ -230,7 +251,7 @@ q("logoBtn").onclick=e=>{e.stopPropagation();menu('<button data-open="about">À 
 document.addEventListener("click",e=>{if(!e.target.closest("#menu"))q("menu").hidden=true});
 
 /* Horloge */
-function tick(){const d=new Date();q("barClock").textContent=d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})+"  "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});q("bigClock").textContent=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});q("bigDate").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+function tick(){const d=new Date();q("barClock").innerHTML='<span class="d">'+d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})+" </span>"+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});q("bigClock").textContent=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});q("bigDate").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
 tick();setInterval(tick,10000);
 
 /* Note rapide */
@@ -243,7 +264,7 @@ Promise.all(APPS.filter(a=>REPOS[a.id]).map(async a=>{try{const v=(await ghVersi
 
 /* ===== Applications intégrées ===== */
 function settings(el){
- const P={compte:["👤","Compte"],apparence:["🎨","Apparence"],fond:["🖼️","Fond d'écran"],stockage:["💾","Données"],apropos:["ℹ️","À propos"]};
+ const P={compte:[ICO("user"),"Compte"],apparence:[ICO("palette"),"Apparence"],fond:[ICO("image"),"Fond d'écran"],stockage:[ICO("disk"),"Données"],apropos:[ICO("info"),"À propos"]};
  el.innerHTML='<div class="set"><nav></nav><div class="pane"></div></div>';
  const nav=el.querySelector("nav"),pane=el.querySelector(".pane");
  function show(k){nav.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));const u=user();
@@ -257,14 +278,14 @@ function settings(el){
   pane.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{S.wp=b.dataset.w;save();theme();show(k)});
   const r=pane.querySelector("#sReset");if(r)r.onclick=()=>{if(confirm("Effacer les réglages et notes de LifeCasts System sur cet appareil ?")){localStorage.removeItem(SK);location.reload()}};
  }
- Object.entries(P).forEach(([k,[i,t]])=>{const b=E("button",{innerHTML:"<span>"+i+"</span>"+t});b.dataset.k=k;b.onclick=()=>show(k);nav.append(b)});
+ Object.entries(P).forEach(([k,[i,t]])=>{const b=E("button",{innerHTML:"<span style=\"display:flex\">"+i+"</span>"+t});b.dataset.k=k;b.onclick=()=>show(k);nav.append(b)});
  show("compte");
 }
-function brochures(el){el.innerHTML='<div style="max-width:560px;margin:20px auto;text-align:center"><div style="font-size:64px">📖</div><h2 style="font-size:30px;letter-spacing:-.03em;margin:8px 0">Brochures LifeCasts</h2><p class="sub" style="font-size:16px">Des brochures tirées des bandes du Message de William Branham, imprimées et distribuées avec soin.</p><p style="margin-top:18px">Pour recevoir une brochure, écrivez-nous depuis la page de contact du site.</p><p style="margin-top:18px"><a class="btn" href="index.html#contact" target="_blank">Nous écrire</a></p></div>'}
+function brochures(el){el.innerHTML='<div style="max-width:560px;margin:20px auto;text-align:center"><div style="color:var(--accent)">'+ICO("book","64px")+'</div><h2 style="font-size:30px;letter-spacing:-.03em;margin:8px 0">Brochures LifeCasts</h2><p class="sub" style="font-size:16px">Des brochures tirées des bandes du Message de William Branham, imprimées et distribuées avec soin.</p><p style="margin-top:18px">Pour recevoir une brochure, écrivez-nous depuis la page de contact du site.</p><p style="margin-top:18px"><a class="btn" href="index.html#contact" target="_blank">Nous écrire</a></p></div>'}
 function about(el){el.innerHTML='<div style="text-align:center;padding:20px"><div class="mark" style="margin:0 auto"><img src="mark-dark.png" alt=""></div><h2 style="margin:14px 0 4px">LifeCasts System</h2><p class="sub">Version 1.0</p><p style="max-width:440px;margin:16px auto 0">Un espace unique pour les applications LifeCasts : Bible, Cantiques, vos réglages et votre compte.</p><p class="sub" style="margin-top:16px">© '+new Date().getFullYear()+' LifeCasts · <a href="confidentialite.html" target="_blank">Confidentialité</a> · <a href="conditions.html" target="_blank">Conditions</a></p></div>'}
 function notes(el){
  S.notes=S.notes||[];let cur=0;
- el.style.padding="0";el.innerHTML='<div class="set" style="margin:0"><nav style="gap:4px"><button class="btn" id="nNew" style="text-align:center;justify-content:center">+ Nouvelle note</button><div id="nList" style="display:flex;flex-direction:column;gap:2px;margin-top:6px"></div></nav><div class="pane" style="display:flex;flex-direction:column"><textarea class="qn" id="nTxt" placeholder="Écrivez…" style="font-size:16px"></textarea><div style="text-align:right"><button class="btn ghost" id="nDel">Supprimer</button></div></div></div>';
+ el.style.padding="0";el.innerHTML='<div class="set notes-wrap" style="margin:0"><nav style="gap:4px"><button class="btn" id="nNew" style="text-align:center;justify-content:center">+ Nouvelle note</button><div id="nList" style="display:flex;flex-direction:column;gap:2px;margin-top:6px"></div></nav><div class="pane" style="display:flex;flex-direction:column"><textarea class="qn" id="nTxt" placeholder="Écrivez…" style="font-size:16px"></textarea><div style="text-align:right"><button class="btn ghost" id="nDel">Supprimer</button></div></div></div>';
  const L=el.querySelector("#nList"),T=el.querySelector("#nTxt");
  function list(){L.innerHTML="";S.notes.forEach((n,i)=>{const b=E("button",{textContent:(n.split("\n")[0]||"Nouvelle note").slice(0,40)});if(i===cur)b.className="on";b.onclick=()=>{cur=i;load()};L.append(b)})}
  function load(){if(!S.notes.length)S.notes.push("");T.value=S.notes[cur]||"";list()}
