@@ -33,6 +33,7 @@
 <div class="row" style="margin-top:16px"><div><button class="pill" id="saveApp">Enregistrer la fiche</button></div></div>
 <p class="msg" id="appMsg"></p></section>
 
+<section class="box"><h2>Nettoyage</h2><p class="muted">Supprime les anciennes versions enregistrées dans Firebase (incohérentes). Les versions affichées viennent uniquement de GitHub.</p><div class="row" style="margin-top:12px"><div><button class="pill danger" id="purge">Supprimer les anciennes versions Firebase</button></div></div><p class="msg" id="purgeMsg"></p></section>
 <section class="box"><h2>Mises à jour</h2><p class="muted">Les mises à jour se publient uniquement sur GitHub : augmentez <code>var B="x.y"</code> dans <code>index.html</code>, puis faites un commit nommé <code>vX.Y : nouveautés</code>. Les applications installées se mettent à jour seules et le site affiche la version.</p></section>
 </div>
 </div></main>
@@ -47,7 +48,8 @@ const vid=v=>String(v).trim();
 
 (async()=>{
   db=await fbInit(true);const A=firebase.auth();
-  $("inBtn").onclick=()=>{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});A.signInWithPopup(p).catch(e=>msg("who","Connexion refusée : "+e.code,false))};
+  $("inBtn").onclick=()=>{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});A.signInWithPopup(p).catch(e=>{if(/popup|operation-not-supported|web-storage/.test(e.code))A.signInWithRedirect(p);else msg("who","Connexion refusée : "+e.code+" — "+e.message,false)})};
+  A.getRedirectResult().catch(e=>msg("who","Connexion refusée : "+e.code+" — "+e.message,false));
   $("outBtn").onclick=()=>A.signOut();
   A.onAuthStateChanged(async u=>{
     $("inBtn").hidden=!!u;$("outBtn").hidden=!u;
@@ -69,6 +71,10 @@ async function pick(){
   $("fId").value=i;$("fId").disabled=!!i;$("fNom").value=a.nom||"";$("fDesc").value=a.description||"";$("fDet").value=a.details||"";$("fWeb").value=a.web||"";$("fOrd").value=a.ordre||1;
   $("fRepo").value=a.repo||REPOS[i]||"";
 }
+$("purge").onclick=async()=>{if(!confirm("Supprimer toutes les versions enregistrées dans Firebase pour toutes les applications ?"))return;
+  try{let n=0;for(const i of Object.keys(apps)){const qs=await db.collection("apps").doc(i).collection("versions").get();for(const d of qs.docs){await d.ref.delete();n++}
+    await db.collection("apps").doc(i).update({latest:firebase.firestore.FieldValue.delete()}).catch(()=>{})}
+    msg("purgeMsg",n+" ancienne(s) version(s) supprimée(s).",true)}catch(e){msg("purgeMsg","Échec : "+e.message,false)}};
 $("saveApp").onclick=async()=>{
   const i=($("fId").value||"").trim().toLowerCase().replace(/[^a-z0-9-]/g,"");if(!i||!$("fNom").value.trim())return msg("appMsg","Identifiant et nom obligatoires.",false);
   await db.collection("apps").doc(i).set({nom:$("fNom").value.trim(),description:$("fDesc").value.trim(),details:$("fDet").value.trim(),web:$("fWeb").value.trim(),repo:$("fRepo").value.trim(),ordre:+$("fOrd").value||1},{merge:true});
