@@ -8,7 +8,7 @@
 <meta name="description" content="LifeCasts : impression et distribution de brochures, et applications liées au ministère des bandes.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="lc-pages.css">
-<script src="lc-common.js"></script>
+<script src="lc-common.js?v=2"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 /* ================= CONFIGURATION ================= */
@@ -44,7 +44,7 @@ const LIFECASTS = {
 .window .bar{display:flex;gap:6px;padding:0 0 12px}
 .window .bar i{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.5)}
 .window .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;background:rgba(255,255,255,.18);backdrop-filter:blur(12px);border-radius:14px 14px 0 0;padding:22px}
-.window .grid div{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#fff}
+.window .grid div{min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#fff}
 .window .grid b{width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,.9);display:grid;place-items:center;font-size:26px;overflow:hidden;color:#9a5b1e}
 .window .grid b img{width:100%;height:100%}
 .duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px;margin:0 12px}
@@ -76,6 +76,9 @@ html,body{overflow-x:hidden}
  .account{padding:20px}
  .ctas{gap:14px}
 }
+.ico{display:block;flex:none}
+.window .grid span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.window .grid b{flex:none}
 </style>
 </head>
 <body>
@@ -196,7 +199,7 @@ html,body{overflow-x:hidden}
     const repo=REPOS[a.id];if(repo)ghVersions(repo).then(vs=>{if(vs[0])v.textContent="Version "+vs[0].version}).catch(()=>{});
   });
   const items=[...LIFECASTS.apps.map(a=>[a.nom,'<img src="'+a.icon+'" alt="">']),["Paramètres",ICO("gear")],["Compte",ICO("user")],["Applications",ICO("grid")],["Brochures",ICO("book")],["À propos",ICO("info")],["Contact",ICO("mail")]];
-  $("winGrid").innerHTML=items.map(i=>'<div><b>'+i[1]+'</b>'+i[0]+'</div>').join("");
+  $("winGrid").innerHTML=items.map(i=>'<div><b>'+i[1]+'</b><span>'+i[0]+'</span></div>').join("");
 
   if(LIFECASTS.contactEmail){const m=$("mailLink");m.href="mailto:"+LIFECASTS.contactEmail;m.textContent=LIFECASTS.contactEmail;m.hidden=false;$("mailBtn").href=m.href}
   $("year").textContent=new Date().getFullYear();
