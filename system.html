@@ -229,7 +229,7 @@ const wins={};
 function open(id){
  const a=APPS.find(x=>x.id===id);if(!a)return;q("menu").hidden=true;
  if(wins[id]){front(id);return}
- const w=E("div",{className:"win"});w.style.zIndex=26+Object.keys(wins).length;
+ const w=E("div",{className:"win"});w.style.zIndex=100+Object.keys(wins).length;
  const tb=E("div",{className:"tb"});tb.innerHTML='<div class="dots"><button class="c" title="Fermer"></button><button class="m" title="Réduire"></button><button class="x" title="Agrandir"></button></div><b>'+a.nom+'</b>';
  w.append(tb);
  if(a.url){w.append(E("iframe",{src:a.url,title:a.nom,allow:"clipboard-write"}))}else{const b=E("div",{className:"body"});a.fn(b);w.append(b)}
@@ -240,7 +240,7 @@ function open(id){
  w.onmousedown=()=>front(id);
  document.body.append(w);wins[id]=w;front(id);dockState();
 }
-function front(id){const w=wins[id];if(!w)return;w.hidden=false;const z=Math.max(26,...Object.values(wins).map(x=>+x.style.zIndex||0));w.style.zIndex=z+1;title()}
+function front(id){const w=wins[id];if(!w)return;w.hidden=false;const z=Math.max(100,...Object.values(wins).map(x=>+x.style.zIndex||0));w.style.zIndex=z+1;title()}
 function close(id){wins[id].remove();delete wins[id];dockState();title()}
 function closeAll(){Object.keys(wins).forEach(close)}
 function title(){const vis=Object.entries(wins).filter(([,w])=>!w.hidden).sort((a,b)=>b[1].style.zIndex-a[1].style.zIndex)[0];q("appTitle").textContent=vis?APPS.find(a=>a.id===vis[0]).nom:"LifeCasts System"}
