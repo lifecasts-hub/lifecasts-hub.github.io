@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <title>LifeCasts System</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-<script src="lc-common.js?v=7"></script>
+<script src="lc-common.js?v=8"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Helvetica Neue",Arial,sans-serif;--glass:rgba(255,255,255,.72);--glass2:rgba(255,255,255,.55);--ink:#1d1d1f;--muted:#6e6e73;--line:rgba(0,0,0,.1);--accent:#9a5b1e;--win:#fff;--soft:#f5f5f7}
@@ -186,8 +186,6 @@ const WP={sable:"linear-gradient(135deg,#f3d9b1 0%,#c98a3d 45%,#5a3a22 100%)",nu
 
 /* Applications du système */
 const APPS=[
- {id:"bible",nom:"Bible",icon:'<img src="/The-Bible-App/icon-192.png" alt="">',url:"/The-Bible-App/"},
- {id:"cantiques",nom:"Cantiques",icon:'<img src="/Songs-Book/icon-192.png" alt="">',url:"/Songs-Book/"},
  {id:"store",nom:"Applications",icon:'<svg viewBox="0 0 100 100"><defs><linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2AA7FF"/><stop offset="1" stop-color="#0A5FE0"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(#gS)"/><g fill="#fff"><rect x="24" y="24" width="22" height="22" rx="6"/><rect x="54" y="24" width="22" height="22" rx="6" opacity=".85"/><rect x="24" y="54" width="22" height="22" rx="6" opacity=".85"/><rect x="54" y="54" width="22" height="22" rx="6" opacity=".7"/></g></svg>',url:"applications.html"},
  {id:"settings",nom:"Paramètres",icon:ICO("gear"),fn:settings},
  {id:"brochures",nom:"Brochures",icon:'<svg viewBox="0 0 100 100"><defs><linearGradient id="gB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6C63FF"/><stop offset="1" stop-color="#3A2FC9"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(#gB)"/><rect x="29" y="22" width="42" height="56" rx="7" fill="#fff"/><rect x="29" y="22" width="9" height="56" rx="4" fill="#fff" opacity=".55" transform="translate(-4 0)"/><path d="M38 22v56" stroke="#3A2FC9" stroke-width="2" opacity=".25"/></svg>',fn:brochures},
@@ -195,6 +193,8 @@ const APPS=[
  {id:"about",nom:"À propos",icon:ICO("info"),fn:about},
  {id:"home",nom:"Site LifeCasts",icon:'<img src="favicon.png" alt="">',url:"index.html"}
 ];
+/* Apps publiées : lues dans LC_APPS (lc-common.js). Une app interne (ex. Notes, fn) garde son fonctionnement mais prend l'icône du dépôt. */
+LC_APPS.slice().reverse().forEach(r=>{const ic='<img src="'+r.iconUrl+'" alt="">',x=APPS.find(a=>a.id===r.id);if(x){x.icon=ic;x.nom=r.court}else APPS.unshift({id:r.id,nom:r.court,icon:ic,url:r.url})});
 const user=()=>{try{const u=JSON.parse(localStorage.getItem(KEY));return u&&u.email?u:null}catch(e){return null}};
 
 /* Thème + fond */
@@ -263,7 +263,7 @@ q("qn").value=S.qn||"";q("qn").oninput=e=>{S.qn=e.target.value;save()};
 /* Mises à jour (lues sur GitHub) */
 const VER={};
 Promise.all(APPS.filter(a=>REPOS[a.id]).map(async a=>{try{const v=(await ghVersions(REPOS[a.id]))[0];VER[a.id]=v;return [a,v]}catch(e){return [a,null]}})).then(r=>{
- q("upd").innerHTML=r.map(([a,v])=>'<li>'+a.icon.replace("<img",'<img style="width:36px;height:36px;border-radius:9px"')+'<div><b>'+a.nom+'</b><div class="sub">'+(v?"Version "+esc(v.version):"Version inconnue")+'</div></div><span class="r">'+(v?'<span class="chip">À jour</span>':"")+'</span></li>').join("")});
+ q("upd").innerHTML=r.map(([a,v])=>'<li><span style="width:36px;height:36px;flex:none;display:block;border-radius:9px;overflow:hidden">'+a.icon.replace("<img",'<img style="width:100%;height:100%;display:block"').replace("<svg",'<svg style="width:100%;height:100%;display:block"')+'</span>'+'<div><b>'+a.nom+'</b><div class="sub">'+(v?"Version "+esc(v.version):"Version inconnue")+'</div></div><span class="r">'+(v?'<span class="chip">À jour</span>':"")+'</span></li>').join("")});
 
 /* ===== Applications intégrées ===== */
 function settings(el){

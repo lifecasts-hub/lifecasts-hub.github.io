@@ -15,7 +15,15 @@ function vcmp(a,b){a=String(a).split(".").map(Number);b=String(b).split(".").map
 function nl(s){return esc(s).replace(/\n/g,"<br>")}
 
 /* Versions lues sur GitHub : chaque commit « vX.Y : nouveautés » qui modifie index.html = une version */
-const REPOS={bible:"lifecasts-hub/The-Bible-App",cantiques:"lifecasts-hub/Songs-Book",notes:"lifecasts-hub/The-Notes-App"};
+/* REGISTRE UNIQUE DES APPLICATIONS — pour publier une nouvelle app, ajouter UNE ligne ici (le dépôt doit avoir index.html + icon-192.png).
+   Le site (Applications, System : dock, mises à jour, À propos) se met à jour tout seul. mot = mot-clé pour retrouver une ancienne fiche Firestore sans id. */
+const LC_APPS=[
+ {id:"bible",repo:"lifecasts-hub/The-Bible-App",nom:"Bible LifeCasts",court:"Bible",mot:"bible",description:"La Parole, partout. Même hors connexion.",ordre:1},
+ {id:"cantiques",repo:"lifecasts-hub/Songs-Book",nom:"Cantiques",court:"Cantiques",mot:"cantique",description:"Les chants d'autrefois, dans votre poche.",ordre:2},
+ {id:"notes",repo:"lifecasts-hub/The-Notes-App",nom:"Notes",court:"Notes",mot:"note",description:"Vos notes et celles de la Bible, au même endroit.",ordre:3}
+];
+LC_APPS.forEach(a=>{a.dir=a.repo.split("/")[1];a.url="/"+a.dir+"/";a.iconUrl=a.url+"icon-192.png"});
+const REPOS=Object.fromEntries(LC_APPS.map(a=>[a.id,a.repo]));
 async function ghVersions0(repo){
   const r=await fetch("https://api.github.com/repos/"+repo+"/commits?path=index.html&per_page=100");if(!r.ok)throw new Error("GitHub indisponible");
   const out=[],seen=new Set();

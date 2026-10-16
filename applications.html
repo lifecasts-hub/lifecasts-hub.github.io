@@ -7,7 +7,7 @@
 <title>Applications — LifeCasts</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="lc-pages.css">
-<script src="lc-common.js?v=7"></script>
+<script src="lc-common.js?v=8"></script>
 </head>
 <body>
 <header><div class="wrap">
@@ -26,29 +26,30 @@
 
 <script>
 $("y").textContent=new Date().getFullYear();
-const DEF={bible:{nom:"Bible LifeCasts",description:"La Parole, partout. Même hors connexion.",ordre:1},cantiques:{nom:"Cantiques",description:"Les chants d'autrefois, dans votre poche.",ordre:2},notes:{nom:"Notes",description:"Vos notes et celles de la Bible, au même endroit.",ordre:3}};
+const DEF=Object.fromEntries(LC_APPS.map(a=>[a.id,a]));
 const id=new URLSearchParams(location.search).get("id");
 (async()=>{
   let db=null;try{db=await fbInit(false)}catch(e){}
   if(!id){
     let qs={docs:[]};try{if(db)qs=await db.collection("apps").get()}catch(e){}
-    const apps=qs.docs.map(d=>({id:d.id,...d.data()}));
-    const nm=x=>(x.nom||x.name||"").toLowerCase();
-    Object.keys(REPOS).forEach(i=>{const k={bible:"bible",cantiques:"cantique",notes:"notes"}[i]||i;const m=apps.filter(x=>!x._r&&(x.id===i||x.repo===REPOS[i]||nm(x).includes(k)));
-      if(!m.length){apps.push({id:i,...DEF[i]});return}
-      m.forEach(x=>{x.repo=REPOS[i];x._r=1});
-      m.slice(1).forEach(x=>apps.splice(apps.indexOf(x),1))});
+    const docs=qs.docs.map(d=>({id:d.id,...d.data()})),used=new Set(),nm=x=>(x.nom||x.name||"").toLowerCase();
+    // 1) correspondance exacte (id ou dépôt), 2) ancienne fiche sans dépôt dont le nom contient le mot-clé
+    const pick=(r,f)=>{const x=docs.find(d=>!used.has(d)&&f(d));if(x)used.add(x);return x};
+    const apps=LC_APPS.map(r=>{const x=pick(r,d=>d.id===r.id||d.repo===r.repo)||pick(r,d=>!d.repo&&!LC_APPS.some(o=>o.id===d.id)&&nm(d).includes(r.mot))||{};
+      return {...r,...x,id:r.id,repo:r.repo,dir:r.dir,nom:x.nom||r.nom,description:x.description||r.description,ordre:x.ordre||r.ordre}});
+    // fiches Firestore d'apps pas encore dans le registre (sans dépôt connu)
+    docs.filter(d=>!used.has(d)&&!(d.repo&&LC_APPS.some(r=>r.repo===d.repo))).forEach(d=>apps.push(d));
     apps.sort((a,b)=>(a.ordre||0)-(b.ordre||0));
     await Promise.all(apps.map(async a=>{const r=a.repo||REPOS[a.id];a.latest=null;if(r)try{a.latest=(await ghVersions(r))[0]||null;a.dl=await ghDownloads(r)}catch(e){}}));
     $("main").innerHTML=apps.length?'<div class="cards">'+apps.map(a=>`<div class="card">
-      <div style="display:flex;align-items:center;gap:14px"><img src="/${(a.repo||REPOS[a.id]||"").split("/")[1]}/icon-192.png" alt="" onerror="this.remove()" style="width:56px;height:56px;border-radius:13px;box-shadow:0 1px 4px rgba(0,0,0,.15)"><h3 style="margin:0">${esc(a.nom)}</h3></div><p>${esc(a.description)}</p>
+      <div style="display:flex;align-items:center;gap:14px"><img src="/${esc(a.dir||(a.repo||"").split("/")[1]||"")}/icon-192.png" alt="" onerror="this.remove()" style="width:56px;height:56px;border-radius:13px;box-shadow:0 1px 4px rgba(0,0,0,.15)"><h3 style="margin:0">${esc(a.nom)}</h3></div><p>${esc(a.description)}</p>
       <div>${a.latest?`<span class="tag">Version ${esc(a.latest.version)}</span> <span class="muted">· ${a.latest.date?fdate(a.latest.date):""}</span>`:'<span class="tag old">Bientôt</span>'}</div>
       ${(a.dl||[]).length?`<div style="display:flex;flex-wrap:wrap;gap:8px">${a.dl.map(x=>`<a class="pill accent small" href="${esc(x.url)}" download>${esc(x.label)}</a>`).join("")}</div>`:""}
       <a class="muted" href="applications.html?id=${encodeURIComponent(a.id)}">Voir la fiche et les versions →</a></div>`).join("")+'</div>':'<p class="muted">Aucune application publiée pour l\'instant.</p>';
     return;
   }
   let d=null;try{if(db)d=await db.collection("apps").doc(id).get()}catch(e){}
-  const a=d&&d.exists?d.data():DEF[id];
+  const a=d&&d.exists?{...DEF[id],...d.data()}:DEF[id];if(a&&DEF[id])a.repo=DEF[id].repo;
   if(!a){$("main").innerHTML='<p class="muted">Application introuvable. <a href="applications.html">Retour</a></p>';return}
   document.title=a.nom+" — LifeCasts";
   $("hEye").textContent="Application";$("hTitle").textContent=a.nom;$("hDesc").textContent=a.description||"";
