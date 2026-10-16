@@ -26,7 +26,7 @@
 
 <script>
 $("y").textContent=new Date().getFullYear();
-const DEF={bible:{nom:"Bible LifeCasts",description:"La Parole, partout. Même hors connexion.",ordre:1},cantiques:{nom:"Cantiques",description:"Les chants d'autrefois, dans votre poche.",ordre:2}};
+const DEF={bible:{nom:"Bible LifeCasts",description:"La Parole, partout. Même hors connexion.",ordre:1},cantiques:{nom:"Cantiques",description:"Les chants d'autrefois, dans votre poche.",ordre:2},notes:{nom:"Notes",description:"Vos notes et celles de la Bible, au même endroit.",ordre:3}};
 const id=new URLSearchParams(location.search).get("id");
 (async()=>{
   let db=null;try{db=await fbInit(false)}catch(e){}
@@ -34,9 +34,9 @@ const id=new URLSearchParams(location.search).get("id");
     let qs={docs:[]};try{if(db)qs=await db.collection("apps").get()}catch(e){}
     const apps=qs.docs.map(d=>({id:d.id,...d.data()}));
     const nm=x=>(x.nom||x.name||"").toLowerCase();
-    Object.keys(REPOS).forEach(i=>{const k=i==="bible"?"bible":"cantique";const m=apps.filter(x=>x.id===i||x.repo===REPOS[i]||nm(x).includes(k));
+    Object.keys(REPOS).forEach(i=>{const k={bible:"bible",cantiques:"cantique",notes:"notes"}[i]||i;const m=apps.filter(x=>!x._r&&(x.id===i||x.repo===REPOS[i]||nm(x).includes(k)));
       if(!m.length){apps.push({id:i,...DEF[i]});return}
-      m.forEach(x=>{if(!x.repo)x.repo=REPOS[i]});
+      m.forEach(x=>{x.repo=REPOS[i];x._r=1});
       m.slice(1).forEach(x=>apps.splice(apps.indexOf(x),1))});
     apps.sort((a,b)=>(a.ordre||0)-(b.ordre||0));
     await Promise.all(apps.map(async a=>{const r=a.repo||REPOS[a.id];a.latest=null;if(r)try{a.latest=(await ghVersions(r))[0]||null;a.dl=await ghDownloads(r)}catch(e){}}));
