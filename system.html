@@ -540,7 +540,7 @@ function notes(el){
  const selT=t=>{qq("nTabs").querySelectorAll("button").forEach(x=>x.classList.toggle("sel",x===t));pill()};X.selT=k=>selT(qq("nTabs").querySelector(k));
  // Nouvelle : la pastille glisse d'abord, puis la barre descend et la note s'ouvre
  qq("nNew2").onclick=()=>{const N=X.querySelector(".nb"),h=qq("nTabs").querySelector(".sel")||qq("nTabs").querySelector("button");selT(qq("nNew2"));
-  setTimeout(()=>{N.classList.add("dn");setTimeout(()=>{qq("nNew").click();selT(h);N.classList.remove("dn")},260)},340)};
+  setTimeout(()=>{N.classList.add("dn");setTimeout(()=>{const V=document.getElementById("vAcc");if(V)V.hidden=true;qq("nNew").click();selT(qq("nTabs").querySelector("[data-t=home]")||h);N.classList.remove("dn")},260)},340)};
  const F2=qq("nFmt"),PL=qq("nPal");F2.onmousedown=PL.onmousedown=e=>e.preventDefault();PL.onclick=()=>{X.classList.remove("fmt");F2.classList.remove("on")};F2.onclick=()=>{if(!cur||cur.ro)return;const on=X.classList.toggle("fmt");F2.classList.toggle("on",on);PL.classList.toggle("on",on)};
  qq("nMore").onclick=e=>{e.stopPropagation();let m=X.querySelector(".nmo");if(m){m.remove();return}m=E("div",{className:"nmo"});const r=qq("nMore").getBoundingClientRect(),R=X.getBoundingClientRect();m.style.top=(r.bottom-R.top+6)+"px";m.style.right=(R.right-r.right)+"px";
   [[I.n,"Nouvelle note",()=>qq("nNew").click()],['<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',"Rechercher",()=>qq("nSr").click()]].forEach(([i,l,f])=>{const b=E("button",{innerHTML:i+l});b.onclick=()=>{m.remove();f()};m.append(b)});
