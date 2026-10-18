@@ -1,11 +1,11 @@
 // À AJOUTER dans les règles Firestore existantes (dans match /databases/{database}/documents { ... })
-function cloudAdmin(){ return request.auth != null && request.auth.token.email in ['lifecasts.h@gmail.com']; }
+function cloudAdmin(){ return request.auth != null && request.auth.token.email_verified == true && request.auth.token.email in ['lifecasts.h@gmail.com']; }
 function cloudMember(){ return request.auth != null && (cloudAdmin() ||
-  request.auth.token.email in get(/databases/$(database)/documents/cloudcfg/config).data.users); }
+  (request.auth.token.email_verified == true && request.auth.token.email in get(/databases/$(database)/documents/cloudcfg/config).data.users)); }
 function cloudSpace(sp){ return sp == 'lc' ? cloudAdmin() : (cloudMember() && sp == 'u_' + request.auth.uid); }
-match /cloudcfg/config { allow read: if request.auth != null; allow write: if cloudAdmin(); }
+match /cloudcfg/config { allow read: if cloudMember(); allow write: if cloudAdmin(); }
 match /cloud/{id} {
   allow read, delete: if cloudSpace(resource.data.sp);
-  allow create: if cloudSpace(request.resource.data.sp);
+  allow create: if cloudSpace(request.resource.data.sp) && request.resource.data.by == request.auth.token.email;
   allow update: if cloudSpace(resource.data.sp) && request.resource.data.sp == resource.data.sp;
 }
