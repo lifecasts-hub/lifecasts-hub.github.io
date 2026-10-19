@@ -192,10 +192,11 @@ html,body{overflow-x:hidden}
   const s=E("div",{className:"sys"});s.append(E("img",{src:"mark-dark.png",alt:"LifeCasts System"}));$("heroIcons").append(s);
   LIFECASTS.apps.forEach(a=>{
     const p=E("section",{className:"panel"});p.style.background=a.fond;
+    p.append(E("img",{className:"big-icon",src:a.icon,alt:""}));
     p.append(E("h3",{textContent:a.nom+"."}),E("p",{className:"lead",textContent:a.accroche}),E("p",{className:"sub",textContent:a.description}));
     const c=E("div",{className:"ctas"});c.append(E("a",{className:"pill",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"more",href:"applications.html?id="+a.id,textContent:"Télécharger l'application"}));
     const v=E("div",{className:"muted",textContent:" "});v.style.marginTop="10px";
-    p.append(E("img",{className:"big-icon",src:a.icon,alt:""}),c,v);
+    p.append(c,v);
     $("applications").append(p);
     const repo=REPOS[a.id];if(repo)ghVersions(repo).then(vs=>{if(vs[0])v.textContent="Version "+vs[0].version}).catch(()=>{});
   });
