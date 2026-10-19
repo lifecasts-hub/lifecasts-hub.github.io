@@ -80,6 +80,35 @@ html,body{overflow-x:hidden}
 .ico{display:block;flex:none}
 .window .grid span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .window .grid b{flex:none}
+
+/* Grille d'espacement : suite de Fibonacci (rapport ≈ φ = 1,618) — 8·13·21·34·55·89 */
+:root{--s1:8px;--s2:13px;--s3:21px;--s4:34px;--s5:55px;--s6:89px}
+.hero-home{padding-top:var(--s6)}
+.hero-home h2{margin-top:var(--s1)}
+.ctas{gap:var(--s3);margin-top:var(--s4)}
+.icons{gap:var(--s3);margin-top:var(--s5);padding-bottom:var(--s6)}
+.panel{margin:var(--s2);padding:var(--s6) var(--s3) var(--s6)}
+.panel:has(.window){padding-bottom:0}
+.panel .eyebrow{margin-bottom:var(--s1)}
+.panel p.lead{margin-top:var(--s1)}
+.panel p.sub{margin-top:var(--s2)}
+.panel .big-icon{width:144px;height:144px;border-radius:22.5%;margin:0 auto var(--s4)}
+.panel .ctas+.muted{margin-top:var(--s3)!important}
+.window{margin-top:var(--s5)}
+.duo{gap:var(--s2);margin:0 var(--s2)}
+.duo .panel{margin:0;padding:var(--s5) var(--s4)}
+.steps{gap:var(--s4);margin-top:var(--s5)}
+.account{margin-top:var(--s4);padding:var(--s4);gap:var(--s2)}
+@media (max-width:600px){
+ .hero-home{padding-top:var(--s5)}
+ .icons{margin-top:var(--s4);padding-bottom:var(--s5)}
+ .panel{margin:var(--s1);padding:var(--s5) var(--s3) var(--s5)}
+ .panel .big-icon{width:89px;height:89px;margin-bottom:var(--s3)}
+ .ctas{gap:var(--s2) var(--s3);margin-top:var(--s3)}
+ .window{margin-top:var(--s4)}
+ .duo{margin:0 var(--s1);gap:var(--s1)}.duo .panel{padding:var(--s5) var(--s3)}
+ .account{padding:var(--s3)}
+}
 </style>
 </head>
 <body>
