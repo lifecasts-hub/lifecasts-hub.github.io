@@ -193,7 +193,7 @@ html,body{overflow-x:hidden}
   LIFECASTS.apps.forEach(a=>{
     const p=E("section",{className:"panel"});p.style.background=a.fond;
     p.append(E("h3",{textContent:a.nom+"."}),E("p",{className:"lead",textContent:a.accroche}),E("p",{className:"sub",textContent:a.description}));
-    const c=E("div",{className:"ctas"});c.append(E("a",{className:"pill",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"more",href:"applications.html?id="+a.id,textContent:"Fiche et versions"}));
+    const c=E("div",{className:"ctas"});c.append(E("a",{className:"pill",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"more",href:"applications.html?id="+a.id,textContent:"Télécharger l'application"}));
     const v=E("div",{className:"muted",textContent:" "});v.style.marginTop="10px";
     p.append(c,v,E("img",{className:"big-icon",src:a.icon,alt:""}));p.style.paddingBottom="80px";
     $("applications").append(p);
