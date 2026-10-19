@@ -37,7 +37,7 @@ const LIFECASTS = {
 .panel h3{font-size:clamp(36px,6vw,56px);font-weight:700;letter-spacing:-.035em;line-height:1.07}
 .panel p.lead{font-size:clamp(19px,2.6vw,26px);margin-top:6px}
 .panel p.sub{color:var(--muted);max-width:560px;margin:14px auto 0}
-.panel .big-icon{width:160px;height:160px;border-radius:36px;margin:40px auto -40px;display:block;box-shadow:0 30px 60px rgba(0,0,0,.25)}
+.panel .big-icon{width:160px;height:160px;border-radius:36px;margin:34px auto 0;display:block;box-shadow:0 30px 60px rgba(0,0,0,.25)}
 .panel.dark{background:#000;color:#f5f5f7}
 .panel.dark p.sub{color:#a1a1a6}
 .panel.dark a{color:var(--accent2)}
@@ -195,7 +195,7 @@ html,body{overflow-x:hidden}
     p.append(E("h3",{textContent:a.nom+"."}),E("p",{className:"lead",textContent:a.accroche}),E("p",{className:"sub",textContent:a.description}));
     const c=E("div",{className:"ctas"});c.append(E("a",{className:"pill",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"more",href:"applications.html?id="+a.id,textContent:"Télécharger l'application"}));
     const v=E("div",{className:"muted",textContent:" "});v.style.marginTop="10px";
-    p.append(c,v,E("img",{className:"big-icon",src:a.icon,alt:""}));p.style.paddingBottom="80px";
+    p.append(E("img",{className:"big-icon",src:a.icon,alt:""}),c,v);
     $("applications").append(p);
     const repo=REPOS[a.id];if(repo)ghVersions(repo).then(vs=>{if(vs[0])v.textContent="Version "+vs[0].version}).catch(()=>{});
   });
