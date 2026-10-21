@@ -36,7 +36,7 @@ const id=new URLSearchParams(location.search).get("id");
     // 1) correspondance exacte (id ou dépôt), 2) ancienne fiche sans dépôt dont le nom contient le mot-clé
     const pick=(r,f)=>{const x=docs.find(d=>!used.has(d)&&f(d));if(x)used.add(x);return x};
     const apps=LC_APPS.map(r=>{const x=pick(r,d=>d.id===r.id||d.repo===r.repo)||pick(r,d=>!d.repo&&!LC_APPS.some(o=>o.id===d.id)&&nm(d).includes(r.mot))||{};
-      return {...r,...x,id:r.id,repo:r.repo,dir:r.dir,nom:x.nom||r.nom,description:x.description||r.description,ordre:x.ordre||r.ordre}});
+      return {...r,...x,id:r.id,repo:r.repo,dir:r.dir,nom:x.nom||r.nom,description:x.description||r.description,ordre:x.ordre||r.ordre,web:x.web||r.url}});
     // fiches Firestore d'apps pas encore dans le registre (sans dépôt connu)
     docs.filter(d=>!used.has(d)&&!(d.repo&&LC_APPS.some(r=>r.repo===d.repo))).forEach(d=>apps.push(d));
     apps.sort((a,b)=>(a.ordre||0)-(b.ordre||0));
