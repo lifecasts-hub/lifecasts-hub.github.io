@@ -255,7 +255,11 @@ html,body{overflow-x:hidden}
   if(LIFECASTS.contactEmail){const m=$("mailLink");m.href="mailto:"+LIFECASTS.contactEmail;m.textContent=LIFECASTS.contactEmail;m.hidden=false;$("mailBtn").href=m.href}
   $("year").textContent=new Date().getFullYear();
   const back=returnPath();if(back&&getUser()){location.replace(back);return}
-  render();if(appHost()){$("loggedOut").hidden=false;$("loggedOut").style.display="flex";$("loggedIn").hidden=true;$("loggedIn").style.display="none";$("loggedOut").scrollIntoView()}initGoogle();if(getUser())loadAge();
+  render();if(appHost()){const g=$("gbtn");g.id="gbtnApp";const b=document.createElement("button");b.className="pill accent";b.type="button";b.textContent="Continuer avec Google";g.replaceWith(b);
+    const go=r=>{const t=r&&r.credential&&r.credential.idToken;if(t)toApp(t)};
+    (fbP=fbP||fbInit(true)).then(()=>firebase.auth().getRedirectResult()).then(go).catch(()=>{});
+    b.onclick=()=>{b.disabled=true;(fbP=fbP||fbInit(true)).then(()=>{const pr=new firebase.auth.GoogleAuthProvider();pr.setCustomParameters({prompt:"select_account"});
+      return firebase.auth().signInWithPopup(pr).then(go).catch(e=>{if(/popup-blocked|operation-not-supported/.test(e.code||""))return firebase.auth().signInWithRedirect(pr);alert("Connexion impossible : "+(e.code||e.message))})}).finally(()=>{b.disabled=false})};$("loggedOut").hidden=false;$("loggedOut").style.display="flex";$("loggedIn").hidden=true;$("loggedIn").style.display="none";$("loggedOut").scrollIntoView()}initGoogle();if(getUser())loadAge();
 })();
 </script>
 </body>
