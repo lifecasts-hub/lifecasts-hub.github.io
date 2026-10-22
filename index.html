@@ -192,6 +192,8 @@ html,body{overflow-x:hidden}
   function setUser(u){try{localStorage.setItem(KEY,JSON.stringify(u))}catch(e){}}
   function clearUser(){try{localStorage.removeItem(KEY)}catch(e){}}
   /* Retour vers une application : index.html?retour=/The-Bible-App/ */
+  function appHost(){const h=new URLSearchParams(location.search).get("app");return h&&/^[a-z]{2,20}$/.test(h)?h:null}
+  function toApp(t){const u="intent://"+appHost()+"/lcidt="+t+"#Intent;scheme=lifecasts;end";location.href=u;const n=$("errNotice");n.hidden=false;n.innerHTML='<a class="pill accent" href="'+u+'">Retourner dans l\'application</a>'}
   function returnPath(){const r=new URLSearchParams(location.search).get("retour");return r&&r.startsWith("/")&&!r.startsWith("//")&&!r.includes("\\")?r:null}
   function decodeJwt(t){const b=t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/");return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b),c=>c.charCodeAt(0))))}
   function render(){
@@ -219,7 +221,7 @@ html,body{overflow-x:hidden}
   function onCredential(resp){
     try{const p=decodeJwt(resp.credential);
       setUser({id:p.sub,name:p.name,email:p.email,picture:p.picture,provider:"google",since:Date.now()});
-      $("errNotice").hidden=true;const back=returnPath();if(back){location.href=back;return}render();loadAge(resp.credential);
+      $("errNotice").hidden=true;if(appHost()){toApp(resp.credential);return}const back=returnPath();if(back){location.href=back;return}render();loadAge(resp.credential);
     }catch(e){$("errNotice").hidden=false}
   }
   function initGoogle(){
