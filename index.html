@@ -129,7 +129,8 @@ html,body{overflow-x:hidden}
 <section class="hero-home" id="accueil"><div class="wrap">
 <h1>LifeCasts.</h1>
 <h2>Le ministère des bandes : imprimé, distribué, et dans vos applications.</h2>
-<div class="ctas"><a class="pill accent" href="system.html">Ouvrir LifeCasts System</a><a class="more" href="#mission">En savoir plus</a></div>
+<div class="ctas"><div class="user" style="justify-content:space-between"><div><strong>Âge</strong><span id="ageV">…</span></div><span id="ageE" style="display:flex;gap:8px;align-items:center"><button class="pill ghost" type="button" id="ageB" hidden>Modifier</button></span></div>
+<a class="pill accent" href="system.html">Ouvrir LifeCasts System</a><a class="more" href="#mission">En savoir plus</a></div>
 <div class="icons" id="heroIcons"></div>
 </div></section>
 
@@ -200,10 +201,25 @@ html,body{overflow-x:hidden}
     $("navBtn").textContent=u?"LifeCasts System":"Se connecter";
     if(u){$("uName").textContent=u.name||"";$("uMail").textContent=u.email;if(u.picture)$("uPic").src=u.picture;else $("uPic").removeAttribute("src")}
   }
+  /* Âge : modifiable uniquement ici (Firestore users/{uid}.by = année de naissance), lu par les applications */
+  let fbP=null;
+  function fbUser(idt){return (fbP=fbP||fbInit(true)).then(()=>{const A=firebase.auth();if(A.currentUser)return A.currentUser;
+    if(idt)return A.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(idt)).then(r=>r.user);
+    return new Promise(ok=>{const off=A.onAuthStateChanged(u=>{off();ok(u)})})})}
+  const yr=()=>new Date().getFullYear(),ans=a=>a?a+" an"+(a>1?"s":""):"Non renseigné";
+  function loadAge(idt){$("ageV").textContent="…";$("ageB").hidden=true;
+    fbUser(idt).then(u=>{if(!u){$("ageV").textContent="Reconnectez-vous pour l'afficher";return}
+      return firebase.firestore().doc("users/"+u.uid).get().then(d=>{const by=d.exists&&d.data().by;$("ageV").textContent=ans(by?yr()-by:0);$("ageB").hidden=false;$("ageB").dataset.a=by?yr()-by:""})
+    }).catch(()=>{$("ageV").textContent="Indisponible hors ligne"})}
+  $("ageB").addEventListener("click",function(){const e=$("ageE"),b=this;b.hidden=true;
+    const i=document.createElement("input");Object.assign(i,{type:"number",min:1,max:120,inputmode:"numeric",value:b.dataset.a,placeholder:"Âge"});i.style.cssText="width:80px;padding:8px;border:1px solid #ccc;border-radius:10px;font:inherit";
+    const ok=document.createElement("button");ok.className="pill accent";ok.type="button";ok.textContent="Enregistrer";e.append(i,ok);i.focus();
+    ok.onclick=()=>{const v=+i.value;if(i.value&&(v<1||v>120))return i.focus();ok.disabled=true;
+      fbUser().then(u=>firebase.firestore().doc("users/"+u.uid).set({by:v?yr()-v:0},{merge:true})).then(()=>{i.remove();ok.remove();loadAge()}).catch(()=>{ok.disabled=false;ok.textContent="Réessayer"})}});
   function onCredential(resp){
     try{const p=decodeJwt(resp.credential);
       setUser({id:p.sub,name:p.name,email:p.email,picture:p.picture,provider:"google",since:Date.now()});
-      $("errNotice").hidden=true;const back=returnPath();if(back){location.href=back;return}render();
+      $("errNotice").hidden=true;const back=returnPath();if(back){location.href=back;return}render();loadAge(resp.credential);
     }catch(e){$("errNotice").hidden=false}
   }
   function initGoogle(){
@@ -212,7 +228,7 @@ html,body{overflow-x:hidden}
     google.accounts.id.initialize({client_id:LIFECASTS.googleClientId,callback:onCredential,auto_select:false});
     google.accounts.id.renderButton($("gbtn"),{theme:"outline",size:"large",shape:"pill",text:"continue_with",locale:"fr",width:300});
   }
-  $("logoutBtn").addEventListener("click",function(){clearUser();if(window.google&&google.accounts&&google.accounts.id)google.accounts.id.disableAutoSelect();render()});
+  $("logoutBtn").addEventListener("click",function(){clearUser();if(fbP)fbP.then(()=>firebase.auth().signOut()).catch(()=>{});if(window.google&&google.accounts&&google.accounts.id)google.accounts.id.disableAutoSelect();render()});
   window.addEventListener("storage",(e)=>{if(e.key===KEY)render()});
 
   /* Présentation des applications */
@@ -235,7 +251,7 @@ html,body{overflow-x:hidden}
   if(LIFECASTS.contactEmail){const m=$("mailLink");m.href="mailto:"+LIFECASTS.contactEmail;m.textContent=LIFECASTS.contactEmail;m.hidden=false;$("mailBtn").href=m.href}
   $("year").textContent=new Date().getFullYear();
   const back=returnPath();if(back&&getUser()){location.replace(back);return}
-  render();initGoogle();
+  render();initGoogle();if(getUser())loadAge();
 })();
 </script>
 </body>
