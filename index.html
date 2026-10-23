@@ -63,7 +63,7 @@ const LIFECASTS = {
 #gbtn{min-height:44px}
 .navcta{font-size:12px;padding:5px 12px;white-space:nowrap;flex:none}
 footer .fl{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;margin-bottom:10px}
-html,body{overflow-x:hidden}
+html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 .hero-home h1,.panel h3{overflow-wrap:anywhere}
 @media (max-width:600px){
  header nav{display:none}
