@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<script>/*LC-OTA*/(function(){var B="1.3";window.LC_BUILT=B;
+<script>/*LC-OTA*/(function(){var B="1.4";window.LC_BUILT=B;
 function c(a,b){a=String(a).split(".");b=String(b).split(".");for(var i=0;i<Math.max(a.length,b.length);i++){var d=(+a[i]||0)-(+b[i]||0);if(d)return d>0?1:-1}return 0}window.LC_CMP=c;
 if(window.LC_OTA_VER){window.LC_VER=window.LC_OTA_VER;return}window.LC_VER=B;
 if(location.protocol!=="file:")return;
@@ -435,8 +435,8 @@ const qa=new URLSearchParams(location.search).get("id");if(qa&&APPS.find(a=>a.id
 if(window.self!==window.top)document.querySelector(".tabbar").style.bottom="14px";
 </script>
 <style>
-#acc{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center}
-#acc.on{display:flex}#acc .pn{background:var(--bg);color:var(--ink);width:min(100%,520px);max-height:92vh;overflow:auto;border-radius:26px 26px 0 0;padding:22px 18px 30px;font-family:Inter,sans-serif}
+#acc{position:fixed;inset:0;z-index:90;background:var(--bg);display:none;overflow:auto;-webkit-overflow-scrolling:touch}
+#acc.on{display:block}#acc .pn{color:var(--ink);max-width:560px;margin:0 auto;min-height:100%;padding:calc(env(safe-area-inset-top) + 28px) 20px calc(env(safe-area-inset-bottom) + 30px);font-family:Inter,sans-serif}#acc h2{font-size:38px!important;font-weight:700}body.accon{overflow:hidden}
 #acc h2{display:flex;justify-content:space-between;align-items:center;margin:0 0 18px;font-size:30px;letter-spacing:-.03em}
 #acc h2 button{border:0;background:none;color:var(--acc);font:600 17px Inter}
 #acc .g{background:var(--pill);border-radius:20px;margin-bottom:22px;overflow:hidden}
@@ -466,13 +466,13 @@ if(window.self!==window.top)document.querySelector(".tabbar").style.bottom="14px
    '<p style="text-align:center;opacity:.5;font-size:13px">LC Store</p>';
   P.querySelector("#accTh").onchange=e=>{const v=e.target.value;try{localStorage.setItem("lcstore.theme",v)}catch(x){}theme()};
   const del=P.querySelector("#accDel");if(del)del.onclick=()=>{if(!confirm("Supprimer ce compte de cet appareil ? Vous pourrez vous reconnecter plus tard."))return;try{localStorage.removeItem(K);Object.keys(localStorage).filter(k=>/^lcgh:|^lcstore\./.test(k)&&k!=="lcstore.theme").forEach(k=>localStorage.removeItem(k))}catch(e){}if(window.firebase&&firebase.apps&&firebase.apps.length)try{firebase.auth().signOut()}catch(e){}location.reload()};
-  P.querySelector("#accOk").onclick=()=>A.classList.remove("on");
+  P.querySelector("#accOk").onclick=()=>{A.classList.remove("on");document.body.classList.remove("accon")};
   const o=P.querySelector("#accOut");if(o)o.onclick=()=>{try{localStorage.removeItem(K)}catch(e){}if(window.firebase&&firebase.apps&&firebase.apps.length)try{firebase.auth().signOut()}catch(e){}location.reload()};
   if(u&&window.fbInit)fbInit(true).then(()=>new Promise(ok=>{const off=firebase.auth().onAuthStateChanged(x=>{off();ok(x)})})).then(x=>{const e=P.querySelector("#accAge");if(!e)return;if(!x){e.textContent="Reconnectez-vous sur le site pour l\u2019afficher";return}
    return firebase.firestore().doc("users/"+x.uid).get().then(d=>{const by=d.exists&&d.data().by,a=by?new Date().getFullYear()-by:0;e.textContent=a?a+" an"+(a>1?"s":""):"Non renseigné"})}).catch(()=>{const e=P.querySelector("#accAge");if(e)e.textContent="Indisponible hors ligne"});
-  A.classList.add("on")}
+  A.classList.add("on");document.body.classList.add("accon");A.scrollTop=0}
  function theme(){let v="auto";try{v=localStorage.getItem("lcstore.theme")||"auto"}catch(e){}if(v==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",v)}
- theme();m.onclick=e=>{e.preventDefault();show()};A.onclick=e=>{if(e.target===A)A.classList.remove("on")};badge();
+ theme();m.onclick=e=>{e.preventDefault();show()};badge();
  if(location.hash==="#compte"){history.replaceState(null,"",location.pathname+location.search);if(get())show()}})();
 </script>
 <script>/*LC-OTA*/(function(){
