@@ -211,6 +211,8 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
     try{const p=decodeJwt(resp.credential);
       setUser({id:p.sub,name:p.name,email:p.email,picture:p.picture,provider:"google",since:Date.now()});
       $("errNotice").hidden=true;if(appHost()){toApp(resp.credential);return}const back=returnPath();if(back){location.href=back;return}render();
+      /* session Firebase partagée par tout le site (Store, System : âge, synchro) */
+      (fbP=fbP||fbInit(true)).then(()=>{if(!firebase.auth().currentUser)return firebase.auth().signInWithCredential(firebase.auth.GoogleAuthProvider.credential(resp.credential))}).catch(()=>{});
     }catch(e){$("errNotice").hidden=false}
   }
   function initGoogle(){

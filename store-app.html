@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<script>/*LC-OTA*/(function(){var B="1.1";window.LC_BUILT=B;
+<script>/*LC-OTA*/(function(){var B="1.2";window.LC_BUILT=B;
 function c(a,b){a=String(a).split(".");b=String(b).split(".");for(var i=0;i<Math.max(a.length,b.length);i++){var d=(+a[i]||0)-(+b[i]||0);if(d)return d>0?1:-1}return 0}window.LC_CMP=c;
 if(window.LC_OTA_VER){window.LC_VER=window.LC_OTA_VER;return}window.LC_VER=B;
 if(location.protocol!=="file:")return;
@@ -16,6 +16,7 @@ var r=indexedDB.open("lc-ota",1);r.onupgradeneeded=function(){r.result.createObj
 r.onsuccess=function(){try{var g=r.result.transaction("f").objectStore("f").get("html");g.onerror=fail;
 g.onsuccess=function(){var h=g.result;if(!h||h.indexOf("/*LC-OTA*/")<0)return fail();window.LC_OTA_VER=v;document.open();document.write(h);document.close()}}catch(e){fail()}};
 })()</script>
+<meta name="format-detection" content="telephone=no,email=no,address=no">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>LC Store</title>
 <script>/* LifeCasts — outils communs aux pages Applications / Admin */
@@ -453,14 +454,14 @@ if(window.self!==window.top)document.querySelector(".tabbar").style.bottom="14px
  function badge(){const u=get();if(u){m.title="Compte";m.innerHTML=u.picture?'<img src="https://lifecasts-hub.github.io/'+X(u.picture)+'" alt="" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover">':X((u.name||u.email)[0].toUpperCase())}}
  function show(){const u=get();
   P.innerHTML='<h2>Compte<button id="accOk">OK</button></h2>'+(u?
-   '<div class="g"><div class="r" style="opacity:.7">'+X(u.email)+'</div><div class="r">'+pic(u)+'<div class="t"><b>'+X(u.name||u.email)+'</b><small>Google</small></div></div></div>'+
+   '<div class="g"><div class="r" style="opacity:.7;-webkit-user-select:text">'+X(u.email).replace("@","@&#8203;")+'</div><div class="r">'+pic(u)+'<div class="t"><b>'+X(u.name||u.email)+'</b><small>Google</small></div></div></div>'+
    '<div class="lab">CE COMPTE</div><div class="g"><div class="r"><div class="t">Âge<small id="accAge">…</small></div><a class="b" href="https://lifecasts-hub.github.io/system.html?app=settings">Modifier sur LifeCasts</a></div>'+
    '<div class="r"><div class="t">Se déconnecter<small>Sur ce navigateur (site, System, Store)</small></div><button class="b" id="accOut">Déconnexion</button></div></div>'
    :'<div class="g"><div class="r"><div class="t">Non connecté<small>Le même compte que le site LifeCasts et les applications</small></div><a class="b" style="background:var(--acc);color:#fff" href="https://lifecasts-hub.github.io/?retour=/store.html#compte">Se connecter</a></div></div>')+
    '<p style="text-align:center;opacity:.5;font-size:13px">LC Store</p>';
   P.querySelector("#accOk").onclick=()=>A.classList.remove("on");
   const o=P.querySelector("#accOut");if(o)o.onclick=()=>{try{localStorage.removeItem(K)}catch(e){}if(window.firebase&&firebase.apps&&firebase.apps.length)try{firebase.auth().signOut()}catch(e){}location.reload()};
-  if(u&&window.fbInit)fbInit(true).then(()=>new Promise(ok=>{const off=firebase.auth().onAuthStateChanged(x=>{off();ok(x)})})).then(x=>{const e=P.querySelector("#accAge");if(!e)return;if(!x){e.textContent="Visible après connexion à System";return}
+  if(u&&window.fbInit)fbInit(true).then(()=>new Promise(ok=>{const off=firebase.auth().onAuthStateChanged(x=>{off();ok(x)})})).then(x=>{const e=P.querySelector("#accAge");if(!e)return;if(!x){e.textContent="Reconnectez-vous sur le site pour l\u2019afficher";return}
    return firebase.firestore().doc("users/"+x.uid).get().then(d=>{const by=d.exists&&d.data().by,a=by?new Date().getFullYear()-by:0;e.textContent=a?a+" an"+(a>1?"s":""):"Non renseigné"})}).catch(()=>{const e=P.querySelector("#accAge");if(e)e.textContent="Indisponible hors ligne"});
   A.classList.add("on")}
  m.onclick=e=>{e.preventDefault();show()};A.onclick=e=>{if(e.target===A)A.classList.remove("on")};badge();
