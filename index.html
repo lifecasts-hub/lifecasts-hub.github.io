@@ -130,7 +130,7 @@ html,body{overflow-x:hidden}
 <section class="hero-home" id="accueil"><div class="wrap">
 <h1>LifeCasts.</h1>
 <h2>Le ministère des bandes : imprimé, distribué, et dans vos applications.</h2>
-<div class="ctas"><div class="user" style="justify-content:space-between"><div><strong>Âge</strong><span id="ageV">…</span></div><span id="ageE" style="display:flex;gap:8px;align-items:center"><button class="pill ghost" type="button" id="ageB" hidden>Modifier</button></span></div>
+<div class="ctas">
 <a class="pill accent" href="system.html">Ouvrir LifeCasts System</a><a class="more" href="#mission">En savoir plus</a></div>
 <div class="icons" id="heroIcons"></div>
 </div></section>
@@ -172,7 +172,7 @@ html,body{overflow-x:hidden}
 </div>
 <div id="loggedIn" hidden style="display:flex;flex-direction:column;gap:14px">
 <div class="user"><img id="uPic" alt="" referrerpolicy="no-referrer"><div><strong id="uName"></strong><span id="uMail"></span></div></div>
-<a class="pill accent" href="system.html" style="text-align:center">Ouvrir LifeCasts System</a>
+<a class="pill accent" href="system.html" style="text-align:center">Ouvrir LifeCasts System</a><a class="pill ghost" href="system.html?app=settings" style="text-align:center">Âge et paramètres du compte</a>
 <button class="pill ghost" type="button" id="logoutBtn">Se déconnecter</button>
 </div>
 </div>
@@ -206,25 +206,11 @@ html,body{overflow-x:hidden}
     $("navBtn").textContent=u?"LifeCasts System":"Se connecter";
     if(u){$("uName").textContent=u.name||"";$("uMail").textContent=u.email;if(u.picture)$("uPic").src=u.picture;else $("uPic").removeAttribute("src")}
   }
-  /* Âge : modifiable uniquement ici (Firestore users/{uid}.by = année de naissance), lu par les applications */
   let fbP=null;
-  function fbUser(idt){return (fbP=fbP||fbInit(true)).then(()=>{const A=firebase.auth();if(A.currentUser)return A.currentUser;
-    if(idt)return A.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(idt)).then(r=>r.user);
-    return new Promise(ok=>{const off=A.onAuthStateChanged(u=>{off();ok(u)})})})}
-  const yr=()=>new Date().getFullYear(),ans=a=>a?a+" an"+(a>1?"s":""):"Non renseigné";
-  function loadAge(idt){$("ageV").textContent="…";$("ageB").hidden=true;
-    fbUser(idt).then(u=>{if(!u){$("ageV").textContent="Reconnectez-vous pour l'afficher";return}
-      return firebase.firestore().doc("users/"+u.uid).get().then(d=>{const by=d.exists&&d.data().by;$("ageV").textContent=ans(by?yr()-by:0);$("ageB").hidden=false;$("ageB").dataset.a=by?yr()-by:""})
-    }).catch(()=>{$("ageV").textContent="Indisponible hors ligne"})}
-  $("ageB").addEventListener("click",function(){const e=$("ageE"),b=this;b.hidden=true;
-    const i=document.createElement("input");Object.assign(i,{type:"number",min:1,max:120,inputmode:"numeric",value:b.dataset.a,placeholder:"Âge"});i.style.cssText="width:80px;padding:8px;border:1px solid #ccc;border-radius:10px;font:inherit";
-    const ok=document.createElement("button");ok.className="pill accent";ok.type="button";ok.textContent="Enregistrer";e.append(i,ok);i.focus();
-    ok.onclick=()=>{const v=+i.value;if(i.value&&(v<1||v>120))return i.focus();ok.disabled=true;
-      fbUser().then(u=>firebase.firestore().doc("users/"+u.uid).set({by:v?yr()-v:0},{merge:true})).then(()=>{i.remove();ok.remove();loadAge()}).catch(()=>{ok.disabled=false;ok.textContent="Réessayer"})}});
   function onCredential(resp){
     try{const p=decodeJwt(resp.credential);
       setUser({id:p.sub,name:p.name,email:p.email,picture:p.picture,provider:"google",since:Date.now()});
-      $("errNotice").hidden=true;if(appHost()){toApp(resp.credential);return}const back=returnPath();if(back){location.href=back;return}render();loadAge(resp.credential);
+      $("errNotice").hidden=true;if(appHost()){toApp(resp.credential);return}const back=returnPath();if(back){location.href=back;return}render();
     }catch(e){$("errNotice").hidden=false}
   }
   function initGoogle(){
@@ -260,7 +246,7 @@ html,body{overflow-x:hidden}
     const go=r=>{const t=r&&r.credential&&r.credential.idToken;if(t)toApp(t)};
     (fbP=fbP||fbInit(true)).then(()=>firebase.auth().getRedirectResult()).then(go).catch(()=>{});
     b.onclick=()=>{b.disabled=true;(fbP=fbP||fbInit(true)).then(()=>{const pr=new firebase.auth.GoogleAuthProvider();pr.setCustomParameters({prompt:"select_account"});
-      return firebase.auth().signInWithPopup(pr).then(go).catch(e=>{if(/popup-blocked|operation-not-supported/.test(e.code||""))return firebase.auth().signInWithRedirect(pr);alert("Connexion impossible : "+(e.code||e.message))})}).finally(()=>{b.disabled=false})};$("loggedOut").hidden=false;$("loggedOut").style.display="flex";$("loggedIn").hidden=true;$("loggedIn").style.display="none";$("loggedOut").scrollIntoView()}if(!appHost())initGoogle();if(getUser())loadAge();
+      return firebase.auth().signInWithPopup(pr).then(go).catch(e=>{if(/popup-blocked|operation-not-supported/.test(e.code||""))return firebase.auth().signInWithRedirect(pr);alert("Connexion impossible : "+(e.code||e.message))})}).finally(()=>{b.disabled=false})};$("loggedOut").hidden=false;$("loggedOut").style.display="flex";$("loggedIn").hidden=true;$("loggedIn").style.display="none";$("loggedOut").scrollIntoView()}if(!appHost())initGoogle();
 })();
 </script>
 </body>
