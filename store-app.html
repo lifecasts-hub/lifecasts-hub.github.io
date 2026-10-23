@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<script>/*LC-OTA*/(function(){var B="1.0";window.LC_BUILT=B;
+function c(a,b){a=String(a).split(".");b=String(b).split(".");for(var i=0;i<Math.max(a.length,b.length);i++){var d=(+a[i]||0)-(+b[i]||0);if(d)return d>0?1:-1}return 0}window.LC_CMP=c;
+if(window.LC_OTA_VER){window.LC_VER=window.LC_OTA_VER;return}window.LC_VER=B;
+if(location.protocol!=="file:")return;
+var L=window.localStorage,v,n;try{v=L.getItem("lc.ota.ver");n=+(L.getItem("lc.ota.try")||0)}catch(e){return}
+if(!v||c(v,B)<=0||!window.indexedDB)return;
+if(n>=3){L.removeItem("lc.ota.ver");L.removeItem("lc.ota.try");return}
+L.setItem("lc.ota.try",n+1);
+function fail(){L.removeItem("lc.ota.ver");location.reload()}
+document.write('<plaintext style="display:none">');
+var r=indexedDB.open("lc-ota",1);r.onupgradeneeded=function(){r.result.createObjectStore("f")};r.onerror=fail;
+r.onsuccess=function(){try{var g=r.result.transaction("f").objectStore("f").get("html");g.onerror=fail;
+g.onsuccess=function(){var h=g.result;if(!h||h.indexOf("/*LC-OTA*/")<0)return fail();window.LC_OTA_VER=v;document.open();document.write(h);document.close()}}catch(e){fail()}};
+})()</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LC Store</title>
+<script>/* LifeCasts — outils communs aux pages Applications / Admin */
+const FBC={apiKey:"AIzaSyBXXuPijD1GRpRQV3OfnWK_zHGJOoLLmeM",authDomain:"lifecasts-17e42.firebaseapp.com",projectId:"lifecasts-17e42",storageBucket:"lifecasts-17e42.firebasestorage.app",messagingSenderId:"625851569945",appId:"1:625851569945:web:421d879406d64d57061788"};
+const ADMINS=["lifecasts.h@gmail.com"]; // doit correspondre aux règles Firestore
+const FBV="https://www.gstatic.com/firebasejs/10.14.1/firebase-";
+const $=id=>document.getElementById(id);
+function loadScript(src){return new Promise((ok,ko)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.append(s)})}
+async function fbInit(withAuth){
+  await loadScript(FBV+"app-compat.js");
+  await Promise.all((withAuth?["auth","firestore"]:["firestore"]).map(m=>loadScript(FBV+m+"-compat.js")));
+  firebase.initializeApp(FBC);return firebase.firestore();
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function fdate(ms){return ms?new Date(ms).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}):""}
+function vcmp(a,b){a=String(a).split(".").map(Number);b=String(b).split(".").map(Number);for(let i=0;i<Math.max(a.length,b.length);i++){const d=(a[i]||0)-(b[i]||0);if(d)return d>0?1:-1}return 0}
+function nl(s){return esc(s).replace(/\n/g,"<br>")}
+
+/* Versions lues sur GitHub : chaque commit « vX.Y : nouveautés » qui modifie index.html = une version */
+/* REGISTRE UNIQUE DES APPLICATIONS — pour publier une nouvelle app, ajouter UNE ligne ici (le dépôt doit avoir index.html + icon-192.png).
+   Le site (Applications, System : dock, mises à jour, À propos) se met à jour tout seul. mot = mot-clé pour retrouver une ancienne fiche Firestore sans id. */
+const LC_APPS=[
+ {id:"bible",repo:"lifecasts-hub/The-Bible-App",nom:"Bible LifeCasts",court:"Bible",mot:"bible",description:"La Parole, partout. Même hors connexion.",ordre:1},
+ {id:"cantiques",repo:"lifecasts-hub/Songs-Book",nom:"Cantiques",court:"Cantiques",mot:"cantique",description:"Les chants d'autrefois, dans votre poche.",ordre:2},
+ {id:"notes",repo:"lifecasts-hub/The-Notes-App",nom:"Notes",court:"Notes",mot:"note",description:"Vos notes et celles de la Bible, au même endroit.",ordre:3}
+];
+LC_APPS.forEach(a=>{a.dir=a.repo.split("/")[1];a.url="/"+a.dir+"/";a.iconUrl="https://lifecasts-hub.github.io"+a.url+"icon-192.png"});
+const REPOS=Object.fromEntries(LC_APPS.map(a=>[a.id,a.repo]));
+async function ghVersions0(repo){
+  const r=await fetch("https://api.github.com/repos/"+repo+"/commits?path=index.html&per_page=100");if(!r.ok)throw new Error("GitHub indisponible");
+  const out=[],seen=new Set();
+  for(const c of await r.json()){const msg=c.commit.message.replace(/\n*Co-Authored-By:[\s\S]*$/i,"").trim(),m=msg.match(/^v?(\d+(?:\.\d+)+)\s*[:\-–—]?\s*([\s\S]*)$/i);
+    if(!m||seen.has(m[1]))continue;seen.add(m[1]);out.push({version:m[1],date:Date.parse(c.commit.committer.date),notes:m[2].trim()})}
+  out.sort((x,y)=>vcmp(y.version,x.version));
+  /* Version réellement publiée : var B="x.y" dans index.html de l'app */
+  try{const cur=await liveVersion(repo);if(cur){const i=out.findIndex(v=>v.version===cur);
+    if(i>0)out.unshift(out.splice(i,1)[0]);else if(i<0)out.unshift({version:cur,date:out[0]?out[0].date:Date.now(),notes:""});
+    out.forEach((v,k)=>{if(k&&vcmp(v.version,cur)>0)v.skip=1})}}catch(e){}
+  return out.filter(v=>!v.skip);
+}
+async function liveVersion(repo){const r=await fetch("/"+repo.split("/")[1]+"/index.html",{cache:"no-store"});if(!r.ok)return null;const m=(await r.text()).match(/var\s+B\s*=\s*["']([\d.]+)["']/);return m?m[1]:null}
+
+/* Icônes SVG (remplacent les emojis) */
+var ICO=(function(){var P={
+gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+grid:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+book:'<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>',
+note:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
+info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-5M12 8h.01"/>',
+mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/>',
+palette:'<circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2a10 10 0 0 0 0 20c1 0 1.6-.8 1.6-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.8-1.7 1.7-1.7H16a6 6 0 0 0 6-6c0-4.6-4.5-8.4-10-8.4z"/>',
+image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+disk:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/>'};
+return function(n,s){return '<svg class="ico" viewBox="0 0 24 24" width="'+(s||'1em')+'" height="'+(s||'1em')+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>'}})();
+
+/* Téléchargements : fichiers .apk / .dmg joints à la dernière Release GitHub */
+async function ghDownloads0(repo){
+  try{const r=await fetch("https://api.github.com/repos/"+repo+"/contents/downloads");if(r.ok){const best={};
+    for(const x of await r.json()){const n=x.name.toLowerCase(),t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":/\.(exe|msi)$/.test(n)?"Windows (EXE)":null;if(!t)continue;
+      const v=(x.name.match(/(\d+(?:\.\d+)+)/)||[])[1]||"0";if(!best[t]||vcmp(v,best[t].tag)>0)best[t]={label:t,url:"https://lifecasts-hub.github.io/"+repo.split("/")[1]+"/downloads/"+encodeURIComponent(x.name),size:x.size,tag:v}}
+    const out=Object.values(best);if(out.length)return out}}catch(e){}
+  try{const r=await fetch("https://data.jsdelivr.com/v1/packages/gh/"+repo+"@main?structure=flat");if(r.ok){const best={};
+    for(const f of (await r.json()).files||[]){const m=f.name.match(/^\/downloads\/([^/]+)$/);if(!m)continue;const n=m[1].toLowerCase(),t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":/\.(exe|msi)$/.test(n)?"Windows (EXE)":null;if(!t)continue;
+      const v=(m[1].match(/(\d+(?:\.\d+)+)/)||[])[1]||"0";if(!best[t]||vcmp(v,best[t].tag)>0)best[t]={label:t,url:"https://lifecasts-hub.github.io/"+repo.split("/")[1]+"/downloads/"+encodeURIComponent(m[1]),size:f.size,tag:v}}
+    const out=Object.values(best);if(out.length)return out}}catch(e){}
+  const r=await fetch("https://api.github.com/repos/"+repo+"/releases/latest");if(!r.ok)return [];const j=await r.json();
+  return (j.assets||[]).map(x=>{const n=x.name.toLowerCase();const t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":/\.(exe|msi)$/.test(n)?"Windows (EXE)":null;return t&&{label:t,url:x.browser_download_url,size:x.size,tag:j.tag_name}}).filter(Boolean)}
+
+/* Cache 15 min (limite GitHub : 60 requêtes/h) + repli si GitHub ne répond pas */
+async function ghCached(k,fn,fb){let c;try{c=JSON.parse(localStorage.getItem("lcgh:"+k))}catch(e){}
+  if(c&&Date.now()-c.t<9e5)return c.v;
+  try{const v=await fn();if(Array.isArray(v)&&!v.length&&c)return c.v;try{if(!(Array.isArray(v)&&!v.length))localStorage.setItem("lcgh:"+k,JSON.stringify({t:Date.now(),v}))}catch(e){}return v}
+  catch(e){if(c)return c.v;if(fb)return fb();throw e}}
+function ghVersions(repo){return ghCached("v:"+repo,()=>ghVersions0(repo),async()=>{const v=await liveVersion(repo);return v?[{version:v,date:null,notes:""}]:[]})}
+function ghDownloads(repo){return ghCached("d2:"+repo,()=>ghDownloads0(repo),()=>[])}
+</script>
+<link rel="icon" type="image/svg+xml" href="https://lifecasts-hub.github.io/store-icon.svg?v=7"><link rel="icon" type="image/png" sizes="64x64" href="https://lifecasts-hub.github.io/store-favicon.png?v=7"><link rel="icon" type="image/png" sizes="192x192" href="https://lifecasts-hub.github.io/store-icon-192.png?v=7">
+<link rel="apple-touch-icon" href="https://lifecasts-hub.github.io/store-icon.png?v=7"><link rel="manifest" href="https://lifecasts-hub.github.io/store.webmanifest"><meta name="apple-mobile-web-app-title" content="LC Store"><meta name="application-name" content="LC Store">
+<meta property="og:title" content="LC Store"><meta property="og:description" content="Les applications LifeCasts pour Android, macOS et Windows."><meta property="og:image" content="https://lifecasts-hub.github.io/store-icon.png"><meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f1e8;--bg2:#efe7d8;--card:#fffdf8;--ink:#17130f;--sub:#7a6f62;--line:rgba(40,25,10,.1);
+--acc:#d9822b;--acc2:#e2483d;--pill:rgba(40,25,10,.06);--glass:rgba(255,251,243,.78);--serif:Fraunces,Georgia,serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0b10;--bg2:#15121a;--card:#1a1620;--ink:#f6efe4;--sub:#a49a8e;--line:rgba(255,240,220,.09);--acc:#ffb547;--acc2:#ff6a4d;--pill:rgba(255,240,220,.07);--glass:rgba(26,22,32,.78)}}
+:root[data-theme="dark"]{--bg:#0d0b10;--bg2:#15121a;--card:#1a1620;--ink:#f6efe4;--sub:#a49a8e;--line:rgba(255,240,220,.09);--acc:#ffb547;--acc2:#ff6a4d;--pill:rgba(255,240,220,.07);--glass:rgba(26,22,32,.78)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:120px;min-height:100vh;
+background-image:radial-gradient(60% 40% at 100% 0%,color-mix(in srgb,var(--acc) 14%,transparent),transparent),radial-gradient(50% 30% at 0% 20%,color-mix(in srgb,var(--acc2) 9%,transparent),transparent);background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+svg{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+header{padding:22px 0 12px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.date{font-size:12px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.14em;margin-top:6px}
+h1{font-family:var(--serif);font-size:40px;font-weight:600;letter-spacing:-.02em;font-variation-settings:"SOFT" 100}
+h1:after{content:".";color:var(--acc)}
+.me{width:42px;height:42px;border-radius:14px;background:conic-gradient(from 210deg,var(--acc),var(--acc2),#7b3cff,var(--acc));display:grid;place-items:center;color:#fff;font:700 15px var(--serif);flex:none;transform:rotate(-6deg);box-shadow:0 8px 20px -6px var(--acc2)}
+.plats{display:flex;gap:6px;overflow-x:auto;padding:4px;margin:4px 0 18px;scrollbar-width:none;background:var(--pill);border-radius:16px;width:max-content;max-width:100%}
+.plats::-webkit-scrollbar{display:none}
+.chip{display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:12px;background:none;color:var(--sub);border:0;font:600 14px Inter,sans-serif;cursor:pointer;white-space:nowrap;transition:.2s}
+.chip.on{background:var(--card);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.chip.on svg{color:var(--acc)}.chip svg{font-size:16px}
+/* hero */
+.hero{position:relative;border-radius:30px;overflow:hidden;min-height:440px;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;background:#120c18;box-shadow:0 30px 60px -30px rgba(80,20,10,.6);isolation:isolate}
+.hero .bg{position:absolute;inset:0;z-index:-1;background:radial-gradient(80% 70% at 85% 10%,#ffb547 0%,#ff6a4d 28%,#8a1f5c 55%,transparent 80%),radial-gradient(60% 50% at 0% 100%,#3a1d8f,transparent 70%)}
+.hero .bg i{position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.25)}
+.hero{padding-top:170px}.hero .glyph{position:absolute;right:22px;top:26px;display:grid;grid-template-columns:repeat(3,58px);gap:12px;transform:rotate(-10deg)}
+.hero .glyph span{width:58px;height:58px;border-radius:18px;box-shadow:0 14px 30px rgba(0,0,0,.35);animation:fl 6s ease-in-out infinite;display:grid;place-items:center;font:700 26px var(--serif);color:#fff;position:relative;overflow:hidden}
+.hero .glyph span img{position:absolute;inset:0;width:100%;height:100%}
+.hero .glyph span:nth-child(2){animation-delay:-2s;margin-top:30px}.hero .glyph span:nth-child(3){animation-delay:-4s}
+@keyframes fl{50%{transform:translateY(-10px)}}
+.hero .txt{position:relative;padding:24px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+.hero h2{font-family:var(--serif);font-size:36px;line-height:1.02;font-weight:500;margin:8px 0;max-width:13ch;letter-spacing:-.02em}
+.hero h2 em{font-style:italic;color:#ffd08a}
+.hero p{opacity:.82;max-width:42ch;font-size:15px;line-height:1.45}
+.strip{position:relative;display:flex;align-items:center;gap:12px;margin:0 12px 12px;padding:10px 12px;border-radius:20px;background:rgba(255,255,255,.12);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.15)}
+.strip .n{flex:1;min-width:0}.strip b{display:block;font-size:14px}.strip small{opacity:.75;font-size:12px}
+section{margin-top:40px}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px;gap:10px}
+.sh h3{font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:-.01em}
+.sh .eyebrow{color:var(--acc);opacity:1;display:block;margin-bottom:4px}
+.sh a{color:var(--acc);font-weight:600;font-size:14px;text-decoration:none;cursor:pointer;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.row{--c:var(--acc);display:flex;align-items:center;gap:14px;padding:14px;border-radius:22px;background:var(--card);cursor:pointer;position:relative;overflow:hidden;border:1px solid var(--line);transition:transform .25s,box-shadow .25s}
+.row:before{content:"";position:absolute;inset:0;background:radial-gradient(120% 120% at 0% 0%,color-mix(in srgb,var(--c) 22%,transparent),transparent 60%);pointer-events:none}
+.row:hover{transform:translateY(-3px);box-shadow:0 18px 40px -20px var(--c)}
+.row>*{position:relative}
+.row .n{flex:1;min-width:0}.row b{display:block;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row small{color:var(--sub);font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row small+small{color:var(--c);font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-top:3px;filter:saturate(1.3)}
+.rank{position:absolute!important;right:14px;top:6px;font:italic 600 40px var(--serif);color:var(--c);opacity:.18;width:auto}
+.ico{width:64px;height:64px;border-radius:19px;flex:none;position:relative;overflow:hidden;display:grid;place-items:center;color:#fff;font:700 24px var(--serif);box-shadow:0 10px 20px -8px rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.15)}
+.ico img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ico.s{width:44px;height:44px;border-radius:13px;font-size:16px}
+.ico.l{width:120px;height:120px;border-radius:34px;font-size:46px;transform:rotate(-4deg)}
+.get{border:0;border-radius:14px;background:var(--ink);color:var(--bg);font:700 13px Inter,sans-serif;padding:9px 14px;cursor:pointer;flex:none;display:flex;flex-direction:column;align-items:center;line-height:1.1;gap:2px;transition:.2s}
+.get:hover{background:var(--acc);color:#1a0f05}
+.get.w{background:#fff;color:#17130f}
+.get.p{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;padding:11px 26px;font-size:15px;box-shadow:0 10px 24px -10px var(--acc2)}
+.get em{font-style:normal;font-size:9px;font-weight:600;opacity:.6;letter-spacing:.06em;text-transform:uppercase}
+.cards{display:grid;grid-auto-flow:column;grid-auto-columns:min(82%,330px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;scrollbar-width:none}
+.cards::-webkit-scrollbar{display:none}
+.fc{scroll-snap-align:start;border-radius:28px;overflow:hidden;color:#fff;min-height:340px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;position:relative;transition:transform .3s}
+.fc:hover{transform:rotate(-1deg) scale(1.01)}
+.fc .t{padding:22px}.fc h4{font-family:var(--serif);font-size:27px;line-height:1.05;font-weight:500;margin-top:8px}
+.fc .art{flex:1;display:grid;place-items:center;position:relative}
+.fc .art:before{content:"";position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.12);box-shadow:0 0 0 30px rgba(255,255,255,.05),0 0 0 60px rgba(255,255,255,.03)}
+.fc .art svg{font-size:84px;stroke-width:1.3;position:relative}
+.band{border-radius:28px;background:var(--card);border:1px solid var(--line);padding:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.pf{display:flex;gap:12px;align-items:center;padding:14px;border-radius:20px;background:var(--pill)}
+.pf .b{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:22px;flex:none;color:#fff}
+.pf b{display:block;font-family:var(--serif);font-size:18px}.pf small{color:var(--sub);font-size:13px}
+.ios{margin-top:12px;border-radius:28px;background:var(--ink);color:var(--bg);padding:22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.ios .n{flex:1;min-width:200px}.ios h4{font:600 22px var(--serif)}.ios p{opacity:.7;font-size:14px;margin-top:4px}
+.badge{display:flex;align-items:center;gap:9px;background:#000;border:1px solid #444;border-radius:12px;padding:7px 14px;color:#fff;text-decoration:none}
+.badge svg{font-size:26px;fill:#fff;stroke:none}.badge small{display:block;font-size:10px;opacity:.8}.badge b{font-size:17px}
+.tabbar{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:8px;align-items:center;z-index:20}
+.tabs{display:flex;background:var(--glass);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);border-radius:22px;padding:6px;box-shadow:0 14px 40px -10px rgba(0,0,0,.35);border:1px solid var(--line)}
+.tab{border:0;background:none;color:var(--sub);display:flex;align-items:center;gap:7px;font:600 13px Inter,sans-serif;padding:11px 14px;border-radius:16px;cursor:pointer;transition:.25s}
+.tab svg{font-size:19px}.tab span{display:none}
+.tab.on{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;box-shadow:0 6px 16px -6px var(--acc2)}.tab.on span{display:inline}
+.srch{width:58px;height:58px;border-radius:20px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 14px 40px -10px rgba(0,0,0,.35);color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.srch svg{font-size:22px}.srch.on{color:var(--acc)}
+@media(min-width:620px){.tab span{display:inline}}
+.view{display:none}.view.on{display:block;animation:f .4s cubic-bezier(.2,.9,.3,1)}
+@keyframes f{from{opacity:0;transform:translateY(10px)}}
+input.q{width:100%;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:18px;padding:16px 16px 16px 46px;font:500 17px Inter,sans-serif;outline:none}
+input.q:focus{border-color:var(--acc)}
+.qw{position:relative;margin-bottom:16px}.qw svg{position:absolute;left:16px;top:17px;color:var(--acc);font-size:19px}
+.empty{color:var(--sub);text-align:center;padding:40px 0;font-family:var(--serif);font-style:italic;font-size:18px}
+.ov{position:fixed;inset:0;background:rgba(10,5,0,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:30;opacity:0;pointer-events:none;transition:.3s}
+.ov.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;width:min(780px,100%);max-height:93vh;overflow-y:auto;transform:translate(-50%,105%);background:var(--bg);border-radius:30px 30px 0 0;z-index:31;transition:transform .45s cubic-bezier(.2,.9,.3,1)}
+.sheet.on{transform:translate(-50%,0)}
+.x{position:sticky;top:14px;float:right;margin:14px 14px 0 0;width:34px;height:34px;border-radius:12px;border:0;background:var(--pill);color:var(--ink);display:grid;place-items:center;cursor:pointer;z-index:2}
+.sh-top{display:flex;gap:20px;padding:30px 22px 14px;align-items:center;position:relative}
+.sh-top h2{font:600 30px var(--serif);letter-spacing:-.01em}.sh-top p{color:var(--sub);font-size:14px;margin:4px 0 14px}
+.stats{display:flex;overflow-x:auto;gap:8px;padding:10px 22px;margin:4px 0;scrollbar-width:none}
+.stats div{flex:1;min-width:100px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 6px}
+.stats small{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--sub);font-weight:700}
+.stats b{display:block;font:600 21px var(--serif);margin:5px 0 2px;color:var(--acc)}.stats span{font-size:11px;color:var(--sub)}
+.blk{padding:16px 22px}.blk h3{font:600 22px var(--serif);margin-bottom:10px}.blk p{color:var(--sub);line-height:1.6;font-size:15px}
+.dl{display:grid;gap:8px}
+.dlr{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px}
+.dlr .b{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:19px;flex:none}
+.dlr .n{flex:1}.dlr b{display:block;font-size:15px}.dlr small{color:var(--sub);font-size:12px}
+.soon{color:var(--sub);font-size:12px;font-weight:600;padding:6px 10px;border-radius:10px;background:var(--pill)}
+.shots{display:flex;gap:12px;overflow-x:auto;padding:8px 22px 16px;scrollbar-width:none}
+.shot{flex:none;width:170px;height:320px;border-radius:26px;position:relative;overflow:hidden;color:#fff;padding:16px;font:600 17px var(--serif);box-shadow:0 16px 30px -18px rgba(0,0,0,.6)}
+.shot:nth-child(odd){transform:rotate(-1.5deg)}.shot:nth-child(even){transform:rotate(1.5deg)}
+.shot i{position:absolute;left:16px;right:16px;height:9px;border-radius:5px;background:rgba(255,255,255,.35)}
+.toast{position:fixed;top:16px;left:50%;transform:translate(-50%,-90px);background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;padding:12px 20px;border-radius:16px;font-weight:600;font-size:14px;z-index:40;transition:.35s cubic-bezier(.2,.9,.3,1);box-shadow:0 12px 30px -10px var(--acc2)}
+.toast.on{transform:translate(-50%,0)}
+@media(min-width:760px){.hero{min-height:480px}.hero h2{font-size:52px}h1{font-size:48px}.hero .glyph{right:60px;top:50px;grid-template-columns:repeat(3,96px);gap:18px}.hero{padding-top:0}.hero .txt{max-width:52%}.hero .glyph span{width:96px;height:96px;border-radius:26px;font-size:38px}}
+
+/* === Version aérée === */
+:root{--serif:Inter,system-ui,sans-serif}
+body{background-image:none}body:before{display:none}
+.wrap{max-width:1000px;padding:0 20px}
+header{padding:30px 0 16px}
+h1{font-weight:800;font-size:34px}h1:after{content:none}
+.date{letter-spacing:.06em;font-size:12px}
+.me{border-radius:50%;transform:none;box-shadow:none;background:var(--acc);font-family:Inter;font-size:14px}
+.plats{background:none;padding:0;gap:8px;margin:6px 0 26px}
+.chip{background:var(--pill);border-radius:999px;color:var(--ink);font-weight:500}
+.chip.on{background:var(--ink);color:var(--bg);box-shadow:none}.chip.on svg{color:inherit}
+.hero{border-radius:24px;min-height:400px;box-shadow:none}
+.hero .bg{background:linear-gradient(160deg,#ffb547 0%,#ff7a4d 45%,#b23a5e 100%)}
+.hero .glyph span{box-shadow:0 10px 24px rgba(0,0,0,.18)}
+.hero h2{font-weight:700;font-size:30px;line-height:1.1;letter-spacing:-.02em}.hero h2 em{font-style:normal;color:#fff}
+.hero p{display:none}
+.strip{margin:0;border-radius:0;border:0;border-top:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.14);padding:12px 24px}
+section{margin-top:64px}
+.sh{margin-bottom:18px}.sh h3{font-weight:700;font-size:22px}
+.sh .eyebrow{display:none}
+.grid{gap:0 40px}
+.row{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:16px 0;overflow:visible}
+.row:before{display:none}.row:hover{transform:none;box-shadow:none}
+.row small+small{display:none}
+.rank{position:static!important;font:600 15px Inter;opacity:1;color:var(--sub);width:16px}
+.ico{border-radius:16px;font-family:Inter;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}
+.ico.l{transform:none;border-radius:28px}
+.get{border-radius:999px;background:var(--pill);color:var(--acc);padding:7px 20px}
+.get:hover{background:var(--pill);opacity:.8;color:var(--acc)}
+.get.w{background:rgba(255,255,255,.95);color:#c2541b}
+.get.p{background:var(--acc);box-shadow:none;color:#fff;border-radius:999px}
+.get em{display:none}
+.cards{gap:18px}
+.fc{border-radius:24px;min-height:320px}.fc:hover{transform:none}
+.fc h4{font-weight:700;font-size:23px;line-height:1.15}
+.fc .art:before{box-shadow:none;background:rgba(255,255,255,.1)}
+.fc .strip{background:rgba(0,0,0,.18)}
+.band{background:none;border:0;padding:0;gap:14px}
+.pf{background:var(--card);border-radius:20px;padding:18px}
+.pf b{font-family:Inter;font-weight:600;font-size:16px}
+.ios{border-radius:24px;background:var(--card);color:var(--ink);border:1px solid var(--line);margin-top:14px}
+.ios h4{font:600 17px Inter}.ios p{opacity:1;color:var(--sub)}
+.tabs{border-radius:999px;padding:5px}
+.tab{flex-direction:column;gap:2px;font-size:10px;padding:7px 16px;border-radius:999px}
+.tab span{display:inline!important}.tab svg{font-size:21px}
+.tab.on{background:var(--pill);color:var(--acc);box-shadow:none}
+.srch{border-radius:50%;width:56px;height:56px}
+.sheet{border-radius:24px 24px 0 0}
+.sh-top h2{font:700 24px Inter}
+.stats{gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 22px;margin:14px 0}
+.stats div{background:none;border:0;border-right:1px solid var(--line);border-radius:0;padding:0 6px}.stats div:last-child{border:0}
+.stats b{font:700 18px Inter;color:var(--ink)}
+.blk{padding:20px 22px}.blk h3{font:700 19px Inter}
+.shot{font:600 15px Inter;border-radius:22px}.shot:nth-child(n){transform:none}
+.toast{background:var(--ink);color:var(--bg);border-radius:999px;box-shadow:none}
+input.q{border-radius:12px;padding:12px 14px 12px 40px;background:var(--pill);border:0}.qw svg{top:13px;left:13px}
+.empty{font:500 15px Inter}
+@media(min-width:760px){.hero h2{font-size:40px}h1{font-size:40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><a href="https://lifecasts-hub.github.io/" style="color:var(--acc);font-weight:600;font-size:14px;text-decoration:none">‹ LifeCasts</a><div class="date" id="date"></div><h1 id="ttl">Aujourd'hui</h1></div>
+    <a class="me" id="me" href="https://lifecasts-hub.github.io/?retour=/store.html#compte" title="Se connecter" style="text-decoration:none;overflow:hidden"><svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:#fff"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></a>
+  </header>
+  <div class="plats" id="plats"></div>
+
+  <!-- AUJOURD'HUI -->
+  <div class="view on" id="v-today">
+    <div class="hero" id="hero">
+      <div class="bg"><i style="width:180px;height:180px;left:-40px;top:60px;background:#ffd88a55"></i><i style="width:90px;height:90px;right:30%;top:20px;background:#ffffff33"></i></div>
+      <div class="glyph" id="glyph"></div>
+      <div class="txt">
+        <div class="eyebrow" style="display:flex;align-items:center;gap:8px"><img src="https://lifecasts-hub.github.io/store-icon.png?v=7" alt="" style="width:22px;height:22px;border-radius:6px">LC Store</div>
+        <h2>Toutes vos apps <em>LifeCasts</em>.</h2>
+        <p>Bible, Cantiques, Notes : téléchargez la version Android, macOS ou Windows, toujours à jour.</p>
+      </div>
+      <div class="strip" id="heroStrip"></div>
+    </div>
+
+    <section>
+      <div class="sh"><div><span class="eyebrow">01 · Nos apps</span><h3>Nos apps</h3></div><a data-go="apps">Tout voir</a></div>
+      <div class="grid" id="topList"></div>
+    </section>
+
+    <section>
+      <div class="sh"><div><span class="eyebrow">02 · Inspiration</span><h3>À découvrir</h3></div></div>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <section>
+      <div class="sh"><div><span class="eyebrow">03 · Plateformes</span><h3>Plateformes</h3></div></div>
+      <div class="band" id="band"></div>
+      <div class="ios">
+        <div class="n"><h4>iPhone et iPad</h4><p>Sur l'App Store.</p></div>
+        <a class="badge" href="https://apps.apple.com/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.1 2.5-1.8 3.1-.5 7.6 1.3 10.1.8 1.2 1.8 2.6 3.1 2.5 1.3 0 1.7-.8 3.3-.8 1.5 0 1.9.8 3.3.8 1.4 0 2.2-1.2 3-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-3.9zM14 5.2c.7-.8 1.2-2 1-3.2-1 0-2.2.7-3 1.5-.6.7-1.2 1.9-1 3.1 1.1.1 2.3-.6 3-1.4z"/></svg>
+          <span><small>Télécharger dans</small><b>l'App Store</b></span></a>
+      </div>
+    </section>
+  </div>
+
+  <!-- APPS -->
+  <div class="view" id="v-apps">
+    <section style="margin-top:6px"><div class="sh"><h3 id="appsH">Toutes les apps</h3></div><div class="grid" id="allList"></div></section>
+  </div>
+
+  <!-- MISES À JOUR -->
+  <div class="view" id="v-upd">
+    <section style="margin-top:6px"><div class="sh"><h3>Dernières versions</h3></div><div id="updList"></div></section>
+  </div>
+
+  <!-- RECHERCHE -->
+  <div class="view" id="v-search">
+    <div class="qw"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="q" id="q" placeholder="Chercher une app LifeCasts"></div>
+    <div class="grid" id="res"></div>
+  </div>
+</div>
+
+<nav class="tabbar">
+  <div class="tabs">
+    <button class="tab on" data-v="today"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/></svg><span>Aujourd'hui</span></button>
+    <button class="tab" data-v="apps"><svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg><span>Apps</span></button>
+    <button class="tab" data-v="upd"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span>Nouveautés</span></button>
+  </div>
+  <button class="srch" data-v="search" aria-label="Rechercher"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+</nav>
+
+<div class="ov" id="ov"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* Registre unique : LC_APPS (lc-common.js). Versions et fichiers lus sur GitHub (dossier downloads/ : .apk, .dmg, .exe/.msi). */
+const LOOK={bible:{cat:"Livres",grad:["#c9a36b","#6b3f1d"],mot:"Lire, chercher, annoter"},cantiques:{cat:"Musique",grad:["#7b5cff","#2a1a7a"],mot:"Chants et recueils"},notes:{cat:"Productivité",grad:["#ffcc33","#f08a00"],mot:"Vos notes, partout"}};
+const APPS=LC_APPS.map(x=>Object.assign({},x,{cat:"LifeCasts",grad:["#0a7cff","#3a1d8f"]},LOOK[x.id]||{},{mot:(LOOK[x.id]||{}).mot||x.description,v:"…",dl:{android:null,mac:null,win:null},url2:{},news:[]}));
+const PL={
+ all:{n:"Toutes",c:"#555",i:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>'},
+ android:{n:"Android",c:"#3ddc84",i:'<path d="M5 10v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7z"/><path d="M5 10a7 7 0 0 1 14 0"/><path d="m7 4 1.5 2.5M17 4l-1.5 2.5"/><circle cx="9.5" cy="8" r=".5"/><circle cx="14.5" cy="8" r=".5"/>',f:"APK",d:"Android 7 et plus"},
+ mac:{n:"macOS",c:"#8e8e93",i:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',f:"DMG",d:"Mac Apple Silicon et Intel"},
+ win:{n:"Windows",c:"#0a7cff",i:'<path d="M3 5.5 10 4.5v7H3zM12 4.2 21 3v8.5h-9zM3 13h7v7l-7-1zM12 13h9v8l-9-1.2z"/>',f:"EXE",d:"Windows 10 et 11"},
+};
+const S=(p,v="0 0 24 24")=>`<svg viewBox="${v}">${p}</svg>`;
+let plat="all";
+try{plat=localStorage.getItem("lcstore.plat")||"all"}catch(e){}
+const $q=s=>document.querySelector(s);
+const ico=(a,c="")=>`<div class="ico ${c}" style="background:linear-gradient(145deg,${a.grad[0]},${a.grad[1]})">${a.court[0]}<img src="${a.iconUrl}" alt="" onerror="this.remove()"></div>`;
+const avail=a=>plat==="all"?Object.values(a.dl).some(Boolean):!!a.dl[plat];
+const btn=(a,c="")=>`<button class="get ${c}" data-get="${a.id}">${avail(a)?"Obtenir":"Bientôt"}${c?"":`<em>${plat==="all"?"Gratuit":PL[plat].f}</em>`}</button>`;
+const row=(a,i)=>`<div class="row" data-open="${a.id}" style="--c:${a.grad[0]}">${i?`<span class="rank">${i}</span>`:""}${ico(a)}<div class="n"><b>${a.nom}</b><small>${a.mot}</small><small>${a.cat}</small></div>${btn(a)}</div>`;
+const list=()=>[...APPS].sort((a,b)=>a.ordre-b.ordre);
+
+function render(){
+  $q("#plats").innerHTML=Object.entries(PL).map(([k,p])=>`<button class="chip ${k===plat?"on":""}" data-plat="${k}">${S(p.i)}${p.n}</button>`).join("")
+   +`<a class="chip" href="https://apps.apple.com/" target="_blank" rel="noopener" style="text-decoration:none">${S('<path d="M12 7c-1-2 0-4 2-5M8 7c-3 0-5 3-4 7s3 7 5 7 2-1 3-1 1 1 3 1 4-3 5-6c-2-1-3-3-2-6-1-1-3-2-5-2-1 0-2 1-3 1S10 7 8 7z"/>')}iOS · App Store</a>`;
+  const L=list();
+  $q("#topList").innerHTML=L.map((a,i)=>row(a,i+1)).join("");
+  $q("#allList").innerHTML=L.map(a=>row(a)).join("");
+  $q("#appsH").textContent=plat==="all"?"Toutes les apps":"Apps pour "+PL[plat].n;
+  $q("#glyph").innerHTML=L.slice(0,3).map(a=>`<span style="background:linear-gradient(145deg,${a.grad[0]},${a.grad[1]})">${a.court[0]}<img src="${a.iconUrl}" alt="" onerror="this.remove()"></span>`).join("");
+  const h=L[0];$q("#heroStrip").innerHTML=`${ico(h,"s")}<div class="n"><b>${h.nom}</b><small>${h.mot}</small></div>${btn(h,"w")}`;
+  $q("#cards").innerHTML=[
+   {a:"bible",e:"Pour bien commencer",t:"La Parole, même hors ligne",g:"linear-gradient(160deg,#c9a36b,#4a2a12)",i:'<path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/>'},
+   {a:"cantiques",e:"Le culte du dimanche",t:"Mille cantiques dans la poche",g:"linear-gradient(160deg,#8a6bff,#1d1060)",i:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'},
+   {a:"notes",e:"Astuce",t:"Vos notes de prédication synchronisées",g:"linear-gradient(160deg,#ffcc33,#d96b00)",i:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>'},
+  ].map(c=>{const a=APPS.find(x=>x.id===c.a);return `<div class="fc" data-open="${a.id}" style="background:${c.g}"><div class="t"><div class="eyebrow">${c.e}</div><h4>${c.t}</h4></div><div class="art">${S(c.i)}</div><div class="strip">${ico(a,"s")}<div class="n"><b>${a.nom}</b><small>${a.mot}</small></div>${btn(a,"w")}</div></div>`}).join("");
+  $q("#band").innerHTML=["android","mac","win"].map(k=>{const p=PL[k],n=APPS.filter(a=>a.dl[k]).length;return `<div class="pf"><div class="b" style="background:${p.c}">${S(p.i)}</div><div><b>${p.n}</b><small>${n?n+" app"+(n>1?"s":"")+" disponible"+(n>1?"s":""):"Bientôt"}</small></div></div>`}).join("");
+  $q("#updList").innerHTML=L.map(a=>`<div style="background:var(--card);border-radius:18px;padding:14px;margin-bottom:12px"><div class="row" data-open="${a.id}" style="border:0;padding:0 0 10px">${ico(a)}<div class="n"><b>${a.nom}</b><small>Version ${a.v}</small></div>${btn(a)}</div><p style="color:var(--sub);font-size:14px;line-height:1.5">${a.news.length?a.news.map(x=>"· "+esc(x)).join("<br>"):"Améliorations et corrections."}</p></div>`).join("");
+  search();
+}
+function search(){const q=($q("#q").value||"").toLowerCase().trim();const r=list().filter(a=>!q||(a.nom+a.mot+a.description+a.cat).toLowerCase().includes(q));$q("#res").innerHTML=r.length?r.map(a=>row(a)).join(""):`<div class="empty">Aucun résultat pour « ${q} »</div>`}
+
+function open(id){
+  const a=APPS.find(x=>x.id===id);
+  const shots=[["Accueil",a.grad],["Lecture",[a.grad[1],"#111"]],["Recherche",["#333",a.grad[0]]],["Compte",[a.grad[0],"#222"]]];
+  $q("#sheet").innerHTML=`<button class="x" data-close>${S('<path d="M6 6l12 12M18 6 6 18"/>')}</button>
+  <div class="sh-top">${ico(a,"l")}<div><h2>${a.nom}</h2><p>${a.mot}</p>${btn(a,"p")}</div></div>
+  <div class="stats"><div><small>Version</small><b>${a.v}</b><span>Web</span></div><div><small>Catégorie</small><b>${S('<path d="m12 3 9 5-9 5-9-5 9-5z"/>')}</b><span>${a.cat}</span></div><div><small>Langue</small><b>FR</b><span>Français</span></div><div><small>Éditeur</small><b>LC</b><span>LifeCasts</span></div><div><small>Prix</small><b>0</b><span>Gratuit</span></div></div>
+  <div class="shots">${shots.map(([t,g],i)=>`<div class="shot" style="background:linear-gradient(170deg,${g[0]},${g[1]})">${t}<i style="top:60px;width:70%"></i><i style="top:80px"></i><i style="top:100px;width:85%"></i><i style="top:${140+i*10}px;height:90px;border-radius:12px;opacity:.6"></i></div>`).join("")}</div>
+  <div class="blk"><h3>Télécharger</h3><div class="dl">${["android","mac","win"].map(k=>{const p=PL[k],v=a.dl[k];return `<div class="dlr"><div class="b" style="background:${p.c}">${S(p.i)}</div><div class="n"><b>${p.n}</b><small>${v?p.f+" · version "+v:p.d}</small></div>${v?`<button class="get" data-dl="${a.id}:${k}">${S('<path d="M12 4v12m0 0-4-4m4 4 4-4M5 20h14"/>')}</button>`:`<span class="soon">Bientôt</span>`}</div>`}).join("")}
+   <a class="dlr" href="https://apps.apple.com/" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><div class="b" style="background:#000">${S('<path d="M12 7c-1-2 0-4 2-5M8 7c-3 0-5 3-4 7s3 7 5 7 2-1 3-1 1 1 3 1 4-3 5-6c-2-1-3-3-2-6-1-1-3-2-5-2-1 0-2 1-3 1S10 7 8 7z"/>')}</div><div class="n"><b>iPhone et iPad</b><small>Sur l'App Store</small></div><span class="soon" style="color:var(--acc)">Ouvrir</span></a></div></div>
+  <div class="blk"><h3>Nouveautés</h3><p>Version ${a.v}<br>${a.news.length?a.news.map(x=>"· "+esc(x)).join("<br>"):"Améliorations et corrections."}</p></div>
+  <div class="blk"><h3>Description</h3><p>${a.description}</p></div>
+  <div class="blk" style="padding-bottom:40px"><a class="get" style="display:inline-flex;text-decoration:none" href="${a.url}" target="_blank" rel="noopener">Ouvrir la version web</a></div>`;
+  $q("#ov").classList.add("on");$q("#sheet").classList.add("on");$q("#sheet").scrollTop=0;
+}
+const close=()=>{$q("#ov").classList.remove("on");$q("#sheet").classList.remove("on")};
+let tt;const toast=m=>{$q("#toast").textContent=m;$q("#toast").classList.add("on");clearTimeout(tt);tt=setTimeout(()=>$q("#toast").classList.remove("on"),2200)};
+function get(id,k){
+  const a=APPS.find(x=>x.id===id);
+  if(!k){k=plat!=="all"?plat:(/Android/i.test(navigator.userAgent)?"android":/Mac/i.test(navigator.platform)?"mac":/Win/i.test(navigator.platform)?"win":"android")}
+  if(!a.dl[k]){open(id);toast(a.nom+" pour "+PL[k].n+" arrive bientôt");return}
+  location.href=a.url2[k];toast("Téléchargement de "+a.nom+" "+a.dl[k]+" ("+PL[k].f+")");
+}
+const T={today:"Aujourd'hui",apps:"Apps",upd:"Nouveautés",search:"Rechercher"};
+function go(v){document.querySelectorAll(".view").forEach(e=>e.classList.toggle("on",e.id==="v-"+v));document.querySelectorAll("[data-v]").forEach(e=>e.classList.toggle("on",e.dataset.v===v));$q("#ttl").textContent=T[v];scrollTo({top:0,behavior:"smooth"});if(v==="search")setTimeout(()=>$q("#q").focus(),200)}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-get],[data-dl],[data-open],[data-plat],[data-v],[data-go],[data-close],#ov,#hero");if(!t)return;
+  if(t.dataset.get){e.stopPropagation();get(t.dataset.get)}
+  else if(t.dataset.dl){const[i,k]=t.dataset.dl.split(":");get(i,k)}
+  else if(t.dataset.open)open(t.dataset.open);
+  else if(t.dataset.plat){plat=t.dataset.plat;try{localStorage.setItem("lcstore.plat",plat)}catch(e){}render()}
+  else if(t.dataset.v)go(t.dataset.v);
+  else if(t.dataset.go)go(t.dataset.go);
+  else if(t.id==="hero")go("apps");
+  else close();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+$q("#q").addEventListener("input",search);
+$q("#date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+render();
+const K={"Android (APK)":"android","Mac (DMG)":"mac","Windows (EXE)":"win"};
+APPS.forEach(a=>{
+  ghVersions(a.repo).then(v=>{if(v[0]){a.v=v[0].version;a.news=(v[0].notes||"").split(/\n|;|,(?= )/).map(x=>x.replace(/^[-·•\s]+/,"").trim()).filter(Boolean).slice(0,4)}render()}).catch(()=>{});
+  ghDownloads(a.repo).then(d=>{d.forEach(x=>{const k=K[x.label];if(k){a.dl[k]=x.tag;a.url2[k]=x.url}});render()}).catch(()=>{});
+});
+const qa=new URLSearchParams(location.search).get("id");if(qa&&APPS.find(a=>a.id===qa))open(qa);
+if(window.self!==window.top)document.querySelector(".tabbar").style.bottom="14px";
+</script>
+<style>
+#acc{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center}
+#acc.on{display:flex}#acc .pn{background:var(--bg);color:var(--ink);width:min(100%,520px);max-height:92vh;overflow:auto;border-radius:26px 26px 0 0;padding:22px 18px 30px;font-family:Inter,sans-serif}
+#acc h2{display:flex;justify-content:space-between;align-items:center;margin:0 0 18px;font-size:30px;letter-spacing:-.03em}
+#acc h2 button{border:0;background:none;color:var(--acc);font:600 17px Inter}
+#acc .g{background:var(--pill);border-radius:20px;margin-bottom:22px;overflow:hidden}
+#acc .r{display:flex;align-items:center;gap:14px;padding:14px 16px;border-top:1px solid #8882}#acc .r:first-child{border:0}
+#acc .r .t{flex:1;min-width:0}#acc .r small{display:block;opacity:.6;font-size:13px;margin-top:2px}
+#acc .av{width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--acc);flex:none}
+#acc .b{border:0;border-radius:999px;padding:10px 16px;background:#8882;color:inherit;font:600 14px Inter;text-decoration:none;white-space:nowrap}
+#acc .lab{font-size:13px;font-weight:600;letter-spacing:.06em;opacity:.6;margin:0 6px 8px}
+</style>
+<div id="acc"><div class="pn"></div></div>
+<script>/* Compte LifeCasts (même compte que le site, System et les apps) */
+(function(){const K="lifecasts_user",m=document.getElementById("me"),A=document.getElementById("acc"),P=A.querySelector(".pn"),X=t=>String(t||"").replace(/[&<>"]/g,c=>"&#"+c.charCodeAt(0)+";");
+ const get=()=>{try{const u=JSON.parse(localStorage.getItem(K));return u&&u.email?u:null}catch(e){return null}};
+ const pic=u=>u.picture?'<img class="av" src="https://lifecasts-hub.github.io/'+X(u.picture)+'" alt="" referrerpolicy="no-referrer">':'<span class="av" style="display:grid;place-items:center;color:#fff;font-weight:700">'+X((u.name||u.email)[0].toUpperCase())+'</span>';
+ function badge(){const u=get();if(u){m.title="Compte";m.innerHTML=u.picture?'<img src="https://lifecasts-hub.github.io/'+X(u.picture)+'" alt="" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover">':X((u.name||u.email)[0].toUpperCase())}}
+ function show(){const u=get();
+  P.innerHTML='<h2>Compte<button id="accOk">OK</button></h2>'+(u?
+   '<div class="g"><div class="r" style="opacity:.7">'+X(u.email)+'</div><div class="r">'+pic(u)+'<div class="t"><b>'+X(u.name||u.email)+'</b><small>Google</small></div></div></div>'+
+   '<div class="lab">CE COMPTE</div><div class="g"><div class="r"><div class="t">Âge<small id="accAge">…</small></div><a class="b" href="https://lifecasts-hub.github.io/system.html?app=settings">Modifier sur LifeCasts</a></div>'+
+   '<div class="r"><div class="t">Se déconnecter<small>Sur ce navigateur (site, System, Store)</small></div><button class="b" id="accOut">Déconnexion</button></div></div>'
+   :'<div class="g"><div class="r"><div class="t">Non connecté<small>Le même compte que le site LifeCasts et les applications</small></div><a class="b" style="background:var(--acc);color:#fff" href="https://lifecasts-hub.github.io/?retour=/store.html#compte">Se connecter</a></div></div>')+
+   '<p style="text-align:center;opacity:.5;font-size:13px">LC Store</p>';
+  P.querySelector("#accOk").onclick=()=>A.classList.remove("on");
+  const o=P.querySelector("#accOut");if(o)o.onclick=()=>{try{localStorage.removeItem(K)}catch(e){}if(window.firebase&&firebase.apps&&firebase.apps.length)try{firebase.auth().signOut()}catch(e){}location.reload()};
+  if(u&&window.fbInit)fbInit(true).then(()=>new Promise(ok=>{const off=firebase.auth().onAuthStateChanged(x=>{off();ok(x)})})).then(x=>{const e=P.querySelector("#accAge");if(!e)return;if(!x){e.textContent="Visible après connexion à System";return}
+   return firebase.firestore().doc("users/"+x.uid).get().then(d=>{const by=d.exists&&d.data().by,a=by?new Date().getFullYear()-by:0;e.textContent=a?a+" an"+(a>1?"s":""):"Non renseigné"})}).catch(()=>{const e=P.querySelector("#accAge");if(e)e.textContent="Indisponible hors ligne"});
+  A.classList.add("on")}
+ m.onclick=e=>{e.preventDefault();show()};A.onclick=e=>{if(e.target===A)A.classList.remove("on")};badge();
+ if(location.hash==="#compte"){history.replaceState(null,"",location.pathname+location.search);if(get())show()}})();
+</script>
+<script>/*LC-OTA*/(function(){
+var APP="store",L=localStorage,plat=/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)?"ios":"android";
+document.querySelectorAll("small").forEach(function(s){if(/^Version [\d.]+ ·/.test(s.textContent))s.firstChild.textContent=s.firstChild.textContent.replace(/Version [\d.]+/,"Version "+LC_VER)});
+if(location.protocol!=="file:")return; // la version web (GitHub) est toujours à jour
+setTimeout(function(){if(typeof FBC!=="undefined"&&typeof LC_APPS!=="undefined")try{L.removeItem("lc.ota.try")}catch(e){}},5000);
+var css=document.createElement("style");css.textContent='#lcUp{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(0,0,0,.5);padding:16px}#lcUp>div{background:var(--bg,#faf9f5);color:var(--fg,#141413);border-radius:22px;padding:20px;width:min(92vw,440px);max-height:84vh;overflow:auto;font:15px -apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.3)}#lcUp h4{margin:0 0 6px;font-size:20px}#lcUp .n{white-space:pre-wrap;opacity:.8;margin:10px 0}#lcUp .b{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}#lcUp button{border:0;border-radius:18px;padding:10px 16px;font:600 14px inherit;cursor:pointer;background:rgba(0,0,0,.08);color:inherit}#lcUp button.p{background:#c98a1b;color:#fff}#lcUp progress{width:100%;height:8px}';document.head.appendChild(css);
+var busy=false,last=0;
+function box(html){var d=document.getElementById("lcUp");if(!d){d=document.createElement("div");d.id="lcUp";document.body.appendChild(d)}d.innerHTML="<div>"+html+"</div>";return d}
+function close(){var d=document.getElementById("lcUp");if(d)d.remove()}
+function esc(s){return String(s||"").replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c]})}
+function idbPut(h){return new Promise(function(ok,ko){var r=indexedDB.open("lc-ota",1);r.onupgradeneeded=function(){r.result.createObjectStore("f")};r.onerror=ko;
+  r.onsuccess=function(){var t=r.result.transaction("f","readwrite");t.objectStore("f").put(h,"html");t.oncomplete=ok;t.onerror=ko}})}
+var SRC="https://lifecasts-hub.github.io/store-app.html";
+async function check(manual){
+  if(busy||!navigator.onLine)return;busy=true;last=Date.now();
+  try{
+    var ac=new AbortController(),to=setTimeout(function(){ac.abort()},20000);var r=await fetch(SRC+"?t="+Date.now(),{cache:"no-store",signal:ac.signal});clearTimeout(to);if(!r.ok)throw 0;
+    var h=await r.text(),m=h.match(/var B="([\d.]+)"/);if(!m||h.indexOf("/*LC-OTA*/")<0)throw 0;
+    var U={version:m[1],h:h},t=document.getElementById("lcUpTxt");
+    if(LC_CMP(U.version,LC_VER)<=0){if(manual)toast("L'application est à jour (v"+LC_VER+")");return}
+    window.lcUpd={U:U};if(t)t.innerHTML='<b>Mise à jour disponible : v'+esc(U.version)+'</b> — toucher pour installer';
+    if(!manual&&L.getItem("lc.ota.ver")!==U.version){try{await idbPut(U.h);L.setItem("lc.ota.ver",U.version);L.removeItem("lc.ota.try");toast("Mise à jour v"+U.version+" téléchargée — appliquée au prochain démarrage")}catch(e){}}
+    if(!manual&&L.getItem("lc.ota.skip")===U.version&&Date.now()-(+L.getItem("lc.ota.skipAt")||0)<12*36e5)return;
+    var d=box("<h4>Mise à jour disponible</h4><div>Version "+esc(U.version)+" (vous avez la "+esc(LC_VER)+")</div><div class='b'><button id='lcL'>Plus tard</button><button class='p' id='lcG'>Installer</button></div>");
+    d.querySelector("#lcL").onclick=function(){L.setItem("lc.ota.skip",U.version);L.setItem("lc.ota.skipAt",Date.now());close()};
+    d.querySelector("#lcG").onclick=function(){get(U)};
+  }catch(e){if(manual)toast("Vérification impossible pour l'instant")}finally{busy=false}
+}
+async function get(U){
+  try{await idbPut(U.h);L.setItem("lc.ota.ver",U.version);L.removeItem("lc.ota.try");
+    box("<h4>Mise à jour prête</h4><div>La version "+esc(U.version)+" est installée. L'application va redémarrer.</div><div class='b'><button class='p' id='lcR'>Redémarrer</button></div>").querySelector("#lcR").onclick=function(){location.reload()};
+  }catch(e){box("<h4>Échec de l'installation</h4><div>Réessayez plus tard.</div><div class='b'><button id='lcX'>Fermer</button></div>").querySelector("#lcX").onclick=close}
+}
+window.lcCheckUpdate=function(){var u=window.lcUpd;u?get(u.U):check(true)};
+try{L.removeItem("lc.ota.try")}catch(e){}setTimeout(check,3000);window.addEventListener("online",function(){setTimeout(check,2000)});setInterval(check,6*36e5);
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&Date.now()-last>36e5)check()});
+})()</script>
+</body>
+</html>

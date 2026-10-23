@@ -1,0 +1,51 @@
+<script>/*LC-OTA*/(function(){var B="2.10";window.LC_BUILT=B;
+function c(a,b){a=String(a).split(".");b=String(b).split(".");for(var i=0;i<Math.max(a.length,b.length);i++){var d=(+a[i]||0)-(+b[i]||0);if(d)return d>0?1:-1}return 0}window.LC_CMP=c;
+if(window.LC_OTA_VER){window.LC_VER=window.LC_OTA_VER;return}window.LC_VER=B;
+if(location.protocol!=="file:")return;
+var L=window.localStorage,v,n;try{v=L.getItem("lc.ota.ver");n=+(L.getItem("lc.ota.try")||0)}catch(e){return}
+if(!v||c(v,B)<=0||!window.indexedDB)return;
+if(n>=3){L.removeItem("lc.ota.ver");L.removeItem("lc.ota.try");return}
+L.setItem("lc.ota.try",n+1);
+function fail(){L.removeItem("lc.ota.ver");location.reload()}
+document.write('<plaintext style="display:none">');
+var r=indexedDB.open("lc-ota",1);r.onupgradeneeded=function(){r.result.createObjectStore("f")};r.onerror=fail;
+r.onsuccess=function(){try{var g=r.result.transaction("f").objectStore("f").get("html");g.onerror=fail;
+g.onsuccess=function(){var h=g.result;if(!h||h.indexOf("/*LC-OTA*/")<0)return fail();window.LC_OTA_VER=v;document.open();document.write(h);document.close()}}catch(e){fail()}};
+})()</script>
+<script>/*LC-OTA*/(function(){
+var APP="notes",L=localStorage,plat=/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)?"ios":"android";
+document.querySelectorAll("small").forEach(function(s){if(/^Version [\d.]+ ·/.test(s.textContent))s.firstChild.textContent=s.firstChild.textContent.replace(/Version [\d.]+/,"Version "+LC_VER)});
+if(location.protocol!=="file:")return; // la version web (GitHub) est toujours à jour
+setTimeout(function(){if(typeof FBC!=="undefined"&&typeof notes!=="undefined")try{L.removeItem("lc.ota.try")}catch(e){}},5000);
+var css=document.createElement("style");css.textContent='#lcUp{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(0,0,0,.5);padding:16px}#lcUp>div{background:var(--bg,#faf9f5);color:var(--fg,#141413);border-radius:22px;padding:20px;width:min(92vw,440px);max-height:84vh;overflow:auto;font:15px -apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.3)}#lcUp h4{margin:0 0 6px;font-size:20px}#lcUp .n{white-space:pre-wrap;opacity:.8;margin:10px 0}#lcUp .b{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}#lcUp button{border:0;border-radius:18px;padding:10px 16px;font:600 14px inherit;cursor:pointer;background:rgba(0,0,0,.08);color:inherit}#lcUp button.p{background:#1f2a44;color:#fff}#lcUp progress{width:100%;height:8px}';document.head.appendChild(css);
+var busy=false,last=0;
+function box(html){var d=document.getElementById("lcUp");if(!d){d=document.createElement("div");d.id="lcUp";document.body.appendChild(d)}d.innerHTML="<div>"+html+"</div>";return d}
+function close(){var d=document.getElementById("lcUp");if(d)d.remove()}
+function esc(s){return String(s||"").replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c]})}
+function idbPut(h){return new Promise(function(ok,ko){var r=indexedDB.open("lc-ota",1);r.onupgradeneeded=function(){r.result.createObjectStore("f")};r.onerror=ko;
+  r.onsuccess=function(){var t=r.result.transaction("f","readwrite");t.objectStore("f").put(h,"html");t.oncomplete=ok;t.onerror=ko}})}
+var SRC="https://lifecasts-hub.github.io/The-Notes-App/index.html";
+async function check(manual){
+  if(busy||!navigator.onLine)return;busy=true;last=Date.now();
+  try{
+    var ac=new AbortController(),to=setTimeout(function(){ac.abort()},20000);var r=await fetch(SRC+"?t="+Date.now(),{cache:"no-store",signal:ac.signal});clearTimeout(to);if(!r.ok)throw 0;
+    var h=await r.text(),m=h.match(/var B="([\d.]+)"/);if(!m||h.indexOf("/*LC-OTA*/")<0)throw 0;
+    var U={version:m[1],h:h},t=document.getElementById("lcUpTxt");
+    if(LC_CMP(U.version,LC_VER)<=0){if(manual)toast("L'application est à jour (v"+LC_VER+")");return}
+    window.lcUpd={U:U};if(t)t.innerHTML='🔴 <b>Mise à jour disponible : v'+esc(U.version)+'</b> — toucher pour installer';
+    if(!manual&&L.getItem("lc.ota.ver")!==U.version){try{await idbPut(U.h);L.setItem("lc.ota.ver",U.version);L.removeItem("lc.ota.try");toast("Mise à jour v"+U.version+" téléchargée — appliquée au prochain démarrage")}catch(e){}}
+    if(!manual&&L.getItem("lc.ota.skip")===U.version&&Date.now()-(+L.getItem("lc.ota.skipAt")||0)<12*36e5)return;
+    var d=box("<h4>Mise à jour disponible</h4><div>Version "+esc(U.version)+" (vous avez la "+esc(LC_VER)+")</div><div class='b'><button id='lcL'>Plus tard</button><button class='p' id='lcG'>Installer</button></div>");
+    d.querySelector("#lcL").onclick=function(){L.setItem("lc.ota.skip",U.version);L.setItem("lc.ota.skipAt",Date.now());close()};
+    d.querySelector("#lcG").onclick=function(){get(U)};
+  }catch(e){if(manual)toast("Vérification impossible pour l'instant")}finally{busy=false}
+}
+async function get(U){
+  try{await idbPut(U.h);L.setItem("lc.ota.ver",U.version);L.removeItem("lc.ota.try");
+    box("<h4>Mise à jour prête</h4><div>La version "+esc(U.version)+" est installée. L'application va redémarrer.</div><div class='b'><button class='p' id='lcR'>Redémarrer</button></div>").querySelector("#lcR").onclick=function(){location.reload()};
+  }catch(e){box("<h4>Échec de l'installation</h4><div>Réessayez plus tard.</div><div class='b'><button id='lcX'>Fermer</button></div>").querySelector("#lcX").onclick=close}
+}
+window.lcCheckUpdate=function(){var u=window.lcUpd;u?get(u.U):check(true)};
+try{L.removeItem("lc.ota.try")}catch(e){}setTimeout(check,3000);window.addEventListener("online",function(){setTimeout(check,2000)});setInterval(check,6*36e5);
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&Date.now()-last>36e5)check()});
+})()</script>
