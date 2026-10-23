@@ -22,7 +22,7 @@ const LC_APPS=[
  {id:"cantiques",repo:"lifecasts-hub/Songs-Book",nom:"Cantiques",court:"Cantiques",mot:"cantique",description:"Les chants d'autrefois, dans votre poche.",ordre:2},
  {id:"notes",repo:"lifecasts-hub/The-Notes-App",nom:"Notes",court:"Notes",mot:"note",description:"Vos notes et celles de la Bible, au même endroit.",ordre:3}
 ];
-LC_APPS.forEach(a=>{a.dir=a.repo.split("/")[1];a.url="/"+a.dir+"/";a.iconUrl=a.url+"icon-192.png"});
+LC_APPS.forEach(a=>{a.dir=a.repo.split("/")[1];a.url="/"+a.dir+"/";a.iconUrl="https://lifecasts-hub.github.io"+a.url+"icon-192.png"});
 const REPOS=Object.fromEntries(LC_APPS.map(a=>[a.id,a.repo]));
 async function ghVersions0(repo){
   const r=await fetch("https://api.github.com/repos/"+repo+"/commits?path=index.html&per_page=100");if(!r.ok)throw new Error("GitHub indisponible");
@@ -56,7 +56,11 @@ return function(n,s){return '<svg class="ico" viewBox="0 0 24 24" width="'+(s||'
 async function ghDownloads0(repo){
   try{const r=await fetch("https://api.github.com/repos/"+repo+"/contents/downloads");if(r.ok){const best={};
     for(const x of await r.json()){const n=x.name.toLowerCase(),t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":/\.(exe|msi)$/.test(n)?"Windows (EXE)":null;if(!t)continue;
-      const v=(x.name.match(/(\d+(?:\.\d+)+)/)||[])[1]||"0";if(!best[t]||vcmp(v,best[t].tag)>0)best[t]={label:t,url:"/"+repo.split("/")[1]+"/downloads/"+encodeURIComponent(x.name),size:x.size,tag:v}}
+      const v=(x.name.match(/(\d+(?:\.\d+)+)/)||[])[1]||"0";if(!best[t]||vcmp(v,best[t].tag)>0)best[t]={label:t,url:"https://lifecasts-hub.github.io/"+repo.split("/")[1]+"/downloads/"+encodeURIComponent(x.name),size:x.size,tag:v}}
+    const out=Object.values(best);if(out.length)return out}}catch(e){}
+  try{const r=await fetch("https://data.jsdelivr.com/v1/packages/gh/"+repo+"@main?structure=flat");if(r.ok){const best={};
+    for(const f of (await r.json()).files||[]){const m=f.name.match(/^\/downloads\/([^/]+)$/);if(!m)continue;const n=m[1].toLowerCase(),t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":/\.(exe|msi)$/.test(n)?"Windows (EXE)":null;if(!t)continue;
+      const v=(m[1].match(/(\d+(?:\.\d+)+)/)||[])[1]||"0";if(!best[t]||vcmp(v,best[t].tag)>0)best[t]={label:t,url:"https://lifecasts-hub.github.io/"+repo.split("/")[1]+"/downloads/"+encodeURIComponent(m[1]),size:f.size,tag:v}}
     const out=Object.values(best);if(out.length)return out}}catch(e){}
   const r=await fetch("https://api.github.com/repos/"+repo+"/releases/latest");if(!r.ok)return [];const j=await r.json();
   return (j.assets||[]).map(x=>{const n=x.name.toLowerCase();const t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":/\.(exe|msi)$/.test(n)?"Windows (EXE)":null;return t&&{label:t,url:x.browser_download_url,size:x.size,tag:j.tag_name}}).filter(Boolean)}
@@ -64,7 +68,7 @@ async function ghDownloads0(repo){
 /* Cache 15 min (limite GitHub : 60 requêtes/h) + repli si GitHub ne répond pas */
 async function ghCached(k,fn,fb){let c;try{c=JSON.parse(localStorage.getItem("lcgh:"+k))}catch(e){}
   if(c&&Date.now()-c.t<9e5)return c.v;
-  try{const v=await fn();try{localStorage.setItem("lcgh:"+k,JSON.stringify({t:Date.now(),v}))}catch(e){}return v}
+  try{const v=await fn();if(Array.isArray(v)&&!v.length&&c)return c.v;try{if(!(Array.isArray(v)&&!v.length))localStorage.setItem("lcgh:"+k,JSON.stringify({t:Date.now(),v}))}catch(e){}return v}
   catch(e){if(c)return c.v;if(fb)return fb();throw e}}
 function ghVersions(repo){return ghCached("v:"+repo,()=>ghVersions0(repo),async()=>{const v=await liveVersion(repo);return v?[{version:v,date:null,notes:""}]:[]})}
-function ghDownloads(repo){return ghCached("d:"+repo,async()=>{const r=await fetch("https://api.github.com/repos/"+repo+"/contents/downloads");if(r.status===403||r.status===429)throw new Error("limite");return ghDownloads0(repo)},()=>[])}
+function ghDownloads(repo){return ghCached("d2:"+repo,()=>ghDownloads0(repo),()=>[])}
