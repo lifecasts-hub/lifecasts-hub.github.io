@@ -7,7 +7,7 @@
 <script src="lc-common.js?v=9"></script>
 <link rel="icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f6f1e8;--bg2:#efe7d8;--card:#fffdf8;--ink:#17130f;--sub:#7a6f62;--line:rgba(40,25,10,.1);
 --acc:#d9822b;--acc2:#e2483d;--pill:rgba(40,25,10,.06);--glass:rgba(255,251,243,.78);--serif:Fraunces,Georgia,serif}
@@ -122,12 +122,71 @@ input.q:focus{border-color:var(--acc)}
 .toast{position:fixed;top:16px;left:50%;transform:translate(-50%,-90px);background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;padding:12px 20px;border-radius:16px;font-weight:600;font-size:14px;z-index:40;transition:.35s cubic-bezier(.2,.9,.3,1);box-shadow:0 12px 30px -10px var(--acc2)}
 .toast.on{transform:translate(-50%,0)}
 @media(min-width:760px){.hero{min-height:480px}.hero h2{font-size:52px}h1{font-size:48px}.hero .glyph{right:60px;top:50px;grid-template-columns:repeat(3,96px);gap:18px}.hero{padding-top:0}.hero .txt{max-width:52%}.hero .glyph span{width:96px;height:96px;border-radius:26px;font-size:38px}}
+
+/* === Version aérée === */
+:root{--serif:Inter,system-ui,sans-serif}
+body{background-image:none}body:before{display:none}
+.wrap{max-width:1000px;padding:0 20px}
+header{padding:30px 0 16px}
+h1{font-weight:800;font-size:34px}h1:after{content:none}
+.date{letter-spacing:.06em;font-size:12px}
+.me{border-radius:50%;transform:none;box-shadow:none;background:var(--acc);font-family:Inter;font-size:14px}
+.plats{background:none;padding:0;gap:8px;margin:6px 0 26px}
+.chip{background:var(--pill);border-radius:999px;color:var(--ink);font-weight:500}
+.chip.on{background:var(--ink);color:var(--bg);box-shadow:none}.chip.on svg{color:inherit}
+.hero{border-radius:24px;min-height:400px;box-shadow:none}
+.hero .bg{background:linear-gradient(160deg,#ffb547 0%,#ff7a4d 45%,#b23a5e 100%)}
+.hero .glyph span{box-shadow:0 10px 24px rgba(0,0,0,.18)}
+.hero h2{font-weight:700;font-size:30px;line-height:1.1;letter-spacing:-.02em}.hero h2 em{font-style:normal;color:#fff}
+.hero p{display:none}
+.strip{margin:0;border-radius:0;border:0;border-top:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.14);padding:12px 24px}
+section{margin-top:64px}
+.sh{margin-bottom:18px}.sh h3{font-weight:700;font-size:22px}
+.sh .eyebrow{display:none}
+.grid{gap:0 40px}
+.row{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:16px 0;overflow:visible}
+.row:before{display:none}.row:hover{transform:none;box-shadow:none}
+.row small+small{display:none}
+.rank{position:static!important;font:600 15px Inter;opacity:1;color:var(--sub);width:16px}
+.ico{border-radius:16px;font-family:Inter;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}
+.ico.l{transform:none;border-radius:28px}
+.get{border-radius:999px;background:var(--pill);color:var(--acc);padding:7px 20px}
+.get:hover{background:var(--pill);opacity:.8;color:var(--acc)}
+.get.w{background:rgba(255,255,255,.95);color:#c2541b}
+.get.p{background:var(--acc);box-shadow:none;color:#fff;border-radius:999px}
+.get em{display:none}
+.cards{gap:18px}
+.fc{border-radius:24px;min-height:320px}.fc:hover{transform:none}
+.fc h4{font-weight:700;font-size:23px;line-height:1.15}
+.fc .art:before{box-shadow:none;background:rgba(255,255,255,.1)}
+.fc .strip{background:rgba(0,0,0,.18)}
+.band{background:none;border:0;padding:0;gap:14px}
+.pf{background:var(--card);border-radius:20px;padding:18px}
+.pf b{font-family:Inter;font-weight:600;font-size:16px}
+.ios{border-radius:24px;background:var(--card);color:var(--ink);border:1px solid var(--line);margin-top:14px}
+.ios h4{font:600 17px Inter}.ios p{opacity:1;color:var(--sub)}
+.tabs{border-radius:999px;padding:5px}
+.tab{flex-direction:column;gap:2px;font-size:10px;padding:7px 16px;border-radius:999px}
+.tab span{display:inline!important}.tab svg{font-size:21px}
+.tab.on{background:var(--pill);color:var(--acc);box-shadow:none}
+.srch{border-radius:50%;width:56px;height:56px}
+.sheet{border-radius:24px 24px 0 0}
+.sh-top h2{font:700 24px Inter}
+.stats{gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 22px;margin:14px 0}
+.stats div{background:none;border:0;border-right:1px solid var(--line);border-radius:0;padding:0 6px}.stats div:last-child{border:0}
+.stats b{font:700 18px Inter;color:var(--ink)}
+.blk{padding:20px 22px}.blk h3{font:700 19px Inter}
+.shot{font:600 15px Inter;border-radius:22px}.shot:nth-child(n){transform:none}
+.toast{background:var(--ink);color:var(--bg);border-radius:999px;box-shadow:none}
+input.q{border-radius:12px;padding:12px 14px 12px 40px;background:var(--pill);border:0}.qw svg{top:13px;left:13px}
+.empty{font:500 15px Inter}
+@media(min-width:760px){.hero h2{font-size:40px}h1{font-size:40px}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div><a href="/" style="color:var(--acc);font-weight:600;font-size:14px;text-decoration:none">‹ LifeCasts</a><div class="date" id="date"></div><h1 id="ttl">À la une</h1></div>
+    <div><a href="/" style="color:var(--acc);font-weight:600;font-size:14px;text-decoration:none">‹ LifeCasts</a><div class="date" id="date"></div><h1 id="ttl">Aujourd'hui</h1></div>
     <a class="me" href="system.html" title="LifeCasts System" style="text-decoration:none">LC</a>
   </header>
   <div class="plats" id="plats"></div>
@@ -138,15 +197,15 @@ input.q:focus{border-color:var(--acc)}
       <div class="bg"><i style="width:180px;height:180px;left:-40px;top:60px;background:#ffd88a55"></i><i style="width:90px;height:90px;right:30%;top:20px;background:#ffffff33"></i></div>
       <div class="glyph" id="glyph"></div>
       <div class="txt">
-        <div class="eyebrow">LC Store · La boutique LifeCasts</div>
-        <h2>Toute la famille <em>LifeCasts</em>, au même endroit.</h2>
+        <div class="eyebrow">LC Store</div>
+        <h2>Toutes vos apps <em>LifeCasts</em>.</h2>
         <p>Bible, Cantiques, Notes : téléchargez la version Android, macOS ou Windows, toujours à jour.</p>
       </div>
       <div class="strip" id="heroStrip"></div>
     </div>
 
     <section>
-      <div class="sh"><div><span class="eyebrow">01 · Nos apps</span><h3>La collection</h3></div><a data-go="apps">Tout voir</a></div>
+      <div class="sh"><div><span class="eyebrow">01 · Nos apps</span><h3>Nos apps</h3></div><a data-go="apps">Tout voir</a></div>
       <div class="grid" id="topList"></div>
     </section>
 
@@ -156,10 +215,10 @@ input.q:focus{border-color:var(--acc)}
     </section>
 
     <section>
-      <div class="sh"><div><span class="eyebrow">03 · Plateformes</span><h3>Sur tous vos appareils</h3></div></div>
+      <div class="sh"><div><span class="eyebrow">03 · Plateformes</span><h3>Plateformes</h3></div></div>
       <div class="band" id="band"></div>
       <div class="ios">
-        <div class="n"><h4>Sur iPhone et iPad ?</h4><p>Les apps LifeCasts pour iOS sont publiées sur l'App Store d'Apple.</p></div>
+        <div class="n"><h4>iPhone et iPad</h4><p>Sur l'App Store.</p></div>
         <a class="badge" href="https://apps.apple.com/" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.1 2.5-1.8 3.1-.5 7.6 1.3 10.1.8 1.2 1.8 2.6 3.1 2.5 1.3 0 1.7-.8 3.3-.8 1.5 0 1.9.8 3.3.8 1.4 0 2.2-1.2 3-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-3.9zM14 5.2c.7-.8 1.2-2 1-3.2-1 0-2.2.7-3 1.5-.6.7-1.2 1.9-1 3.1 1.1.1 2.3-.6 3-1.4z"/></svg>
           <span><small>Télécharger dans</small><b>l'App Store</b></span></a>
@@ -186,7 +245,7 @@ input.q:focus{border-color:var(--acc)}
 
 <nav class="tabbar">
   <div class="tabs">
-    <button class="tab on" data-v="today"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/></svg><span>À la une</span></button>
+    <button class="tab on" data-v="today"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/></svg><span>Aujourd'hui</span></button>
     <button class="tab" data-v="apps"><svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg><span>Apps</span></button>
     <button class="tab" data-v="upd"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span>Nouveautés</span></button>
   </div>
@@ -213,7 +272,7 @@ try{plat=localStorage.getItem("lcstore.plat")||"all"}catch(e){}
 const $q=s=>document.querySelector(s);
 const ico=(a,c="")=>`<div class="ico ${c}" style="background:linear-gradient(145deg,${a.grad[0]},${a.grad[1]})">${a.court[0]}<img src="${a.iconUrl}" alt="" onerror="this.remove()"></div>`;
 const avail=a=>plat==="all"?Object.values(a.dl).some(Boolean):!!a.dl[plat];
-const btn=(a,c="")=>`<button class="get ${c}" data-get="${a.id}">${avail(a)?"Installer":"Bientôt"}${c?"":`<em>${plat==="all"?"Gratuit":PL[plat].f}</em>`}</button>`;
+const btn=(a,c="")=>`<button class="get ${c}" data-get="${a.id}">${avail(a)?"Obtenir":"Bientôt"}${c?"":`<em>${plat==="all"?"Gratuit":PL[plat].f}</em>`}</button>`;
 const row=(a,i)=>`<div class="row" data-open="${a.id}" style="--c:${a.grad[0]}">${i?`<span class="rank">${i}</span>`:""}${ico(a)}<div class="n"><b>${a.nom}</b><small>${a.mot}</small><small>${a.cat}</small></div>${btn(a)}</div>`;
 const list=()=>[...APPS].sort((a,b)=>a.ordre-b.ordre);
 
@@ -231,7 +290,7 @@ function render(){
    {a:"cantiques",e:"Le culte du dimanche",t:"Mille cantiques dans la poche",g:"linear-gradient(160deg,#8a6bff,#1d1060)",i:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'},
    {a:"notes",e:"Astuce",t:"Vos notes de prédication synchronisées",g:"linear-gradient(160deg,#ffcc33,#d96b00)",i:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>'},
   ].map(c=>{const a=APPS.find(x=>x.id===c.a);return `<div class="fc" data-open="${a.id}" style="background:${c.g}"><div class="t"><div class="eyebrow">${c.e}</div><h4>${c.t}</h4></div><div class="art">${S(c.i)}</div><div class="strip">${ico(a,"s")}<div class="n"><b>${a.nom}</b><small>${a.mot}</small></div>${btn(a,"w")}</div></div>`}).join("");
-  $q("#band").innerHTML=["android","mac","win"].map(k=>{const p=PL[k],n=APPS.filter(a=>a.dl[k]).length;return `<div class="pf"><div class="b" style="background:${p.c}">${S(p.i)}</div><div><b>${p.n}</b><small>${p.d} · ${n?n+" app"+(n>1?"s":"")+" disponible"+(n>1?"s":""):"bientôt"}</small></div></div>`}).join("");
+  $q("#band").innerHTML=["android","mac","win"].map(k=>{const p=PL[k],n=APPS.filter(a=>a.dl[k]).length;return `<div class="pf"><div class="b" style="background:${p.c}">${S(p.i)}</div><div><b>${p.n}</b><small>${n?n+" app"+(n>1?"s":"")+" disponible"+(n>1?"s":""):"Bientôt"}</small></div></div>`}).join("");
   $q("#updList").innerHTML=L.map(a=>`<div style="background:var(--card);border-radius:18px;padding:14px;margin-bottom:12px"><div class="row" data-open="${a.id}" style="border:0;padding:0 0 10px">${ico(a)}<div class="n"><b>${a.nom}</b><small>Version ${a.v}</small></div>${btn(a)}</div><p style="color:var(--sub);font-size:14px;line-height:1.5">${a.news.length?a.news.map(x=>"· "+esc(x)).join("<br>"):"Améliorations et corrections."}</p></div>`).join("");
   search();
 }
@@ -259,7 +318,7 @@ function get(id,k){
   if(!a.dl[k]){open(id);toast(a.nom+" pour "+PL[k].n+" arrive bientôt");return}
   location.href=a.url2[k];toast("Téléchargement de "+a.nom+" "+a.dl[k]+" ("+PL[k].f+")");
 }
-const T={today:"À la une",apps:"Apps",upd:"Nouveautés",search:"Rechercher"};
+const T={today:"Aujourd'hui",apps:"Apps",upd:"Nouveautés",search:"Rechercher"};
 function go(v){document.querySelectorAll(".view").forEach(e=>e.classList.toggle("on",e.id==="v-"+v));document.querySelectorAll("[data-v]").forEach(e=>e.classList.toggle("on",e.dataset.v===v));$q("#ttl").textContent=T[v];scrollTo({top:0,behavior:"smooth"});if(v==="search")setTimeout(()=>$q("#q").focus(),200)}
 document.addEventListener("click",e=>{
   const t=e.target.closest("[data-get],[data-dl],[data-open],[data-plat],[data-v],[data-go],[data-close],#ov,#hero");if(!t)return;
