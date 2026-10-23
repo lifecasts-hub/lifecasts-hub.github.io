@@ -1,0 +1,22 @@
+{
+ "name": "LC Store",
+ "short_name": "LC Store",
+ "start_url": "/store.html",
+ "scope": "/",
+ "display": "standalone",
+ "background_color": "#271D9E",
+ "theme_color": "#3A2FC9",
+ "icons": [
+  {
+   "src": "/store-icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/store-icon.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  }
+ ]
+}
