@@ -8,7 +8,7 @@
 <meta name="description" content="LifeCasts : impression et distribution de brochures, et applications liées au ministère des bandes.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="lc-pages.css">
-<script src="lc-common.js?v=8"></script>
+<script src="lc-common.js?v=9"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 /* ================= CONFIGURATION ================= */
@@ -120,6 +120,7 @@ html,body{overflow-x:hidden}
 <a href="#system">LifeCasts System</a>
 <a href="#mission">Mission</a>
 <a href="#brochures">Brochures</a>
+<a href="store.html">LC Store</a>
 <a href="applications.html">Versions</a>
 </nav>
 <a class="pill small navcta" href="system.html" id="navBtn">Se connecter</a>
@@ -179,7 +180,7 @@ html,body{overflow-x:hidden}
 </main>
 
 <footer id="contact"><div class="wrap">
-<div class="fl"><a href="#mission">Mission</a><a href="#brochures">Brochures</a><a href="system.html">LifeCasts System</a><a href="applications.html">Applications et versions</a><a href="confidentialite.html">Confidentialité</a><a href="conditions.html">Conditions d'utilisation</a><a id="mailLink" hidden></a></div>
+<div class="fl"><a href="#mission">Mission</a><a href="#brochures">Brochures</a><a href="system.html">LifeCasts System</a><a href="store.html">LC Store</a><a href="applications.html">Applications et versions</a><a href="confidentialite.html">Confidentialité</a><a href="conditions.html">Conditions d'utilisation</a><a id="mailLink" hidden></a></div>
 <div>Une question, une demande de brochure ? Écrivez-nous, nous vous répondrons avec plaisir.</div>
 <div style="margin-top:8px">© <span id="year"></span> LifeCasts. Tous droits réservés.</div>
 </div></footer>
@@ -243,7 +244,7 @@ html,body{overflow-x:hidden}
     const p=E("section",{className:"panel"});p.style.background=a.fond;
     p.append(E("img",{className:"big-icon",src:a.icon,alt:""}));
     p.append(E("h3",{textContent:a.nom+"."}),E("p",{className:"lead",textContent:a.accroche}),E("p",{className:"sub",textContent:a.description}));
-    const c=E("div",{className:"ctas"});c.append(E("a",{className:"pill",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"more",href:"applications.html?id="+a.id,textContent:"Télécharger l'application"}));
+    const c=E("div",{className:"ctas"});c.append(E("a",{className:"pill",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"more",href:"store.html?id="+a.id,textContent:"LC Store"}));
     const v=E("div",{className:"muted",textContent:" "});v.style.marginTop="10px";
     p.append(c,v);
     $("applications").append(p);
