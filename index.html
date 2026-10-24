@@ -91,9 +91,22 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 .pts li::before{content:"";position:absolute;left:2px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--accent2)}
 .how{padding:55px 0 89px;text-align:center}
 .how .steps small{display:block;margin-bottom:2px}
-.more-apps{display:block;color:inherit;text-decoration:none;background:linear-gradient(180deg,#f5f5f7,#e8e6f5);padding-bottom:var(--s6,89px);transition:transform .3s}
-.more-apps:hover{transform:scale(1.01)}
-.more-apps .more{color:var(--accent)}
+.more-apps{position:relative;isolation:isolate;background:#f5f5f7;padding-bottom:var(--s6,89px)}
+.ma-bg{position:absolute;inset:-20px 0;z-index:-2;display:flex;flex-direction:column;justify-content:center;gap:16px;transform:rotate(-4deg) scale(1.1);filter:saturate(1.1)}
+.ma-row{display:flex;gap:16px;width:max-content;animation:maL 70s linear infinite}
+.ma-row.r{animation-name:maR;animation-duration:85s}.ma-row.s{animation-duration:60s}
+.ma-row i{flex:none;width:84px;height:84px;border-radius:22.5%;display:grid;place-items:center;overflow:hidden;color:#fff;box-shadow:0 10px 24px rgba(40,30,80,.22)}
+.ma-row i img{width:100%;height:100%;object-fit:cover}
+.ma-row i svg{width:38px;height:38px}
+@keyframes maL{to{transform:translateX(-50%)}}@keyframes maR{from{transform:translateX(-50%)}to{transform:none}}
+.ma-fog{position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 62% 58% at 50% 50%,rgba(245,245,247,.97) 28%,rgba(245,245,247,.72) 58%,rgba(245,245,247,.18) 100%),linear-gradient(180deg,#f5f5f7 0,rgba(245,245,247,0) 22%,rgba(245,245,247,0) 78%,#f5f5f7 100%);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px)}
+.ma-in{position:relative}
+.big-btn{font-size:19px;padding:19px 40px;gap:12px;display:inline-flex;align-items:center;font-weight:600;background:linear-gradient(135deg,#c98a3d,#8a4f17);color:#fff;box-shadow:0 14px 34px rgba(154,91,30,.42),inset 0 1px 0 rgba(255,255,255,.35);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.big-btn::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-90px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:shine 3.8s ease-in-out infinite}
+.big-btn svg{transition:transform .25s}.big-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 20px 44px rgba(154,91,30,.5),inset 0 1px 0 rgba(255,255,255,.35)}.big-btn:hover svg{transform:translateX(4px)}
+@keyframes shine{0%,55%{left:-90px}100%{left:130%}}
+@media (max-width:600px){.ma-row i{width:68px;height:68px}.ma-row i svg{width:30px;height:30px}.big-btn{font-size:17px;padding:17px 32px}}
+@media (prefers-reduced-motion:reduce){.ma-row,.big-btn::after{animation:none}}
 .ico{display:block;flex:none}
 .window .grid span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .window .grid b{flex:none}
@@ -167,14 +180,17 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 
 <div id="applications"></div>
 
-<a class="panel more-apps" href="store.html" aria-label="Plus d'applications dans LC Store">
+<section class="panel more-apps" id="plus">
+<div class="ma-bg" id="maBg" aria-hidden="true"></div><div class="ma-fog" aria-hidden="true"></div>
+<div class="ma-in">
 <img class="big-icon" src="store-icon-192.png?v=7" alt="">
 <div class="eyebrow">LC Store</div>
 <h3>Plus d'applications.</h3>
 <p class="lead">Toutes les applications LifeCasts, pour Android, macOS et Windows.</p>
-<p class="sub">D'autres applications arrivent. Retrouvez-les toutes dans LC Store.</p>
-<div class="ctas"><span class="more">Découvrir LC Store</span></div>
-</a>
+<p class="sub">D'autres applications arrivent. Retrouvez-les toutes au même endroit.</p>
+<div class="ctas"><a class="pill accent big-btn" href="store.html">Découvrir LC Store<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+</div>
+</section>
 
 <section class="how" id="commencer"><div class="wrap">
 <div class="eyebrow">Pour commencer</div>
@@ -289,6 +305,10 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
     const repo=REPOS[a.id];if(repo)ghVersions(repo).then(vs=>{if(vs[0])v.textContent="Version "+vs[0].version}).catch(()=>{});
   });
   [["fi1","book"],["fi2","grid"],["fi3","gear"],["fi4","user"]].forEach(x=>{$(x[0]).innerHTML=ICO(x[1],30)});
+  (function(){const G=["#6C63FF,#3A2FC9","#f2994a,#d35400","#2ebd85,#117a5a","#e0527b,#a8244f","#2d9cdb,#1b5fa8","#9b51e0,#5b2a9e","#f2c94c,#c98a1b","#56ccf2,#2f80ed"],
+    N=["note","book","mail","palette","image","disk","grid","gear","user","info"],R=["/The-Bible-App/icon-192.png","/Songs-Book/icon-192.png","/The-Notes-App/icon-192.png","store-icon-192.png?v=7"];
+    const row=(k,n)=>{const t=[];for(let i=0;i<n;i++){const r=(i+k)%3===0;t.push(r?'<i><img src="'+R[(i+k)%R.length]+'" alt="" loading="lazy"></i>':'<i style="background:linear-gradient(135deg,'+G[(i*3+k)%G.length]+')">'+ICO(N[(i*2+k)%N.length],38)+'</i>')}const h=t.join("");return '<div class="ma-row'+(k%2?" r":"")+(k==2?" s":"")+'">'+h+h+'</div>'};
+    const b=$("maBg");if(b)b.innerHTML=row(0,12)+row(1,12)+row(2,12)+row(3,12)})();
   const items=[...LIFECASTS.apps.map(a=>[a.nom,'<img src="'+a.icon+'" alt="">']),["Paramètres",ICO("gear")],["Compte",ICO("user")],["Applications",ICO("grid")],["Brochures",ICO("book")],["À propos",ICO("info")],["Contact",ICO("mail")]];
   $("winGrid").innerHTML=items.map(i=>'<div><b>'+i[1]+'</b><span>'+i[0]+'</span></div>').join("");
 
