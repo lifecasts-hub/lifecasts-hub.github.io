@@ -17,8 +17,9 @@ const LIFECASTS = {
   storageKey: "lifecasts_user",
   contactEmail: "",
   apps: [
-    { id:"bible", nom:"Bible LifeCasts", accroche:"La Parole, partout. Même hors connexion.", description:"Louis Segond 1910, recherche, favoris synchronisés et mises à jour automatiques.", url:"/The-Bible-App/", icon:"/The-Bible-App/icon-192.png", fond:"linear-gradient(180deg,#fbf6ee,#f2e4cf)" },
-    { id:"cantiques", nom:"Cantiques", accroche:"Les chants d'autrefois, dans votre poche.", description:"Un recueil de cantiques avec favoris, recherche et synchronisation.", url:"/Songs-Book/", icon:"/Songs-Book/icon-192.png", fond:"linear-gradient(180deg,#f3f5fb,#e2e7f3)" }
+    { id:"bible", nom:"Bible LifeCasts", accroche:"La Parole, partout. Même hors connexion.", description:"La Bible Louis Segond 1910 complète, pensée pour la lecture et l'étude au quotidien.", points:["Lisible hors connexion, sans forfait Internet","Recherche par mot ou par référence","Surlignage, notes et favoris synchronisés entre vos appareils","Mises à jour automatiques"], url:"/The-Bible-App/", icon:"/The-Bible-App/icon-192.png", fond:"linear-gradient(180deg,#fbf6ee,#f2e4cf)" },
+    { id:"cantiques", nom:"Cantiques", accroche:"Les chants d'autrefois, dans votre poche.", description:"Plusieurs recueils de cantiques réunis dans une seule application, pour chanter et préparer les réunions.", points:["Recherche par numéro ou par titre","Paroles lisibles avec strophes et refrain","Favoris synchronisés avec votre compte","Fonctionne hors connexion"], url:"/Songs-Book/", icon:"/Songs-Book/icon-192.png", fond:"linear-gradient(180deg,#f3f5fb,#e2e7f3)" },
+    { id:"notes", nom:"Notes", accroche:"Vos réflexions, au même endroit.", description:"Un carnet simple pour écrire vos notes, qui retrouve aussi les notes prises dans la Bible.", points:["Vos notes et celles de la Bible réunies","Synchronisées avec votre compte LifeCasts","Utilisable sans compte, sur l'appareil","Mises à jour automatiques"], url:"/The-Notes-App/", icon:"/The-Notes-App/icon-192.png", fond:"linear-gradient(180deg,#f7f3ea,#ece3cf)" }
   ]
 };
 </script>
@@ -77,6 +78,19 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
  .account{padding:20px}
  .ctas{gap:14px}
 }
+.intro{max-width:680px;margin:var(--s3,21px) auto 0;font-size:clamp(17px,2.2vw,20px);color:var(--muted);line-height:1.5}
+.what{padding:89px 0 55px;text-align:center}
+.what h3{font-size:clamp(32px,5vw,48px);font-weight:700;letter-spacing:-.035em;line-height:1.08}
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:13px;margin-top:55px;text-align:left}
+.feat div{background:var(--soft);border-radius:24px;padding:28px}
+.feat .ico{width:30px;height:30px;color:var(--accent);margin-bottom:14px}
+.feat b{display:block;font-size:21px;letter-spacing:-.02em;margin-bottom:6px}
+.feat p{color:var(--muted);font-size:15px}
+.pts{list-style:none;max-width:420px;margin:21px auto 0;text-align:left;font-size:15px;color:var(--ink)}
+.pts li{padding:6px 0 6px 22px;position:relative}
+.pts li::before{content:"";position:absolute;left:2px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--accent2)}
+.how{padding:55px 0 89px;text-align:center}
+.how .steps small{display:block;margin-bottom:2px}
 .ico{display:block;flex:none}
 .window .grid span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .window .grid b{flex:none}
@@ -116,6 +130,7 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 <header><div class="wrap">
 <a class="logo" href="#accueil"><img src="mark-dark.png" alt="">LifeCasts</a>
 <nav aria-label="Navigation principale">
+<a href="#apropos">À propos</a>
 <a href="#applications">Applications</a>
 <a href="#system">LifeCasts System</a>
 <a href="#mission">Mission</a>
@@ -130,12 +145,34 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 <section class="hero-home" id="accueil"><div class="wrap">
 <h1>LifeCasts.</h1>
 <h2>Le ministère des bandes : imprimé, distribué, et dans vos applications.</h2>
+<p class="intro">LifeCasts imprime et distribue des brochures tirées des bandes du Message de William Branham, et crée des applications pour lire la Bible, chanter les cantiques et prendre des notes, avec un seul compte pour tout retrouver sur tous vos appareils.</p>
 <div class="ctas">
 <a class="pill accent" href="system.html">Ouvrir LifeCasts System</a><a class="more" href="#mission">En savoir plus</a></div>
 <div class="icons" id="heroIcons"></div>
 </div></section>
 
+<section class="what" id="apropos"><div class="wrap">
+<div class="eyebrow">Ce que fait LifeCasts</div>
+<h3>Quatre choses,<br>un même service.</h3>
+<div class="feat">
+<div><span id="fi1"></span><b>Des brochures imprimées</b><p>Des messages des bandes mis en forme et imprimés avec soin, pour être lus, prêtés et conservés.</p></div>
+<div><span id="fi2"></span><b>Des applications</b><p>La Bible, les cantiques et un carnet de notes, installables sur Android, macOS et Windows, ou utilisables dans le navigateur.</p></div>
+<div><span id="fi3"></span><b>LifeCasts System</b><p>Un espace en ligne qui rassemble vos applications, vos notes et vos paramètres, accessible depuis n'importe quel navigateur.</p></div>
+<div><span id="fi4"></span><b>Un seul compte</b><p>Connectez-vous avec Google : vos favoris et vos notes vous suivent d'une application et d'un appareil à l'autre.</p></div>
+</div>
+</div></section>
+
 <div id="applications"></div>
+
+<section class="how" id="commencer"><div class="wrap">
+<div class="eyebrow">Pour commencer</div>
+<h3 style="font-size:clamp(30px,4.5vw,40px);font-weight:700;letter-spacing:-.03em">Prêt en trois étapes.</h3>
+<div class="steps">
+<div><small>Étape une</small><b>Choisir</b><p>Ouvrez une application dans le navigateur, ou rendez-vous sur LC Store.</p></div>
+<div><small>Étape deux</small><b>Installer</b><p>Téléchargez-la pour Android, macOS ou Windows. Elle se met ensuite à jour toute seule.</p></div>
+<div><small>Étape trois</small><b>Se connecter</b><p>Facultatif : un compte Google pour synchroniser favoris et notes entre vos appareils.</p></div>
+</div>
+</div></section>
 
 <section class="panel dark" id="system">
 <div class="eyebrow" style="color:var(--accent2)">Nouveau</div>
@@ -232,12 +269,14 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
     const p=E("section",{className:"panel"});p.style.background=a.fond;
     p.append(E("img",{className:"big-icon",src:a.icon,alt:""}));
     p.append(E("h3",{textContent:a.nom+"."}),E("p",{className:"lead",textContent:a.accroche}),E("p",{className:"sub",textContent:a.description}));
-    const c=E("div",{className:"ctas"});c.append(E("a",{className:"pill",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"more",href:"store.html?id="+a.id,textContent:"LC Store"}));
+    if(a.points){const u=E("ul",{className:"pts"});a.points.forEach(t=>u.append(E("li",{textContent:t})));p.append(u)}
+    const c=E("div",{className:"ctas"});c.append(E("a",{className:"more",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"pill",href:"store.html?id="+a.id,textContent:"Télécharger"}));
     const v=E("div",{className:"muted",textContent:" "});v.style.marginTop="10px";
     p.append(c,v);
     $("applications").append(p);
     const repo=REPOS[a.id];if(repo)ghVersions(repo).then(vs=>{if(vs[0])v.textContent="Version "+vs[0].version}).catch(()=>{});
   });
+  [["fi1","book"],["fi2","grid"],["fi3","gear"],["fi4","user"]].forEach(x=>{$(x[0]).innerHTML=ICO(x[1],30)});
   const items=[...LIFECASTS.apps.map(a=>[a.nom,'<img src="'+a.icon+'" alt="">']),["Paramètres",ICO("gear")],["Compte",ICO("user")],["Applications",ICO("grid")],["Brochures",ICO("book")],["À propos",ICO("info")],["Contact",ICO("mail")]];
   $("winGrid").innerHTML=items.map(i=>'<div><b>'+i[1]+'</b><span>'+i[0]+'</span></div>').join("");
 
