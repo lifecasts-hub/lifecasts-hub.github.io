@@ -91,22 +91,26 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 .pts li::before{content:"";position:absolute;left:2px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--accent2)}
 .how{padding:55px 0 89px;text-align:center}
 .how .steps small{display:block;margin-bottom:2px}
-.more-apps{position:relative;isolation:isolate;background:#f5f5f7;padding-bottom:var(--s6,89px)}
-.ma-bg{position:absolute;inset:-20px 0;z-index:-2;display:flex;flex-direction:column;justify-content:center;gap:16px;transform:rotate(-4deg) scale(1.1);filter:saturate(1.1)}
+.more-apps{position:relative;isolation:isolate;background:linear-gradient(115deg,#fff0d9,#ffe1ea,#e9e3ff,#def0ff,#e0f7ea,#fff0d9);background-size:400% 400%;animation:helios 26s cubic-bezier(.45,0,.55,1) infinite alternate;padding-bottom:var(--s6,89px)}
+@keyframes helios{from{background-position:0% 50%}to{background-position:100% 50%}}
+.ma-bg{position:absolute;inset:-20px 0;z-index:-2;display:flex;flex-direction:column;justify-content:center;gap:16px;transform:rotate(-4deg) scale(1.1);-webkit-mask-image:linear-gradient(180deg,transparent,#000 24%,#000 76%,transparent);mask-image:linear-gradient(180deg,transparent,#000 24%,#000 76%,transparent)}
+.ma-row i[style]{animation:hue 20s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes hue{from{filter:hue-rotate(0deg) saturate(1.1)}to{filter:hue-rotate(300deg) saturate(1.25)}}
 .ma-row{display:flex;gap:16px;width:max-content;animation:maL 70s linear infinite}
 .ma-row.r{animation-name:maR;animation-duration:85s}.ma-row.s{animation-duration:60s}
 .ma-row i{flex:none;width:84px;height:84px;border-radius:22.5%;display:grid;place-items:center;overflow:hidden;color:#fff;box-shadow:0 10px 24px rgba(40,30,80,.22)}
 .ma-row i img{width:100%;height:100%;object-fit:cover}
 .ma-row i svg{width:38px;height:38px}
 @keyframes maL{to{transform:translateX(-50%)}}@keyframes maR{from{transform:translateX(-50%)}to{transform:none}}
-.ma-fog{position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 62% 58% at 50% 50%,rgba(245,245,247,.97) 28%,rgba(245,245,247,.72) 58%,rgba(245,245,247,.18) 100%),linear-gradient(180deg,#f5f5f7 0,rgba(245,245,247,0) 22%,rgba(245,245,247,0) 78%,#f5f5f7 100%);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px)}
+.ma-fog{position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 62% 58% at 50% 50%,rgba(255,255,255,.96) 28%,rgba(255,255,255,.7) 58%,rgba(255,255,255,.12) 100%);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px)}
 .ma-in{position:relative}
-.big-btn{font-size:19px;padding:19px 40px;gap:12px;display:inline-flex;align-items:center;font-weight:600;background:linear-gradient(135deg,#c98a3d,#8a4f17);color:#fff;box-shadow:0 14px 34px rgba(154,91,30,.42),inset 0 1px 0 rgba(255,255,255,.35);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.big-btn{font-size:19px;padding:19px 40px;gap:12px;display:inline-flex;align-items:center;font-weight:600;background:linear-gradient(120deg,#c98a3d,#e0703a,#d6457a,#8a4f17,#c98a3d);background-size:300% 100%;animation:btnh 9s cubic-bezier(.45,0,.55,1) infinite alternate;color:#fff;box-shadow:0 14px 34px rgba(154,91,30,.42),inset 0 1px 0 rgba(255,255,255,.35);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s}
 .big-btn::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-90px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:shine 3.8s ease-in-out infinite}
 .big-btn svg{transition:transform .25s}.big-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 20px 44px rgba(154,91,30,.5),inset 0 1px 0 rgba(255,255,255,.35)}.big-btn:hover svg{transform:translateX(4px)}
+@keyframes btnh{to{background-position:100% 0}}
 @keyframes shine{0%,55%{left:-90px}100%{left:130%}}
 @media (max-width:600px){.ma-row i{width:68px;height:68px}.ma-row i svg{width:30px;height:30px}.big-btn{font-size:17px;padding:17px 32px}}
-@media (prefers-reduced-motion:reduce){.ma-row,.big-btn::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.more-apps,.ma-row,.ma-row i[style],.big-btn,.big-btn::after{animation:none}}
 .ico{display:block;flex:none}
 .window .grid span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .window .grid b{flex:none}
