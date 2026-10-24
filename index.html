@@ -93,24 +93,20 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 .how .steps small{display:block;margin-bottom:2px}
 .more-apps{position:relative;isolation:isolate;background:linear-gradient(115deg,#fff0d9,#ffe1ea,#e9e3ff,#def0ff,#e0f7ea,#fff0d9);background-size:400% 400%;animation:helios 26s cubic-bezier(.45,0,.55,1) infinite alternate;padding-bottom:var(--s6,89px)}
 @keyframes helios{from{background-position:0% 50%}to{background-position:100% 50%}}
-.ma-bg{position:absolute;inset:-20px 0;z-index:-2;display:flex;flex-direction:column;justify-content:center;gap:16px;transform:rotate(-4deg) scale(1.1);-webkit-mask-image:linear-gradient(180deg,transparent,#000 24%,#000 76%,transparent);mask-image:linear-gradient(180deg,transparent,#000 24%,#000 76%,transparent)}
-.ma-row i[style]{animation:hue 20s cubic-bezier(.45,0,.55,1) infinite alternate}
-@keyframes hue{from{filter:hue-rotate(0deg) saturate(1.1)}to{filter:hue-rotate(300deg) saturate(1.25)}}
+.ma-bg{position:absolute;inset:-20px 0;z-index:-2;display:flex;flex-direction:column;justify-content:center;gap:16px;opacity:.75;transform:rotate(-4deg) scale(1.1)}
+.ma-row i.sy{background:linear-gradient(135deg,#2a1c14,#9a5b1e)}.ma-row i.sy img{width:58%;height:58%;filter:invert(1)}
 .ma-row{display:flex;gap:16px;width:max-content;animation:maL 70s linear infinite}
 .ma-row.r{animation-name:maR;animation-duration:85s}.ma-row.s{animation-duration:60s}
 .ma-row i{flex:none;width:84px;height:84px;border-radius:22.5%;display:grid;place-items:center;overflow:hidden;color:#fff;box-shadow:0 10px 24px rgba(40,30,80,.22)}
 .ma-row i img{width:100%;height:100%;object-fit:cover}
 .ma-row i svg{width:38px;height:38px}
 @keyframes maL{to{transform:translateX(-50%)}}@keyframes maR{from{transform:translateX(-50%)}to{transform:none}}
-.ma-fog{position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 62% 58% at 50% 50%,rgba(255,255,255,.96) 28%,rgba(255,255,255,.7) 58%,rgba(255,255,255,.12) 100%);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px)}
+.ma-fog{position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 95% 85% at 50% 52%,rgba(255,255,255,.97) 30%,rgba(255,255,255,.85) 58%,rgba(255,255,255,.3) 100%)}
 .ma-in{position:relative}
-.big-btn{font-size:19px;padding:19px 40px;gap:12px;display:inline-flex;align-items:center;font-weight:600;background:linear-gradient(120deg,#c98a3d,#e0703a,#d6457a,#8a4f17,#c98a3d);background-size:300% 100%;animation:btnh 9s cubic-bezier(.45,0,.55,1) infinite alternate;color:#fff;box-shadow:0 14px 34px rgba(154,91,30,.42),inset 0 1px 0 rgba(255,255,255,.35);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s}
-.big-btn::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-90px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:shine 3.8s ease-in-out infinite}
-.big-btn svg{transition:transform .25s}.big-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 20px 44px rgba(154,91,30,.5),inset 0 1px 0 rgba(255,255,255,.35)}.big-btn:hover svg{transform:translateX(4px)}
-@keyframes btnh{to{background-position:100% 0}}
-@keyframes shine{0%,55%{left:-90px}100%{left:130%}}
-@media (max-width:600px){.ma-row i{width:68px;height:68px}.ma-row i svg{width:30px;height:30px}.big-btn{font-size:17px;padding:17px 32px}}
-@media (prefers-reduced-motion:reduce){.more-apps,.ma-row,.ma-row i[style],.big-btn,.big-btn::after{animation:none}}
+.pill.accent.big-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:min(100%,520px);padding:22px 28px;border-radius:20px;font-size:19px;font-weight:600;background:#111;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:transform .25s,box-shadow .25s,background .25s}
+.big-btn svg{transition:transform .25s}.pill.accent.big-btn:hover{background:#000;transform:translateY(-2px);box-shadow:0 14px 32px rgba(0,0,0,.28)}.big-btn:hover svg{transform:translateX(5px)}
+@media (max-width:600px){.ma-row i{width:68px;height:68px}.ma-row i svg{width:30px;height:30px}.big-btn{font-size:17px;padding:19px 22px}}
+@media (prefers-reduced-motion:reduce){.more-apps,.ma-row{animation:none}}
 .ico{display:block;flex:none}
 .window .grid span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .window .grid b{flex:none}
@@ -309,10 +305,9 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
     const repo=REPOS[a.id];if(repo)ghVersions(repo).then(vs=>{if(vs[0])v.textContent="Version "+vs[0].version}).catch(()=>{});
   });
   [["fi1","book"],["fi2","grid"],["fi3","gear"],["fi4","user"]].forEach(x=>{$(x[0]).innerHTML=ICO(x[1],30)});
-  (function(){const G=["#6C63FF,#3A2FC9","#f2994a,#d35400","#2ebd85,#117a5a","#e0527b,#a8244f","#2d9cdb,#1b5fa8","#9b51e0,#5b2a9e","#f2c94c,#c98a1b","#56ccf2,#2f80ed"],
-    N=["note","book","mail","palette","image","disk","grid","gear","user","info"],R=["/The-Bible-App/icon-192.png","/Songs-Book/icon-192.png","/The-Notes-App/icon-192.png","store-icon-192.png?v=7"];
-    const row=(k,n)=>{const t=[];for(let i=0;i<n;i++){const r=(i+k)%3===0;t.push(r?'<i><img src="'+R[(i+k)%R.length]+'" alt="" loading="lazy"></i>':'<i style="background:linear-gradient(135deg,'+G[(i*3+k)%G.length]+')">'+ICO(N[(i*2+k)%N.length],38)+'</i>')}const h=t.join("");return '<div class="ma-row'+(k%2?" r":"")+(k==2?" s":"")+'">'+h+h+'</div>'};
-    const b=$("maBg");if(b)b.innerHTML=row(0,12)+row(1,12)+row(2,12)+row(3,12)})();
+  (function(){const R=["/The-Bible-App/icon-192.png","/Songs-Book/icon-192.png","/The-Notes-App/icon-192.png","store-icon-192.png?v=7"];
+    const row=k=>{let t="";for(let i=0;i<8;i++){const n=(i+k*2)%5;t+=n===4?'<i class="sy"><img src="mark-dark.png" alt=""></i>':'<i><img src="'+R[n]+'" alt="" loading="lazy"></i>'}return '<div class="ma-row'+(k%2?" r":"")+'">'+t+t+'</div>'};
+    const b=$("maBg");if(b)b.innerHTML=row(0)+row(1)+row(2)})();
   const items=[...LIFECASTS.apps.map(a=>[a.nom,'<img src="'+a.icon+'" alt="">']),["Paramètres",ICO("gear")],["Compte",ICO("user")],["Applications",ICO("grid")],["Brochures",ICO("book")],["À propos",ICO("info")],["Contact",ICO("mail")]];
   $("winGrid").innerHTML=items.map(i=>'<div><b>'+i[1]+'</b><span>'+i[0]+'</span></div>').join("");
 
