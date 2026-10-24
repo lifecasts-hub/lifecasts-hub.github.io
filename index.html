@@ -91,6 +91,9 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 .pts li::before{content:"";position:absolute;left:2px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--accent2)}
 .how{padding:55px 0 89px;text-align:center}
 .how .steps small{display:block;margin-bottom:2px}
+.more-apps{display:block;color:inherit;text-decoration:none;background:linear-gradient(180deg,#f5f5f7,#e8e6f5);padding-bottom:var(--s6,89px);transition:transform .3s}
+.more-apps:hover{transform:scale(1.01)}
+.more-apps .more{color:var(--accent)}
 .ico{display:block;flex:none}
 .window .grid span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .window .grid b{flex:none}
@@ -163,6 +166,15 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 </div></section>
 
 <div id="applications"></div>
+
+<a class="panel more-apps" href="store.html" aria-label="Plus d'applications dans LC Store">
+<img class="big-icon" src="store-icon-192.png?v=7" alt="">
+<div class="eyebrow">LC Store</div>
+<h3>Plus d'applications.</h3>
+<p class="lead">Toutes les applications LifeCasts, pour Android, macOS et Windows.</p>
+<p class="sub">D'autres applications arrivent. Retrouvez-les toutes dans LC Store.</p>
+<div class="ctas"><span class="more">Découvrir LC Store</span></div>
+</a>
 
 <section class="how" id="commencer"><div class="wrap">
 <div class="eyebrow">Pour commencer</div>
