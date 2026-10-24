@@ -338,6 +338,35 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
 $q("#q").addEventListener("input",search);
 $q("#date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
 render();
+/* Proposition de télécharger LC Store : navigateur seulement (pas dans l'APK), une fois par session */
+(function(){
+ if(location.protocol==="file:"||matchMedia("(display-mode: standalone)").matches||new URLSearchParams(location.search).get("id"))return;
+ try{if(sessionStorage.getItem("lcstore.offer"))return;sessionStorage.setItem("lcstore.offer","1")}catch(e){}
+ const ua=navigator.userAgent,pf=navigator.platform||"",ios=/iPhone|iPad|iPod/.test(ua)||(/Mac/.test(pf)&&navigator.maxTouchPoints>1);
+ const me=ios?"ios":/Android/i.test(ua)?"android":/Win/i.test(pf)?"win":/Mac/i.test(pf)?"mac":"other";
+ const F={android:{url:"https://lifecasts-hub.github.io/downloads/LC_Store_1.1.apk",v:"1.1"},mac:null,win:null};
+ const APPSTORE="https://apps.apple.com/";
+ const dlI=S('<path d="M12 4v12m0 0-4-4m4 4 4-4M5 20h14"/>');
+ const wide="display:flex;flex-direction:row;justify-content:center;align-items:center;gap:10px;width:100%;box-sizing:border-box;text-decoration:none;height:55px;border-radius:999px;font-size:16px";
+ function view(){
+  let body;
+  if(me==="ios")body=`<a class="get p" style="${wide}" href="${APPSTORE}" target="_blank" rel="noopener">Ouvrir l'App Store</a>`;
+  else if(me==="android")body=`<a class="get p" style="${wide}" href="${F.android.url}" download>${dlI}Télécharger LC Store (APK)</a><p style="margin-top:14px;font-size:13px">Android 7 et plus. Si Android le demande, autorisez l'installation depuis votre navigateur.</p>`;
+  else{
+   const row=k=>{const p=PL[k],f=F[k];return `<div class="dlr"><div class="b" style="background:${p.c}">${S(p.i)}</div><div class="n"><b>${p.n}</b><small>${f?p.f+(f.v?" · version "+f.v:""):p.d}</small></div>${f?`<a class="get" href="${f.url}" download>${dlI}</a>`:`<span class="soon">Bientôt</span>`}</div>`};
+   const order=["win","mac","android"].sort((a,b)=>(b===me)-(a===me));
+   body=`<div class="dl" style="display:flex;flex-direction:column;gap:10px;text-align:left">${order.map(row).join("")}</div>`;
+  }
+  $q("#sheet").innerHTML=`<button class="x" data-close>${S('<path d="M6 6l12 12M18 6 6 18"/>')}</button>
+  <div style="padding:38px 22px 10px;text-align:center"><img src="store-icon-192.png?v=7" alt="" style="width:88px;height:88px;border-radius:22.5%;box-shadow:0 14px 30px -10px rgba(30,20,90,.5)"><h2 style="font:600 28px var(--serif);margin-top:16px">Télécharger LC Store</h2><p style="color:var(--sub);font-size:15px;margin-top:6px;line-height:1.5">${ios?"Retrouvez LC Store sur l'App Store.":"L'application officielle pour installer et mettre à jour toutes les apps LifeCasts."}</p></div>
+  <div class="blk" style="padding:14px 22px 34px;text-align:center">${body}<p style="margin-top:16px"><a data-close style="color:var(--sub);font-size:14px;cursor:pointer">Plus tard</a></p></div>`;
+  $q("#ov").classList.add("on");$q("#sheet").classList.add("on");$q("#sheet").scrollTop=0;
+ }
+ const shown=()=>$q("#sheet").classList.contains("on")&&/Télécharger LC Store/.test($q("#sheet").textContent);
+ setTimeout(()=>{view();
+  if(me!=="ios")ghDownloads("lifecasts-hub/lifecasts-hub.github.io").then(d=>{const K2={"Android (APK)":"android","Mac (DMG)":"mac","Windows (EXE)":"win"};d.forEach(x=>{const k=K2[x.label];if(k&&/store/i.test(x.url))F[k]={url:x.url,v:(x.tag||"").replace(/^v/,"")}});if(shown())view()}).catch(()=>{});
+ },1200);
+})();
 const K={"Android (APK)":"android","Mac (DMG)":"mac","Windows (EXE)":"win"};
 APPS.forEach(a=>{
   ghVersions(a.repo).then(v=>{if(v[0]){a.v=v[0].version;a.news=(v[0].notes||"").split(/\n|;|,(?= )/).map(x=>x.replace(/^[-·•\s]+/,"").trim()).filter(Boolean).slice(0,4)}render()}).catch(()=>{});
