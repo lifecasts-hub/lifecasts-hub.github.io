@@ -338,7 +338,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
 $q("#q").addEventListener("input",search);
 $q("#date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
 render();
-/* Proposition de télécharger LC Store : navigateur seulement (pas dans l'APK), une fois par session */
+/* Proposition de télécharger LC Store, façon Dynamic Island : navigateur seulement (pas dans l'APK), une fois par session */
 (function(){
  if(location.protocol==="file:"||matchMedia("(display-mode: standalone)").matches||new URLSearchParams(location.search).get("id"))return;
  try{if(sessionStorage.getItem("lcstore.offer"))return;sessionStorage.setItem("lcstore.offer","1")}catch(e){}
@@ -347,24 +347,41 @@ render();
  const F={android:{url:"https://lifecasts-hub.github.io/downloads/LC_Store_1.1.apk",v:"1.1"},mac:null,win:null};
  const APPSTORE="https://apps.apple.com/";
  const dlI=S('<path d="M12 4v12m0 0-4-4m4 4 4-4M5 20h14"/>');
- const wide="display:flex;flex-direction:row;justify-content:center;align-items:center;gap:10px;width:100%;box-sizing:border-box;text-decoration:none;height:55px;border-radius:999px;font-size:16px";
- function view(){
-  let body;
-  if(me==="ios")body=`<a class="get p" style="${wide}" href="${APPSTORE}" target="_blank" rel="noopener">Ouvrir l'App Store</a>`;
-  else if(me==="android")body=`<a class="get p" style="${wide}" href="${F.android.url}" download>${dlI}Télécharger LC Store (APK)</a><p style="margin-top:14px;font-size:13px">Android 7 et plus. Si Android le demande, autorisez l'installation depuis votre navigateur.</p>`;
-  else{
-   const row=k=>{const p=PL[k],f=F[k];return `<div class="dlr"><div class="b" style="background:${p.c}">${S(p.i)}</div><div class="n"><b>${p.n}</b><small>${f?p.f+(f.v?" · version "+f.v:""):p.d}</small></div>${f?`<a class="get" href="${f.url}" download>${dlI}</a>`:`<span class="soon">Bientôt</span>`}</div>`};
-   const order=["win","mac","android"].sort((a,b)=>(b===me)-(a===me));
-   body=`<div class="dl" style="display:flex;flex-direction:column;gap:10px;text-align:left">${order.map(row).join("")}</div>`;
-  }
-  $q("#sheet").innerHTML=`<button class="x" data-close>${S('<path d="M6 6l12 12M18 6 6 18"/>')}</button>
-  <div style="padding:38px 22px 10px;text-align:center"><img src="store-icon-192.png?v=7" alt="" style="width:88px;height:88px;border-radius:22.5%;box-shadow:0 14px 30px -10px rgba(30,20,90,.5)"><h2 style="font:600 28px var(--serif);margin-top:16px">Télécharger LC Store</h2><p style="color:var(--sub);font-size:15px;margin-top:6px;line-height:1.5">${ios?"Retrouvez LC Store sur l'App Store.":"L'application officielle pour installer et mettre à jour toutes les apps LifeCasts."}</p></div>
-  <div class="blk" style="padding:14px 22px 34px;text-align:center">${body}<p style="margin-top:16px"><a data-close style="color:var(--sub);font-size:14px;cursor:pointer">Plus tard</a></p></div>`;
-  $q("#ov").classList.add("on");$q("#sheet").classList.add("on");$q("#sheet").scrollTop=0;
+ const st=document.createElement("style");st.textContent=`
+ #isl{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;z-index:60;transform:translateX(-50%);width:132px;background:#000;color:#fff;border-radius:22px;box-shadow:0 18px 40px -12px rgba(0,0,0,.55),0 0 0 .5px rgba(255,255,255,.08) inset;overflow:hidden;font-family:Inter,-apple-system,sans-serif;transition:width .6s cubic-bezier(.2,1.1,.3,1),border-radius .6s cubic-bezier(.2,1.1,.3,1),opacity .35s,transform .45s cubic-bezier(.2,.9,.3,1);opacity:0;transform:translate(-50%,-30px) scale(.8)}
+ #isl.in{opacity:1;transform:translateX(-50%)}
+ #isl.open{width:min(392px,calc(100vw - 20px));border-radius:34px}
+ #isl .hd{display:flex;align-items:center;gap:12px;padding:10px 12px;min-height:34px}
+ #isl .hd img{width:22px;height:22px;border-radius:7px;flex:none;transition:.5s cubic-bezier(.2,1.1,.3,1)}
+ #isl.open .hd{padding:16px 16px 6px}#isl.open .hd img{width:46px;height:46px;border-radius:12px}
+ #isl .t{flex:1;min-width:0;line-height:1.25;font-size:13px;font-weight:600;white-space:nowrap}
+ #isl .t small{display:block;font-weight:400;font-size:12.5px;color:#a1a1a6;white-space:normal;max-height:0;opacity:0;transition:.4s .1s}
+ #isl.open .t{font-size:16px}#isl.open .t small{max-height:40px;opacity:1;margin-top:2px}
+ #isl .x2{width:30px;height:30px;border-radius:50%;border:0;background:#2c2c2e;color:#fff;display:none;place-items:center;cursor:pointer;flex:none;padding:0}
+ #isl.open .x2{display:grid}#isl .x2 svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+ #isl .bd{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .55s cubic-bezier(.2,1,.3,1),opacity .4s .12s}
+ #isl.open .bd{grid-template-rows:1fr;opacity:1}
+ #isl .bd>div{overflow:hidden}#isl .bi{padding:8px 16px 16px;display:flex;flex-direction:column;gap:8px}
+ #isl .go{display:flex;align-items:center;justify-content:center;gap:10px;height:50px;border-radius:999px;background:#fff;color:#000;font-weight:600;font-size:15px;text-decoration:none}
+ #isl .go svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+ #isl .rw{display:flex;align-items:center;gap:12px;background:#1c1c1e;border-radius:18px;padding:10px 12px;font-size:14px}
+ #isl .rw .b{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none}#isl .rw .b svg{width:19px;height:19px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+ #isl .rw .n{flex:1}#isl .rw b{display:block;font-weight:600}#isl .rw small{color:#a1a1a6;font-size:12px}
+ #isl .rw .sn{color:#a1a1a6;font-size:12px;font-weight:600}
+ #isl .rw a.dl2{width:38px;height:38px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center}#isl .rw a.dl2 svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+ #isl .nt{font-size:12px;color:#a1a1a6;text-align:center;line-height:1.4;padding:2px 6px 0}
+ @media(prefers-reduced-motion:reduce){#isl,#isl *{transition:none!important}}`;document.head.append(st);
+ const el=document.createElement("div");el.id="isl";el.setAttribute("role","dialog");el.setAttribute("aria-label","Télécharger LC Store");
+ function body(){
+  if(me==="ios")return `<a class="go" href="${APPSTORE}" target="_blank" rel="noopener">Ouvrir l'App Store</a>`;
+  if(me==="android")return `<a class="go" href="${F.android.url}" download>${dlI}Télécharger (APK)</a><div class="nt">Android 7 et plus. Si Android le demande, autorisez l'installation depuis votre navigateur.</div>`;
+  return ["win","mac","android"].sort((a,b)=>(b===me)-(a===me)).map(k=>{const p=PL[k],f=F[k];return `<div class="rw"><div class="b" style="background:${p.c}">${S(p.i)}</div><div class="n"><b>${p.n}</b><small>${f?p.f+(f.v?" · version "+f.v:""):p.d}</small></div>${f?`<a class="dl2" href="${f.url}" download aria-label="Télécharger pour ${p.n}">${dlI}</a>`:`<span class="sn">Bientôt</span>`}</div>`}).join("");
  }
- const shown=()=>$q("#sheet").classList.contains("on")&&/Télécharger LC Store/.test($q("#sheet").textContent);
- setTimeout(()=>{view();
-  if(me!=="ios")ghDownloads("lifecasts-hub/lifecasts-hub.github.io").then(d=>{const K2={"Android (APK)":"android","Mac (DMG)":"mac","Windows (EXE)":"win"};d.forEach(x=>{const k=K2[x.label];if(k&&/store/i.test(x.url))F[k]={url:x.url,v:(x.tag||"").replace(/^v/,"")}});if(shown())view()}).catch(()=>{});
+ function draw(){const o=el.classList.contains("open");
+  el.innerHTML=`<div class="hd"><img src="store-icon-192.png?v=7" alt=""><div class="t">${o||1?"LC Store":""}<small>${ios?"Retrouvez LC Store sur l'App Store":"Installez l'application officielle LifeCasts"}</small></div><button class="x2" aria-label="Fermer">${S('<path d="M6 6l12 12M18 6 6 18"/>')}</button></div><div class="bd"><div><div class="bi">${body()}</div></div></div>`;
+  el.querySelector(".x2").onclick=()=>{el.classList.remove("open");setTimeout(()=>{el.classList.remove("in");setTimeout(()=>el.remove(),450)},350)}}
+ setTimeout(()=>{document.body.append(el);draw();requestAnimationFrame(()=>requestAnimationFrame(()=>{el.classList.add("in");setTimeout(()=>el.classList.add("open"),650)}));
+  if(me!=="ios")ghDownloads("lifecasts-hub/lifecasts-hub.github.io").then(d=>{const K2={"Android (APK)":"android","Mac (DMG)":"mac","Windows (EXE)":"win"};d.forEach(x=>{const k=K2[x.label];if(k&&/store/i.test(x.url))F[k]={url:x.url,v:(x.tag||"").replace(/^v/,"")}});if(el.isConnected){const b=el.querySelector(".bi");if(b)b.innerHTML=body()}}).catch(()=>{});
  },1200);
 })();
 const K={"Android (APK)":"android","Mac (DMG)":"mac","Windows (EXE)":"win"};
