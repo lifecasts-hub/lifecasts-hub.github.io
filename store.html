@@ -338,10 +338,9 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
 $q("#q").addEventListener("input",search);
 $q("#date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
 render();
-/* Proposition de télécharger LC Store, façon Dynamic Island : navigateur seulement (pas dans l'APK), une fois par session */
+/* Proposition de télécharger LC Store, façon Dynamic Island : navigateur seulement (pas dans l'APK), à chaque ouverture de la page */
 (function(){
  if(location.protocol==="file:"||matchMedia("(display-mode: standalone)").matches||new URLSearchParams(location.search).get("id"))return;
- try{if(sessionStorage.getItem("lcstore.offer"))return;sessionStorage.setItem("lcstore.offer","1")}catch(e){}
  const ua=navigator.userAgent,pf=navigator.platform||"",ios=/iPhone|iPad|iPod/.test(ua)||(/Mac/.test(pf)&&navigator.maxTouchPoints>1);
  const me=ios?"ios":/Android/i.test(ua)?"android":/Win/i.test(pf)?"win":/Mac/i.test(pf)?"mac":"other";
  const F={android:{url:"https://lifecasts-hub.github.io/downloads/LC_Store_1.1.apk",v:"1.1"},mac:null,win:null};
