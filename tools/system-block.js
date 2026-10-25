@@ -21,9 +21,9 @@ function pairSite(){const c=new URLSearchParams(location.search).get("pair");if(
  const go=async()=>{const pr=new firebase.auth.GoogleAuthProvider();pr.setCustomParameters({prompt:"select_account"});
   try{const r=await FA.signInWithPopup(pr),t=r.credential&&r.credential.idToken;if(!t)throw{code:"no-token"};
    await FD.doc("pairings/"+c).update({t,uid:r.user.uid});history.replaceState(null,"",location.pathname);
-   show("C'est fait !","Votre compte est lié. Revenez dans l'application LifeCasts System.","Retour à l'application").onclick=()=>{location.href="lifecasts://system"};
+   show("C'est fait !","Votre compte est lié. Revenez dans l'application Life System.","Retour à l'application").onclick=()=>{location.href="lifecasts://system"};
    setTimeout(()=>{location.href="lifecasts://system"},800)}
   catch(e){show("Échec de la connexion",(e.code==="not-found"||e.code==="permission-denied")?"Ce lien a expiré. Relancez la connexion depuis l'application.":"Erreur : "+(e.code||"inconnue"),"Réessayer").onclick=go}};
- document.body.appendChild(o);show("Connexion à l'application","Connectez-vous avec Google pour lier l'application LifeCasts System à votre compte.","Se connecter avec Google").onclick=go}
+ document.body.appendChild(o);show("Connexion à l'application","Connectez-vous avec Google pour lier l'application Life System à votre compte.","Se connecter avec Google").onclick=go}
 if(location.protocol==="file:"||new URLSearchParams(location.search).get("pair"))fbInit(true).then(()=>{FA=firebase.auth();FD=firebase.firestore();
  if(location.protocol==="file:"){FA.onAuthStateChanged(fbUser);const c=localStorage.getItem("lc.pair");if(c)fbPairWait(c)}else pairSite()}).catch(()=>{});

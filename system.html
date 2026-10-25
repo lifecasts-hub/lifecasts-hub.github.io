@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2a1c14">
 <link rel="icon" type="image/png" href="favicon.png">
-<title>LifeCasts System</title>
+<title>Life System</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-<script src="lc-common.js?v=11"></script>
+<script src="lc-common.js?v=12"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Helvetica Neue",Arial,sans-serif;--glass:rgba(255,255,255,.72);--glass2:rgba(255,255,255,.55);--ink:#1d1d1f;--muted:#6e6e73;--line:rgba(0,0,0,.1);--accent:#9a5b1e;--win:#fff;--soft:#f5f5f7}
@@ -143,7 +143,7 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
 <section id="login" hidden>
 <div class="box glass">
 <div class="mark"><img src="mark-dark.png" alt=""></div>
-<h1>LifeCasts System</h1>
+<h1>Life System</h1>
 <p>Connectez-vous avec votre compte LifeCasts.</p>
 <div id="gbtn"></div>
 <p class="sub" id="lerr" hidden style="color:#c4302b">La connexion n'a pas abouti.</p>
@@ -156,7 +156,7 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
 <div id="os" hidden>
 <div id="bar" class="glass">
 <button id="logoBtn" title="LifeCasts"><img src="mark-dark.png" alt="" style="height:15px;vertical-align:middle" id="barMark"></button>
-<span class="ttl" id="appTitle">LifeCasts System</span>
+<span class="ttl" id="appTitle">Life System</span>
 <span class="sp"></span>
 <span id="barClock"></span>
 <button id="meBtn"><img class="av" id="barAv" alt=""></button>
@@ -187,7 +187,7 @@ const WP={sable:"linear-gradient(135deg,#f3d9b1 0%,#c98a3d 45%,#5a3a22 100%)",nu
 /* Applications du système */
 const APPS=[
  {id:"apps",nom:"Applications",icon:'<svg viewBox="0 0 100 100"><defs><linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2AA7FF"/><stop offset="1" stop-color="#0A5FE0"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(#gS)"/><g fill="#fff"><rect x="24" y="24" width="22" height="22" rx="6"/><rect x="54" y="24" width="22" height="22" rx="6" opacity=".85"/><rect x="24" y="54" width="22" height="22" rx="6" opacity=".85"/><rect x="54" y="54" width="22" height="22" rx="6" opacity=".7"/></g></svg>',url:"applications.html?v=2"},
- {id:"store",nom:"LC Store",icon:'<img src="store-icon.png?v=7" alt="">',url:"store.html"},
+ {id:"store",nom:"Life Store",icon:'<img src="store-icon.png?v=7" alt="">',url:"store.html"},
  {id:"settings",nom:"Paramètres",icon:ICO("gear"),fn:settings},
  {id:"brochures",nom:"Brochures",icon:'<svg viewBox="0 0 100 100"><defs><linearGradient id="gB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6C63FF"/><stop offset="1" stop-color="#3A2FC9"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(#gB)"/><rect x="29" y="22" width="42" height="56" rx="7" fill="#fff"/><rect x="29" y="22" width="9" height="56" rx="4" fill="#fff" opacity=".55" transform="translate(-4 0)"/><path d="M38 22v56" stroke="#3A2FC9" stroke-width="2" opacity=".25"/></svg>',fn:brochures},
  {id:"notes",nom:"Notes",icon:'<svg viewBox="0 0 100 100"><defs><linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE27A"/><stop offset="1" stop-color="#F7B731"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(#gN)"/><rect x="22" y="18" width="56" height="66" rx="8" fill="#fff"/><path d="M31 36h38M31 48h38M31 60h26" stroke="#E0A92A" stroke-width="4" stroke-linecap="round"/><path d="M61 76l16-16 6 6-16 16-8 2z" fill="#8B5A2B"/></svg>',fn:notes},
@@ -244,14 +244,14 @@ function open(id,hash){
 function front(id){const w=wins[id];if(!w)return;w.hidden=false;const z=Math.max(100,...Object.values(wins).map(x=>+x.style.zIndex||0));w.style.zIndex=z+1;title()}
 function close(id){wins[id].remove();delete wins[id];dockState();title()}
 function closeAll(){Object.keys(wins).forEach(close)}
-function title(){const vis=Object.entries(wins).filter(([,w])=>!w.hidden).sort((a,b)=>b[1].style.zIndex-a[1].style.zIndex)[0];q("appTitle").textContent=vis?APPS.find(a=>a.id===vis[0]).nom:"LifeCasts System"}
+function title(){const vis=Object.entries(wins).filter(([,w])=>!w.hidden).sort((a,b)=>b[1].style.zIndex-a[1].style.zIndex)[0];q("appTitle").textContent=vis?APPS.find(a=>a.id===vis[0]).nom:"Life System"}
 function dockState(){document.querySelectorAll("#dock .ic").forEach(b=>b.classList.toggle("run",!!wins[b.dataset.app]))}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){const t=Object.entries(wins).filter(([,w])=>!w.hidden).sort((a,b)=>b[1].style.zIndex-a[1].style.zIndex)[0];if(t)close(t[0])}});
 
 /* Menu */
 function menu(html){const m=q("menu");if(!m.hidden&&m.dataset.k===html.slice(0,20)){m.hidden=true;return}m.innerHTML=html;m.dataset.k=html.slice(0,20);m.hidden=false}
 q("meBtn").onclick=e=>{e.stopPropagation();const u=user();menu('<div style="padding:9px 12px"><b>'+esc(u?u.name||"":"Invité")+'</b><div style="font-size:12px;color:var(--muted)">'+esc(u?u.email:"Non connecté")+'</div></div><hr><button data-open="settings">Paramètres…</button><a href="index.html">Site LifeCasts</a><hr><button id="mOut">'+(u?"Se déconnecter":"Se connecter")+'</button>');q("mOut").onclick=logout};
-q("logoBtn").onclick=e=>{e.stopPropagation();menu('<button data-open="about">À propos de LifeCasts System</button><button data-open="settings">Paramètres…</button><hr><button id="mHome">Afficher le bureau</button><button id="mClose">Tout fermer</button>');q("mHome").onclick=()=>{Object.values(wins).forEach(w=>w.hidden=true);title();q("menu").hidden=true};q("mClose").onclick=()=>{closeAll();q("menu").hidden=true}};
+q("logoBtn").onclick=e=>{e.stopPropagation();menu('<button data-open="about">À propos de Life System</button><button data-open="settings">Paramètres…</button><hr><button id="mHome">Afficher le bureau</button><button id="mClose">Tout fermer</button>');q("mHome").onclick=()=>{Object.values(wins).forEach(w=>w.hidden=true);title();q("menu").hidden=true};q("mClose").onclick=()=>{closeAll();q("menu").hidden=true}};
 document.addEventListener("click",e=>{if(!e.target.closest("#menu"))q("menu").hidden=true});
 
 /* Horloge */
@@ -284,21 +284,21 @@ function settings(el){
   if(k==="compte")pane.innerHTML='<h3>Compte</h3><div class="grp"><div><div class="me"><img src="'+esc(u&&u.picture||"favicon.png")+'" referrerpolicy="no-referrer" alt=""><div><b>'+esc(u?u.name||"":"Invité")+'</b><span>'+esc(u?u.email:"Non connecté")+'</span></div></div></div><div><span>Connexion</span><span class="sub">'+(u?"Google":"—")+'</span></div><div><span>Membre depuis</span><span class="sub">'+(u&&u.since?new Date(u.since).toLocaleDateString("fr-FR"):"—")+'</span></div>'+(u?'<div><span>Âge</span><span style="display:flex;gap:8px;align-items:center"><span class="sub" id="sAge">…</span><button class="btn ghost" id="sAgeB" hidden>Modifier</button></span></div>':'')+'</div><button class="btn" id="sOut">'+(u?"Se déconnecter":"Se connecter")+'</button>';
   if(k==="apparence")pane.innerHTML='<h3>Apparence</h3><div class="grp"><div><span>Thème</span><div class="seg">'+[["light","Clair"],["dark","Sombre"],["auto","Auto"]].map(t=>'<button data-t="'+t[0]+'" class="'+((S.theme||"auto")===t[0]?"on":"")+'">'+t[1]+'</button>').join("")+'</div></div></div>';
   if(k==="fond")pane.innerHTML='<h3>Fond d\'écran</h3><div class="wps">'+Object.entries(WP).map(([n,g])=>'<button data-w="'+n+'" class="'+((S.wp||"braise")===n?"on":"")+'" style="background:'+g+'" title="'+n+'"></button>').join("")+'</div>';
-  if(k==="stockage")pane.innerHTML='<h3>Données</h3><div class="grp"><div><span>Note rapide</span><span class="sub">'+((S.qn||"").length)+' caractères</span></div><div><span>Notes</span><span class="sub">'+((S.notes||[]).length)+' note(s)</span></div></div><button class="btn ghost" id="sReset">Réinitialiser LifeCasts System sur cet appareil</button>';
+  if(k==="stockage")pane.innerHTML='<h3>Données</h3><div class="grp"><div><span>Note rapide</span><span class="sub">'+((S.qn||"").length)+' caractères</span></div><div><span>Notes</span><span class="sub">'+((S.notes||[]).length)+' note(s)</span></div></div><button class="btn ghost" id="sReset">Réinitialiser Life System sur cet appareil</button>';
   if(k==="notes")pane.innerHTML='<h3>Notes</h3><div class="grp"><div><span>Modifier les notes de la Bible<span class="sub" style="display:block">Depuis l\'app Notes. Les changements sont visibles dans l\'app Bible.</span></span><div class="seg"><button data-eb="0" class="'+(S.editBible?"":"on")+'">Non</button><button data-eb="1" class="'+(S.editBible?"on":"")+'">Oui</button></div></div></div>';
-  if(k==="apropos")pane.innerHTML='<h3>À propos</h3><div class="grp"><div><span>Système</span><span class="sub">LifeCasts System '+(window.LC_VER||"1.0")+'</span></div>'+APPS.filter(a=>REPOS[a.id]).map(a=>'<div><span>'+a.nom+'</span><span class="sub">'+(VER[a.id]?"v"+esc(VER[a.id].version):"—")+'</span></div>').join("")+'</div><p class="sub">Les applications se mettent à jour automatiquement depuis GitHub.</p>';
+  if(k==="apropos")pane.innerHTML='<h3>À propos</h3><div class="grp"><div><span>Système</span><span class="sub">Life System '+(window.LC_VER||"1.0")+'</span></div>'+APPS.filter(a=>REPOS[a.id]).map(a=>'<div><span>'+a.nom+'</span><span class="sub">'+(VER[a.id]?"v"+esc(VER[a.id].version):"—")+'</span></div>').join("")+'</div><p class="sub">Les applications se mettent à jour automatiquement depuis GitHub.</p>';
   const o=pane.querySelector("#sOut");if(o)o.onclick=logout;
   if(k==="compte"&&u)ageUI(pane);
   pane.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{S.theme=b.dataset.t;save();theme();show(k)});
   pane.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{S.wp=b.dataset.w;save();theme();show(k)});
   pane.querySelectorAll("[data-eb]").forEach(b=>b.onclick=()=>{const on=b.dataset.eb==="1";if(on&&!S.editBible&&!confirm("Autoriser la modification des notes de la Bible depuis Notes ?"))return;S.editBible=on;save();show(k)});
-  const r=pane.querySelector("#sReset");if(r)r.onclick=()=>{if(confirm("Effacer les réglages et notes de LifeCasts System sur cet appareil ?")){localStorage.removeItem(SK);location.reload()}};
+  const r=pane.querySelector("#sReset");if(r)r.onclick=()=>{if(confirm("Effacer les réglages et notes de Life System sur cet appareil ?")){localStorage.removeItem(SK);location.reload()}};
  }
  Object.entries(P).forEach(([k,[i,t]])=>{const b=E("button",{innerHTML:"<span style=\"display:flex\">"+i+"</span>"+t});b.dataset.k=k;b.onclick=()=>show(k);nav.append(b)});
  show("compte");
 }
 function brochures(el){el.innerHTML='<div style="max-width:560px;margin:20px auto;text-align:center"><div style="color:var(--accent)">'+ICO("book","64px")+'</div><h2 style="font-size:30px;letter-spacing:-.03em;margin:8px 0">Brochures LifeCasts</h2><p class="sub" style="font-size:16px">Des brochures tirées des bandes du Message de William Branham, imprimées et distribuées avec soin.</p><p style="margin-top:18px">Pour recevoir une brochure, écrivez-nous depuis la page de contact du site.</p><p style="margin-top:18px"><a class="btn" href="index.html#contact" target="_blank">Nous écrire</a></p></div>'}
-function about(el){el.innerHTML='<div style="text-align:center;padding:20px"><div class="mark" style="margin:0 auto"><img src="mark-dark.png" alt=""></div><h2 style="margin:14px 0 4px">LifeCasts System</h2><p class="sub">Version '+(window.LC_VER||"1.0")+'</p><p style="max-width:440px;margin:16px auto 0">Un espace unique pour les applications LifeCasts : Bible, Cantiques, vos réglages et votre compte.</p><p class="sub" style="margin-top:16px">© '+new Date().getFullYear()+' LifeCasts · <a href="confidentialite.html" target="_blank">Confidentialité</a> · <a href="conditions.html" target="_blank">Conditions</a></p></div>'}
+function about(el){el.innerHTML='<div style="text-align:center;padding:20px"><div class="mark" style="margin:0 auto"><img src="mark-dark.png" alt=""></div><h2 style="margin:14px 0 4px">Life System</h2><p class="sub">Version '+(window.LC_VER||"1.0")+'</p><p style="max-width:440px;margin:16px auto 0">Un espace unique pour les applications LifeCasts : Bible, Cantiques, vos réglages et votre compte.</p><p class="sub" style="margin-top:16px">© '+new Date().getFullYear()+' LifeCasts · <a href="confidentialite.html" target="_blank">Confidentialité</a> · <a href="conditions.html" target="_blank">Conditions</a></p></div>'}
 /* Notes de la Bible : fusionne toutes les clés lsg.notes / lsg.notes.<compte> de cet appareil (compte actuel en priorité) */
 function bibleNotes(){const out={};let c="";try{c=localStorage.getItem("lc.current")||""}catch(e){}
  const keys=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^lsg\.notes(\.|$)/.test(k))keys.push(k)}}catch(e){}

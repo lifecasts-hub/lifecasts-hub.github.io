@@ -1,6 +1,6 @@
 {
- "name": "LC Store",
- "short_name": "LC Store",
+ "name": "Life Store",
+ "short_name": "Life Store",
  "start_url": "/store.html",
  "scope": "/",
  "display": "standalone",
