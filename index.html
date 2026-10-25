@@ -302,7 +302,7 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
     p.append(E("img",{className:"big-icon",src:a.icon,alt:""}));
     p.append(E("h3",{textContent:a.nom+"."}),E("p",{className:"lead",textContent:a.accroche}),E("p",{className:"sub",textContent:a.description}));
     if(a.points){const u=E("ul",{className:"pts"});a.points.forEach(t=>u.append(E("li",{textContent:t})));p.append(u)}
-    const c=E("div",{className:"ctas"});c.append(E("a",{className:"more",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"pill",href:"store.html?id="+a.id,textContent:"Télécharger"}));
+    const c=E("div",{className:"ctas"});c.append(E("a",{className:"more",href:"system.html?app="+a.id,textContent:"Ouvrir"}),E("a",{className:"more",href:a.url,textContent:"Version seule"}),E("a",{className:"pill",href:"store.html?id="+a.id,target:"_top",textContent:"Télécharger"}));
     const v=E("div",{className:"muted",textContent:" "});v.style.marginTop="10px";
     p.append(c,v);
     $("applications").append(p);
