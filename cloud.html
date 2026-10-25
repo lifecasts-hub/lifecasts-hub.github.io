@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>LifeCasts Cloud</title>
+<title>LifeCloud</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="favicon.png">
 <script src="lc-common.js?v=12"></script>
@@ -160,19 +160,19 @@ table.ls{width:100%;border-collapse:collapse;font-size:13px}
 <!-- Connexion -->
 <div class="gate hide" id="gLogin"><div class="box">
  <svg class="logo" viewBox="0 0 100 100" id="lg"></svg>
- <h1>LifeCasts Cloud</h1><p>Espace de stockage privé de LifeCasts.<br>Accès réservé aux comptes autorisés.</p>
+ <h1>LifeCloud</h1><p>Espace de stockage privé de LifeCasts.<br>Accès réservé aux comptes autorisés.</p>
  <button class="btn" id="bLogin">Se connecter avec Google</button>
 </div></div>
 <div class="gate hide" id="gDeny"><div class="box">
  <svg class="logo" viewBox="0 0 100 100" id="lg2"></svg>
- <h1>Accès refusé</h1><p>Le compte <b id="dMail"></b> n'est pas autorisé à utiliser LifeCasts Cloud. Demandez l'accès à un administrateur.</p>
+ <h1>Accès refusé</h1><p>Le compte <b id="dMail"></b> n'est pas autorisé à utiliser LifeCloud. Demandez l'accès à un administrateur.</p>
  <button class="btn ghost" id="bOut2">Changer de compte</button>
 </div></div>
 <div class="gate" id="gLoad"><div class="box"><svg class="logo" viewBox="0 0 100 100" id="lg3"></svg><p style="margin-top:16px">Chargement…</p></div></div>
 
 <div id="app" class="hide">
  <aside id="side">
-  <div class="brand"><svg viewBox="0 0 100 100" id="lg4"></svg><div>LifeCasts Cloud<small>Stockage privé</small></div></div>
+  <div class="brand"><svg viewBox="0 0 100 100" id="lg4"></svg><div>LifeCloud<small>Stockage privé</small></div></div>
   <div class="sh">Emplacements</div>
   <div id="spaces"></div>
   <div class="sh">Accès rapide</div>
@@ -622,7 +622,7 @@ async function download(L){
  const job=txStart("Préparation de l'archive"),zip=new JSZip();
  const add=async(it,dir)=>{if(it.d){for(const k of kids(it.sp,it.id))await add(k,dir+it.n+"/");if(!kids(it.sp,it.id).length)zip.folder(dir+it.n);return}
   job.line(it.n,0);zip.file(dir+it.n,await getBlob(ref(st,it.ref)),{date:new Date(it.u||Date.now())});job.line(it.n,1)};
- try{for(const it of L)await add(it,"");const blob=await zip.generateAsync({type:"blob"});saveBlob(blob,(L.length===1?L[0].n:"LifeCasts Cloud")+".zip");job.ok()}catch(e){job.ko(e);toast("Archive impossible (CORS ?)")}}
+ try{for(const it of L)await add(it,"");const blob=await zip.generateAsync({type:"blob"});saveBlob(blob,(L.length===1?L[0].n:"LifeCloud")+".zip");job.ok()}catch(e){job.ko(e);toast("Archive impossible (CORS ?)")}}
 async function copyLink(it){try{await navigator.clipboard.writeText(await getDownloadURL(ref(st,it.ref)));toast("Lien copié (accessible à toute personne qui l'a)")}catch(e){toast("Copie impossible")}}
 
 /* ---------- Inspecteur ---------- */
