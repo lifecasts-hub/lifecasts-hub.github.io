@@ -21,7 +21,7 @@ const LC_APPS=[
  {id:"bible",repo:"lifecasts-hub/The-Bible-App",nom:"Bible LifeCasts",court:"Bible",mot:"bible",description:"La Parole, partout. Même hors connexion.",ordre:1},
  {id:"cantiques",repo:"lifecasts-hub/Songs-Book",nom:"Cantiques",court:"Cantiques",mot:"cantique",description:"Les chants d'autrefois, dans votre poche.",ordre:2},
  {id:"notes",repo:"lifecasts-hub/The-Notes-App",nom:"Notes",court:"Notes",mot:"note",description:"Vos notes et celles de la Bible, au même endroit.",ordre:3},
- {id:"system",repo:"lifecasts-hub/LifeCasts-System",nom:"Life System",court:"System",mot:"system",description:"Votre bureau LifeCasts : toutes vos applications au même endroit.",ordre:4}
+ {id:"system",repo:"lifecasts-hub/LifeCasts-System",nom:"LifeCasts System",court:"System",mot:"system",description:"Votre bureau LifeCasts : toutes vos applications au même endroit.",ordre:4}
 ];
 LC_APPS.forEach(a=>{a.dir=a.repo.split("/")[1];a.url="/"+a.dir+"/";a.iconUrl="https://lifecasts-hub.github.io"+a.url+"icon-192.png"});
 const REPOS=Object.fromEntries(LC_APPS.map(a=>[a.id,a.repo]));

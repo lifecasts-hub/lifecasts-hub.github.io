@@ -1,4 +1,4 @@
-# Génère index.html de l'app Life System (dépôt LifeCasts-System : APK + source OTA) depuis system.html.
+# Génère index.html de l'app LifeCasts System (dépôt LifeCasts-System : APK + source OTA) depuis system.html.
 # Usage : python3 tools/build-system-app.py X.Y [../lifecasts-system/index.html]   (puis commit "vX.Y : …")
 import re,sys
 V=sys.argv[1];out=sys.argv[2] if len(sys.argv)>2 else "../lifecasts-system/index.html"
