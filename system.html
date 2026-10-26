@@ -75,11 +75,14 @@ a{color:var(--accent)}
 textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;font:inherit;color:inherit;outline:none}
 
 /* Dock */
-#dock{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;gap:10px;padding:8px 10px;border-radius:22px;box-shadow:0 10px 40px rgba(0,0,0,.25);max-width:calc(100vw - 20px);overflow-x:auto;scrollbar-width:none}
-#dock .ic i{width:50px;height:50px;border-radius:12px;font-size:24px}
+#dock{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;width:min(460px,calc(100vw - 24px));box-sizing:border-box;height:62px;padding:0 8px;display:flex;align-items:center;overflow:hidden;border-radius:31px;background:rgba(28,28,30,.88);-webkit-backdrop-filter:blur(30px) saturate(1.6);backdrop-filter:blur(30px) saturate(1.6);border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 28px rgba(0,0,0,.28)}
+#dock .dks{flex:1;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+#dock .dks::-webkit-scrollbar{display:none}
+#dock .dkp{flex:0 0 100%;display:grid;grid-template-columns:repeat(var(--n,7),1fr);align-items:center;justify-items:center;scroll-snap-align:start;scroll-snap-stop:always}
+#dock .ic i{width:46px;height:46px;border-radius:50%;font-size:22px;box-shadow:none}
 #dock .ic span{display:none}
 #dock .ic{position:relative}
-#dock .ic.run::after{content:"";position:absolute;bottom:-5px;width:4px;height:4px;border-radius:50%;background:var(--ink)}
+#dock .ic.run::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-2px;width:4px;height:4px;border-radius:50%;background:#fff}
 
 /* Fenêtres */
 .win{position:fixed;z-index:25;background:var(--win);border-radius:14px;box-shadow:0 30px 90px rgba(0,0,0,.4);display:flex;flex-direction:column;overflow:hidden;animation:pop .22s ease-out;top:60px;left:50%;width:min(1000px,94vw);height:calc(100vh - 170px);height:calc(100dvh - 170px);transform:translateX(-50%)}
@@ -118,8 +121,8 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
  #desk{padding:20px 12px 110px}
  .tile{padding:16px;min-height:0}
  .clock{font-size:44px}
- #dock{gap:6px;padding:6px 8px;border-radius:18px}
- #dock .ic i{width:42px;height:42px;border-radius:10px;font-size:20px}
+ #dock{height:58px;border-radius:29px}
+ #dock .ic i{width:42px;height:42px;font-size:20px}
  #bar{gap:6px;padding-left:8px;padding-right:8px}
  #barClock{font-size:12px}
  .win .body{padding:16px}
@@ -173,7 +176,7 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
 <section class="tile glass"><h2>Note rapide</h2><textarea class="qn" id="qn" placeholder="Écrivez une note… elle reste sur cet appareil."></textarea></section>
 </div>
 </main>
-<div id="dock" class="glass"></div>
+<div id="dock"></div>
 </div>
 
 <script>
@@ -222,7 +225,10 @@ function boot(){
 
 /* Icônes : grille + dock */
 function icon(a,label){const b=E("button",{className:"ic",title:a.nom});b.dataset.app=a.id;b.innerHTML="<i>"+a.icon+"</i>"+(label?"<span>"+a.nom+"</span>":"");b.onclick=()=>open(a.id);return b}
-APPS.forEach(a=>{q("gridApps").append(icon(a,true));if(a.id!=="about")q("dock").append(icon(a,false))});
+APPS.forEach(a=>q("gridApps").append(icon(a,true)));
+/* Dock : barre ronde, apps en pages (snap scroll comme la barre de Notes) */
+function dockBuild(){const d=q("dock"),per=innerWidth<=700?5:7;if(d.dataset.per==per)return;d.dataset.per=per;d.innerHTML="";const s=E("div",{className:"dks"}),L=APPS.filter(a=>a.id!=="about");for(let i=0;i<L.length;i+=per){const p=E("div",{className:"dkp"});p.style.setProperty("--n",per);L.slice(i,i+per).forEach(a=>p.append(icon(a,false)));s.append(p)}d.append(s);dockState()}
+dockBuild();addEventListener("resize",dockBuild);
 document.addEventListener("click",e=>{const o=e.target.closest("[data-open]");if(o)open(o.dataset.open)});
 
 /* Fenêtres */
