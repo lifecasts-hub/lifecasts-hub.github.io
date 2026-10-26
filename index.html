@@ -33,7 +33,7 @@ const LIFECASTS = {
 .icons img:hover{transform:translateY(-6px) scale(1.04)}
 .icons .sys{display:grid;place-items:center;width:clamp(72px,14vw,120px);height:clamp(72px,14vw,120px);border-radius:24%;background:linear-gradient(135deg,#2a1c14,#9a5b1e);box-shadow:0 18px 40px rgba(0,0,0,.18)}
 .icons .sys{position:relative;overflow:hidden}
-.icons .sys img{position:absolute;inset:0;margin:auto;width:auto!important;height:58%!important;max-width:none;border-radius:0;transform:none!important;box-shadow:none;background:none;filter:invert(1)}
+.icons .sys img{position:absolute;inset:0;margin:0;width:100%!important;height:100%!important;max-width:none;border-radius:0;transform:none!important;box-shadow:none;background:none}
 .panel{margin:12px;border-radius:28px;text-align:center;padding:64px 22px 0;overflow:hidden}
 .panel h3{font-size:clamp(36px,6vw,56px);font-weight:700;letter-spacing:-.035em;line-height:1.07}
 .panel p.lead{font-size:clamp(19px,2.6vw,26px);margin-top:6px}
@@ -98,7 +98,7 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 /* Proportions : bouton h=55 ; marge basse=34 ; largeur 377 = 55·φ⁴ ; 55:34 = φ */
 @keyframes helios{from{background-position:0% 50%}to{background-position:100% 50%}}
 .ma-bg{position:absolute;inset:-20px 0;z-index:-2;display:flex;flex-direction:column;justify-content:center;gap:16px;opacity:.75;transform:rotate(-4deg) scale(1.1)}
-.ma-row i.sy{background:linear-gradient(135deg,#2a1c14,#9a5b1e)}.ma-row i.sy img{width:58%;height:58%;filter:invert(1)}
+.ma-row i.sy{background:linear-gradient(135deg,#2a1c14,#9a5b1e)}.ma-row i.sy img{width:100%;height:100%;border-radius:0}
 .ma-row{display:flex;gap:16px;width:max-content;animation:maL 70s linear infinite}
 .ma-row.r{animation-name:maR;animation-duration:85s}.ma-row.s{animation-duration:60s}
 .ma-row i{flex:none;width:84px;height:84px;border-radius:22.5%;display:grid;place-items:center;overflow:hidden;color:#fff;box-shadow:0 10px 24px rgba(40,30,80,.22)}
@@ -155,7 +155,7 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 <a href="#system">LifeCasts System</a>
 <a href="#mission">Mission</a>
 <a href="#brochures">Brochures</a>
-<a href="store.html">Life Store</a>
+<a href="store.html">LifeStore</a>
 <a href="applications.html">Versions</a>
 </nav>
 <a class="pill small navcta" href="system.html" id="navBtn">Se connecter</a>
@@ -188,11 +188,11 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 <div class="ma-bg" id="maBg" aria-hidden="true"></div><div class="ma-fog" aria-hidden="true"></div>
 <div class="ma-in">
 <img class="big-icon" src="store-icon-192.png?v=7" alt="">
-<div class="eyebrow">Life Store</div>
+<div class="eyebrow">LifeStore</div>
 <h3>Plus d'applications.</h3>
 <p class="lead">Toutes les applications LifeCasts, pour Android, macOS et Windows.</p>
 <p class="sub">D'autres applications arrivent. Retrouvez-les toutes au même endroit.</p>
-<div class="ctas"><a class="pill accent big-btn" href="store.html">Découvrir Life Store<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+<div class="ctas"><a class="pill accent big-btn" href="store.html">Découvrir LifeStore<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
 </div>
 </section>
 
@@ -200,7 +200,7 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 <div class="eyebrow">Pour commencer</div>
 <h3 style="font-size:clamp(30px,4.5vw,40px);font-weight:700;letter-spacing:-.03em">Prêt en trois étapes.</h3>
 <div class="steps">
-<div><small>Étape une</small><b>Choisir</b><p>Ouvrez une application dans le navigateur, ou rendez-vous sur Life Store.</p></div>
+<div><small>Étape une</small><b>Choisir</b><p>Ouvrez une application dans le navigateur, ou rendez-vous sur LifeStore.</p></div>
 <div><small>Étape deux</small><b>Installer</b><p>Téléchargez-la pour Android, macOS ou Windows. Elle se met ensuite à jour toute seule.</p></div>
 <div><small>Étape trois</small><b>Se connecter</b><p>Facultatif : un compte Google pour synchroniser favoris et notes entre vos appareils.</p></div>
 </div>
@@ -249,7 +249,7 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
 </main>
 
 <footer id="contact"><div class="wrap">
-<div class="fl"><a href="#mission">Mission</a><a href="#brochures">Brochures</a><a href="system.html">LifeCasts System</a><a href="store.html">Life Store</a><a href="applications.html">Applications et versions</a><a href="cloud.html" style="opacity:.35" rel="nofollow">Cloud</a><a href="confidentialite.html">Confidentialité</a><a href="conditions.html">Conditions d'utilisation</a><a id="mailLink" hidden></a></div>
+<div class="fl"><a href="#mission">Mission</a><a href="#brochures">Brochures</a><a href="system.html">LifeCasts System</a><a href="store.html">LifeStore</a><a href="applications.html">Applications et versions</a><a href="cloud.html" style="opacity:.35" rel="nofollow">Cloud</a><a href="confidentialite.html">Confidentialité</a><a href="conditions.html">Conditions d'utilisation</a><a id="mailLink" hidden></a></div>
 <div>Une question, une demande de brochure ? Écrivez-nous, nous vous répondrons avec plaisir.</div>
 <div style="margin-top:8px">© <span id="year"></span> LifeCasts. Tous droits réservés.</div>
 </div></footer>
@@ -296,7 +296,7 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
   /* Présentation des applications */
   const E=(t,p)=>{const e=document.createElement(t);Object.assign(e,p||{});return e};
   LIFECASTS.apps.forEach(a=>{$("heroIcons").append(E("img",{src:a.icon,alt:a.nom}))});
-  const s=E("div",{className:"sys"});s.append(E("img",{src:"mark-dark.png",alt:"LifeCasts System"}));$("heroIcons").append(s);
+  const s=E("div",{className:"sys"});s.append(E("img",{src:"system-icon-192.png?v=1",alt:"LifeCasts System"}));$("heroIcons").append(s);
   LIFECASTS.apps.forEach(a=>{
     const p=E("section",{className:"panel"});p.style.background=a.fond;
     p.append(E("img",{className:"big-icon",src:a.icon,alt:""}));
@@ -310,7 +310,7 @@ html,body{overflow-x:hidden}@supports(overflow:clip){html,body{overflow-x:clip}}
   });
   [["fi1","book"],["fi2","grid"],["fi3","gear"],["fi4","user"]].forEach(x=>{$(x[0]).innerHTML=ICO(x[1],30)});
   (function(){const R=["/The-Bible-App/icon-192.png","/Songs-Book/icon-192.png","/The-Notes-App/icon-192.png","store-icon-192.png?v=7"];
-    const row=k=>{let t="";for(let i=0;i<8;i++){const n=(i+k*2)%5;t+=n===4?'<i class="sy"><img src="mark-dark.png" alt=""></i>':'<i><img src="'+R[n]+'" alt="" loading="lazy"></i>'}return '<div class="ma-row'+(k%2?" r":"")+'">'+t+t+'</div>'};
+    const row=k=>{let t="";for(let i=0;i<8;i++){const n=(i+k*2)%5;t+=n===4?'<i class="sy"><img src="system-icon-192.png?v=1" alt=""></i>':'<i><img src="'+R[n]+'" alt="" loading="lazy"></i>'}return '<div class="ma-row'+(k%2?" r":"")+'">'+t+t+'</div>'};
     const b=$("maBg");if(b)b.innerHTML=row(0)+row(1)+row(2)})();
   const items=[...LIFECASTS.apps.map(a=>[a.nom,'<img src="'+a.icon+'" alt="">']),["Paramètres",ICO("gear")],["Compte",ICO("user")],["Applications",ICO("grid")],["Brochures",ICO("book")],["À propos",ICO("info")],["Contact",ICO("mail")]];
   $("winGrid").innerHTML=items.map(i=>'<div><b>'+i[1]+'</b><span>'+i[0]+'</span></div>').join("");

@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="format-detection" content="telephone=no,email=no,address=no">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Life Store</title>
+<title>LifeStore</title>
 <script src="lc-common.js?v=13"></script>
 <link rel="icon" type="image/svg+xml" href="store-icon.svg?v=7"><link rel="icon" type="image/png" sizes="64x64" href="store-favicon.png?v=7"><link rel="icon" type="image/png" sizes="192x192" href="store-icon-192.png?v=7">
-<link rel="apple-touch-icon" href="store-icon.png?v=7"><link rel="manifest" href="store.webmanifest"><meta name="apple-mobile-web-app-title" content="Life Store"><meta name="application-name" content="Life Store">
-<meta property="og:title" content="Life Store"><meta property="og:description" content="Les applications LifeCasts pour Android, macOS et Windows."><meta property="og:image" content="https://lifecasts-hub.github.io/store-icon.png"><meta name="twitter:card" content="summary">
+<link rel="apple-touch-icon" href="store-icon.png?v=7"><link rel="manifest" href="store.webmanifest"><meta name="apple-mobile-web-app-title" content="LifeStore"><meta name="application-name" content="LifeStore">
+<meta property="og:title" content="LifeStore"><meta property="og:description" content="Les applications LifeCasts pour Android, macOS et Windows."><meta property="og:image" content="https://lifecasts-hub.github.io/store-icon.png"><meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -200,7 +200,7 @@ input.q{border-radius:12px;padding:12px 14px 12px 40px;background:var(--pill);bo
       <div class="bg"><i style="width:180px;height:180px;left:-40px;top:60px;background:#ffd88a55"></i><i style="width:90px;height:90px;right:30%;top:20px;background:#ffffff33"></i></div>
       <div class="glyph" id="glyph"></div>
       <div class="txt">
-        <div class="eyebrow" style="display:flex;align-items:center;gap:8px"><img src="store-icon.png?v=7" alt="" style="width:22px;height:22px;border-radius:6px">Life Store</div>
+        <div class="eyebrow" style="display:flex;align-items:center;gap:8px"><img src="store-icon.png?v=7" alt="" style="width:22px;height:22px;border-radius:6px">LifeStore</div>
         <h2>Toutes vos apps <em>LifeCasts</em>.</h2>
         <p>Bible, Cantiques, Notes : téléchargez la version Android, macOS ou Windows, toujours à jour.</p>
       </div>
@@ -343,7 +343,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
 $q("#q").addEventListener("input",search);
 $q("#date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
 render();
-/* Proposition de télécharger Life Store, façon Dynamic Island : navigateur seulement (pas dans l'APK), à chaque ouverture de la page */
+/* Proposition de télécharger LifeStore, façon Dynamic Island : navigateur seulement (pas dans l'APK), à chaque ouverture de la page */
 (function(){
  if(location.protocol==="file:"||matchMedia("(display-mode: standalone)").matches||new URLSearchParams(location.search).get("id"))return;
  const ua=navigator.userAgent,pf=navigator.platform||"",ios=/iPhone|iPad|iPod/.test(ua)||(/Mac/.test(pf)&&navigator.maxTouchPoints>1);
@@ -374,14 +374,14 @@ render();
  #isl .rw a.dl2{width:38px;height:38px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center}#isl .rw a.dl2 svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
  #isl .nt{font-size:12px;color:#a1a1a6;text-align:center;line-height:1.4;padding:2px 6px 0}
  @media(prefers-reduced-motion:reduce){#isl,#isl *{transition:none!important}}`;document.head.append(st);
- const el=document.createElement("div");el.id="isl";el.setAttribute("role","dialog");el.setAttribute("aria-label","Télécharger Life Store");
+ const el=document.createElement("div");el.id="isl";el.setAttribute("role","dialog");el.setAttribute("aria-label","Télécharger LifeStore");
  function body(){
   if(me==="ios")return iosUrl("store")?`<a class="go" href="${iosUrl("store")}" target="_blank" rel="noopener">Ouvrir l'App Store</a>`:`<span class="go" style="background:#2c2c2e;color:#a1a1a6">Bientôt sur l'App Store</span>`;
   if(me==="android")return `<a class="go" href="${F.android.url}" download>${dlI}Télécharger (APK)</a><div class="nt">Android 7 et plus. Si Android le demande, autorisez l'installation depuis votre navigateur.</div>`;
   return ["win","mac","android"].sort((a,b)=>(b===me)-(a===me)).map(k=>{const p=PL[k],f=F[k];return `<div class="rw"><div class="b" style="background:${p.c}">${S(p.i)}</div><div class="n"><b>${p.n}</b><small>${f?p.f+(f.v?" · version "+f.v:""):p.d}</small></div>${f?`<a class="dl2" href="${f.url}" download aria-label="Télécharger pour ${p.n}">${dlI}</a>`:`<span class="sn">Bientôt</span>`}</div>`}).join("");
  }
  function draw(){const o=el.classList.contains("open");
-  el.innerHTML=`<div class="hd"><img src="store-icon-192.png?v=7" alt=""><div class="t">${o||1?"Life Store":""}<small>${ios?(iosUrl("store")?"Retrouvez Life Store sur l'App Store":"Life Store arrive sur l'App Store"):"Installez l'application officielle LifeCasts"}</small></div><button class="x2" aria-label="Fermer">${S('<path d="M6 6l12 12M18 6 6 18"/>')}</button></div><div class="bd"><div><div class="bi">${body()}</div></div></div>`;
+  el.innerHTML=`<div class="hd"><img src="store-icon-192.png?v=7" alt=""><div class="t">${o||1?"LifeStore":""}<small>${ios?(iosUrl("store")?"Retrouvez LifeStore sur l'App Store":"LifeStore arrive sur l'App Store"):"Installez l'application officielle LifeCasts"}</small></div><button class="x2" aria-label="Fermer">${S('<path d="M6 6l12 12M18 6 6 18"/>')}</button></div><div class="bd"><div><div class="bi">${body()}</div></div></div>`;
   el.querySelector(".x2").onclick=()=>{el.classList.remove("open");setTimeout(()=>{el.classList.remove("in");setTimeout(()=>el.remove(),450)},350)}}
  setTimeout(()=>{document.body.append(el);draw();requestAnimationFrame(()=>requestAnimationFrame(()=>{el.classList.add("in");setTimeout(()=>el.classList.add("open"),650)}));
   if(me!=="ios")ghDownloads("lifecasts-hub/lifecasts-hub.github.io").then(d=>{const K2={"Android (APK)":"android","Mac (DMG)":"mac","Windows (EXE)":"win"};d.forEach(x=>{const k=K2[x.label];if(k&&/store/i.test(x.url))F[k]={url:x.url,v:(x.tag||"").replace(/^v/,"")}});if(el.isConnected){const b=el.querySelector(".bi");if(b)b.innerHTML=body()}}).catch(()=>{});
@@ -435,13 +435,13 @@ if(window.self!==window.top)document.querySelector(".tabbar").style.bottom="14px
    '<div class="r"><div class="t">Se déconnecter<small>Les données du compte restent sur cet appareil</small></div><button class="b" id="accOut">Déconnexion</button></div></div>'
    :'<div class="lcin"><i class="lcm" aria-hidden="true"></i><b>Votre compte LifeCasts</b><p>Retrouvez vos favoris et vos réglages, sur le site et dans toutes les applications LifeCasts. (Aucun mot de passe à créer)</p>'+goBtn()+'</div>')+
    '<div class="g" style="margin-top:22px"><button class="r" id="accSet" style="width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer"><span class="sq"><svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span><div class="t">Réglages</div><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;opacity:.4"><path d="m9 5 7 7-7 7"/></svg></button></div>'+
-   '<p style="text-align:center;opacity:.5;font-size:13px">Life Store</p>';
+   '<p style="text-align:center;opacity:.5;font-size:13px">LifeStore</p>';
   P.querySelector("#accSet").onclick=()=>{const W=document.createElement("div");W.className="sub";
    W.innerHTML='<button class="bk" aria-label="Retour"><svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2.4"><path d="m15 5-7 7 7 7"/></svg></button>'+
-    '<div class="g shero"><span class="sq big"><svg viewBox="0 0 24 24" style="width:34px;height:34px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span><h3>Réglages</h3><p>Personnalisez l’apparence du Life Store sur cet appareil.</p></div>'+
+    '<div class="g shero"><span class="sq big"><svg viewBox="0 0 24 24" style="width:34px;height:34px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span><h3>Réglages</h3><p>Personnalisez l’apparence du LifeStore sur cet appareil.</p></div>'+
     '<div class="g"><div class="r"><div class="t">Thème</div><select class="b" id="accTh" style="appearance:auto">'+[["auto","Système"],["light","Clair"],["dark","Sombre"]].map(o=>'<option value="'+o[0]+'"'+(TH===o[0]?" selected":"")+'>'+o[1]+'</option>').join("")+'</select></div></div>'+
     (u?'<div class="lab">ZONE DE DANGER</div><div class="g"><div class="r"><div class="t" style="color:#e5534b">Retirer ce compte de l\'appareil<small style="color:var(--ink)">Store, site et System sur cet appareil. Le compte LifeCasts n\'est pas supprimé.</small></div><button class="b" id="accDel" style="color:#e5534b">Retirer</button></div></div>':'')+
-    '<p style="text-align:center;opacity:.5;font-size:13px">Life Store · version '+X(window.LC_VER||window.LC_BUILT||"web")+'</p>';
+    '<p style="text-align:center;opacity:.5;font-size:13px">LifeStore · version '+X(window.LC_VER||window.LC_BUILT||"web")+'</p>';
    A.append(W);requestAnimationFrame(()=>W.classList.add("on"));A.scrollTop=0;
    W.querySelector(".bk").onclick=()=>{W.classList.remove("on");setTimeout(()=>W.remove(),300)};
    W.querySelector("#accTh").onchange=e=>{const v=e.target.value;try{localStorage.setItem("lcstore.theme",v)}catch(x){}theme()};const del=W.querySelector("#accDel");if(del)del.onclick=()=>{if(!confirm("Retirer ce compte de cet appareil ? Vous pourrez vous reconnecter plus tard."))return;try{localStorage.removeItem(K);Object.keys(localStorage).filter(k=>/^lcgh:|^lcstore\./.test(k)&&k!=="lcstore.theme").forEach(k=>localStorage.removeItem(k))}catch(e){}out().then(()=>location.reload())};};
@@ -473,10 +473,10 @@ if(window.self!==window.top)document.querySelector(".tabbar").style.bottom="14px
   const go=async()=>{try{await fbReady();const pr=new firebase.auth.GoogleAuthProvider();pr.setCustomParameters({prompt:"select_account"});
    const r=await firebase.auth().signInWithPopup(pr),t=r.credential&&r.credential.idToken;if(!t)throw{code:"no-token"};
    await firebase.firestore().doc("pairings/"+c).update({t,uid:r.user.uid});history.replaceState(null,"",location.pathname);
-   show2("C'est fait !","Votre compte est lié. Revenez dans l'application Life Store.","Retour à l'application").onclick=()=>{location.href="lifecasts://store"};
+   show2("C'est fait !","Votre compte est lié. Revenez dans l'application LifeStore.","Retour à l'application").onclick=()=>{location.href="lifecasts://store"};
    setTimeout(()=>{location.href="lifecasts://store"},800)}
    catch(e){show2("Échec de la connexion",(e.code==="not-found"||e.code==="permission-denied")?"Ce lien a expiré. Relancez la connexion depuis l'application.":"Erreur : "+(e.code||"inconnue"),"Réessayer").onclick=go}};
-  document.body.appendChild(o);show2("Connexion à l'application","Connectez-vous avec Google pour lier l'application Life Store à votre compte.","Se connecter avec Google").onclick=go}
+  document.body.appendChild(o);show2("Connexion à l'application","Connectez-vous avec Google pour lier l'application LifeStore à votre compte.","Se connecter avec Google").onclick=go}
  /* compte Firebase -> compte local du Store (lifecasts_user) */
  function fbSync(){fbReady().then(()=>firebase.auth().onAuthStateChanged(x=>{if(!x||get())return;try{localStorage.setItem(K,JSON.stringify({email:x.email||"",name:x.displayName||x.email||"",picture:x.photoURL||""}))}catch(e){}badge();if(A.classList.contains("on"))show()}))}
  if(location.protocol==="file:"){const c=localStorage.getItem("lc.pair");if(c)fbReady().then(()=>fbPairWait(c));fbSync()}else pairSite();

@@ -1,4 +1,4 @@
-# Génère store-app.html (Life Store pour l'APK + source OTA) depuis store.html.
+# Génère store-app.html (LifeStore pour l'APK + source OTA) depuis store.html.
 # Usage : python3 tools/build-store-app.py X.Y   (puis commit "vX.Y : …")
 import re,sys
 V=sys.argv[1];R="https://lifecasts-hub.github.io/"

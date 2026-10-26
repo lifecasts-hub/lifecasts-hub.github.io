@@ -41,7 +41,7 @@ const id=new URLSearchParams(location.search).get("id");
     docs.filter(d=>!used.has(d)&&!(d.repo&&LC_APPS.some(r=>r.repo===d.repo))).forEach(d=>apps.push(d));
     apps.sort((a,b)=>(a.ordre||0)-(b.ordre||0));
     await Promise.all(apps.map(async a=>{const r=a.repo||REPOS[a.id];a.latest=null;if(r)try{a.latest=(await ghVersions(r))[0]||null;a.dl=await ghDownloads(r)}catch(e){}}));
-    const storeCard=`<div class="card"><div style="display:flex;align-items:center;gap:14px"><img src="store-icon-192.png?v=7" alt="" style="width:56px;height:56px;border-radius:13px;box-shadow:0 1px 4px rgba(0,0,0,.15)"><h3 style="margin:0">Life Store</h3></div><p>Toutes les applications LifeCasts pour Android, macOS et Windows, au même endroit.</p><div><span class="tag">Boutique officielle</span></div><div style="display:flex;flex-wrap:wrap;gap:8px"><a class="pill accent small" href="store.html" target="_top">Télécharger</a></div></div>`;
+    const storeCard=`<div class="card"><div style="display:flex;align-items:center;gap:14px"><img src="store-icon-192.png?v=7" alt="" style="width:56px;height:56px;border-radius:13px;box-shadow:0 1px 4px rgba(0,0,0,.15)"><h3 style="margin:0">LifeStore</h3></div><p>Toutes les applications LifeCasts pour Android, macOS et Windows, au même endroit.</p><div><span class="tag">Boutique officielle</span></div><div style="display:flex;flex-wrap:wrap;gap:8px"><a class="pill accent small" href="store.html" target="_top">Télécharger</a></div></div>`;
     $("main").innerHTML='<div class="cards">'+storeCard+apps.map(a=>`<div class="card">
       <div style="display:flex;align-items:center;gap:14px"><img src="/${esc(a.dir||(a.repo||"").split("/")[1]||"")}/icon-192.png" alt="" onerror="this.remove()" style="width:56px;height:56px;border-radius:13px;box-shadow:0 1px 4px rgba(0,0,0,.15)"><h3 style="margin:0">${esc(a.nom)}</h3></div><p>${esc(a.description)}</p>
       <div>${a.latest?`<span class="tag">Version ${esc(a.latest.version)}</span> <span class="muted">· ${a.latest.date?fdate(a.latest.date):""}</span>`:'<span class="tag old">Bientôt</span>'}</div>
@@ -62,7 +62,7 @@ const id=new URLSearchParams(location.search).get("id");
   $("main").innerHTML=`
   <p style="margin-bottom:20px"><a href="applications.html" class="muted">← Toutes les applications</a></p>
   ${a.details?`<section class="box"><h2>À propos</h2><p>${nl(a.details)}</p>${a.web?`<p style="margin-top:14px"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></p>`:""}</section>`:(a.web?`<section class="box"><a class="pill" href="${esc(a.web)}">Ouvrir la version web</a></section>`:"")}
-  <section class="box"><h2>Télécharger</h2><p><a class="pill accent" href="store.html?id=${encodeURIComponent(id)}" target="_top">Télécharger sur Life Store</a></p></section>
+  <section class="box"><h2>Télécharger</h2><p><a class="pill accent" href="store.html?id=${encodeURIComponent(id)}" target="_top">Télécharger sur LifeStore</a></p></section>
   <section class="box"><h2>Mise à jour actuelle</h2>${L?`
     <div class="row" style="flex-wrap:wrap"><div><span class="tag">Version ${esc(L.version)}</span> <span class="muted">· ${L.date?"publiée le "+fdate(L.date):""}</span></div></div>
     <p style="margin-top:12px">${nl(L.notes||"")}</p>
