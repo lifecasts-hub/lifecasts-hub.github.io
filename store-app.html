@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<script>/*LC-OTA*/(function(){var B="1.21";window.LC_BUILT=B;
+<script>/*LC-OTA*/(function(){var B="1.23";window.LC_BUILT=B;
 function c(a,b){a=String(a).split(".");b=String(b).split(".");for(var i=0;i<Math.max(a.length,b.length);i++){var d=(+a[i]||0)-(+b[i]||0);if(d)return d>0?1:-1}return 0}window.LC_CMP=c;
 if(window.LC_OTA_VER){window.LC_VER=window.LC_OTA_VER;return}window.LC_VER=B;
 if(location.protocol!=="file:")return;
@@ -560,13 +560,13 @@ if(window.self!==window.top)document.querySelector(".tabbar").style.bottom="14px
   const o=document.createElement("div");o.style.cssText="position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(0,0,0,.5);padding:16px;font:15px -apple-system,BlinkMacSystemFont,sans-serif";
   const B="border:0;border-radius:12px;padding:12px 16px;font:inherit;margin-top:14px;width:100%;background:#141413;color:#fff";
   const show2=(t,x,btn)=>{o.innerHTML=`<div style="background:#fff;color:#141413;border-radius:22px;padding:22px;width:min(92vw,420px)"><h3 style="margin:0 0 8px">${t}</h3><div style="opacity:.8">${x}</div>${btn?`<button style="${B}">${btn}</button>`:""}</div>`;return o.querySelector("button")};
-  const go=async()=>{try{await fbReady();const pr=new firebase.auth.GoogleAuthProvider();pr.setCustomParameters({prompt:"select_account"});
+  const go=async()=>{try{const pr=new firebase.auth.GoogleAuthProvider();pr.setCustomParameters({prompt:"select_account"});
    const r=await firebase.auth().signInWithPopup(pr),t=r.credential&&r.credential.idToken;if(!t)throw{code:"no-token"};
    await firebase.firestore().doc("pairings/"+c).update({t,uid:r.user.uid});history.replaceState(null,"",location.pathname);
    show2("C'est fait !","Votre compte est lié. Revenez dans l'application LifeStore.","Retour à l'application").onclick=()=>{location.href="lifecasts://store"};
    setTimeout(()=>{location.href="lifecasts://store"},800)}
-   catch(e){show2("Échec de la connexion",(e.code==="not-found"||e.code==="permission-denied")?"Ce lien a expiré. Relancez la connexion depuis l'application.":"Erreur : "+(e.code||"inconnue"),"Réessayer").onclick=go}};
-  document.body.appendChild(o);show2("Connexion à l'application","Connectez-vous avec Google pour lier l'application LifeStore à votre compte.","Se connecter avec Google").onclick=go}
+   catch(e){show2("Échec de la connexion",(e.code==="not-found"||e.code==="permission-denied")?"Ce lien a expiré. Relancez la connexion depuis l'application.":"Erreur : "+(e.code||e.message||e.type||String(e)||"inconnue")+" [site v1.23]","Réessayer").onclick=go}};
+  document.body.appendChild(o);const b0=show2("Connexion à l'application","Chargement…","Se connecter avec Google");b0.disabled=true;fbReady().then(()=>{b0.disabled=false;show2("Connexion à l'application","Connectez-vous avec Google pour lier l'application LifeStore à votre compte.","Se connecter avec Google").onclick=go}).catch(()=>{FP=null;show2("Connexion indisponible","Vérifiez votre connexion internet.","Réessayer").onclick=()=>location.reload()})}
  /* compte Firebase -> compte local du Store (lifecasts_user) */
  function fbSync(){fbReady().then(()=>firebase.auth().onAuthStateChanged(x=>{if(!x||get())return;try{localStorage.setItem(K,JSON.stringify({email:x.email||"",name:x.displayName||x.email||"",picture:x.photoURL||""}))}catch(e){}badge();if(A.classList.contains("on"))show()}))}
  if(location.protocol==="file:"){const c=localStorage.getItem("lc.pair");if(c)fbReady().then(()=>fbPairWait(c));fbSync()}else pairSite();

@@ -475,7 +475,7 @@ if(window.self!==window.top)document.querySelector(".tabbar").style.bottom="14px
    await firebase.firestore().doc("pairings/"+c).update({t,uid:r.user.uid});history.replaceState(null,"",location.pathname);
    show2("C'est fait !","Votre compte est lié. Revenez dans l'application LifeStore.","Retour à l'application").onclick=()=>{location.href="lifecasts://store"};
    setTimeout(()=>{location.href="lifecasts://store"},800)}
-   catch(e){show2("Échec de la connexion",(e.code==="not-found"||e.code==="permission-denied")?"Ce lien a expiré. Relancez la connexion depuis l'application.":"Erreur : "+(e.code||e.message||e.type||"inconnue"),"Réessayer").onclick=go}};
+   catch(e){show2("Échec de la connexion",(e.code==="not-found"||e.code==="permission-denied")?"Ce lien a expiré. Relancez la connexion depuis l'application.":"Erreur : "+(e.code||e.message||e.type||String(e)||"inconnue")+" [site v1.23]","Réessayer").onclick=go}};
   document.body.appendChild(o);const b0=show2("Connexion à l'application","Chargement…","Se connecter avec Google");b0.disabled=true;fbReady().then(()=>{b0.disabled=false;show2("Connexion à l'application","Connectez-vous avec Google pour lier l'application LifeStore à votre compte.","Se connecter avec Google").onclick=go}).catch(()=>{FP=null;show2("Connexion indisponible","Vérifiez votre connexion internet.","Réessayer").onclick=()=>location.reload()})}
  /* compte Firebase -> compte local du Store (lifecasts_user) */
  function fbSync(){fbReady().then(()=>firebase.auth().onAuthStateChanged(x=>{if(!x||get())return;try{localStorage.setItem(K,JSON.stringify({email:x.email||"",name:x.displayName||x.email||"",picture:x.photoURL||""}))}catch(e){}badge();if(A.classList.contains("on"))show()}))}
