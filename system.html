@@ -81,7 +81,7 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
 #dock .dkset{width:var(--cs);height:var(--cs);border-radius:50%;display:grid;place-items:center;flex:none}
 #dock .dks{flex:1;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 #dock .dks::-webkit-scrollbar{display:none}
-#dock .dkp{flex:0 0 100%;display:flex;gap:var(--g);align-items:center;justify-content:space-between;scroll-snap-align:start;scroll-snap-stop:always}
+#dock .dkp{flex:0 0 100%;display:flex;gap:var(--g);align-items:center;justify-content:center;scroll-snap-align:start;scroll-snap-stop:always}
 #dock .ic{position:relative;flex:none}
 #dock .ic i{width:var(--ic);height:var(--ic);border-radius:50%;font-size:calc(var(--ic)*.48);box-shadow:none}
 #dock .ic span{display:none}
@@ -121,8 +121,8 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
 .set .sq.big{width:56px;height:56px;border-radius:14px}.set .sq.big svg{width:32px;height:32px}
 .set .pg>.bk2{margin:0 auto 16px 0}.set .bk2{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:rgba(128,128,128,.2);margin-bottom:16px}
 .set .hero{padding:18px 16px;margin-bottom:6px}.set .hero h2{margin:12px 0 4px;font-size:22px;font-weight:700}.set .hero p{margin:0;color:var(--muted);font-size:14px;line-height:1.4}
-.set .danger{color:#ff453a}
-.set .ver{text-align:center;color:var(--muted);font-size:13px;margin:26px 0 0}
+.set .danger{color:#ff453a}.set .btn.danger{color:#ff453a;border-color:#ff453a}
+.set .ver{text-align:center;color:var(--muted);font-size:13px;margin:26px auto 0}.set .pg>.note{padding:0 16px;margin:8px auto 0}
 .set .rw .btn{padding:6px 14px;font-size:14px;flex:none}
 .set .wps{padding:14px}
 .grp{background:var(--soft);border-radius:12px;padding:4px 14px;margin-bottom:18px}
@@ -242,7 +242,7 @@ function boot(){
 }
 
 /* Icônes : grille + dock */
-function icon(a,label){const b=E("button",{className:"ic",title:a.nom});b.dataset.app=a.id;b.innerHTML="<i>"+a.icon+"</i>"+(label?"<span>"+a.nom+"</span>":"");b.onclick=()=>open(a.id);return b}
+function icon(a,label){const b=E("button",{className:"ic",title:a.nom});b.dataset.app=a.id;b.innerHTML="<i>"+a.icon+"</i>"+(label?"<span>"+a.nom+"</span>":"");const im=b.querySelector("i>img");if(im)im.onerror=()=>{im.replaceWith(document.createTextNode((a.nom||"?")[0]))};b.onclick=()=>open(a.id);return b}
 APPS.forEach(a=>q("gridApps").append(icon(a,true)));
 /* Dock : barre ronde, apps en pages (snap scroll comme la barre de Notes) */
 function dockBuild(){const d=q("dock"),m=innerWidth<=700,p=m?6:8,ic=m?46:50,g=m?5:6,per=Math.max(3,Math.min(7,Math.floor((innerWidth-24-58-10-2*p-2+g)/(ic+g)))),key=per+"|"+m;if(d.dataset.per==key)return;d.dataset.per=key;d.innerHTML="";const L=APPS.filter(a=>a.id!=="about"&&a.id!=="settings"),bar=E("div",{className:"dkbar"}),s=E("div",{className:"dks"});bar.style.setProperty("--n",Math.min(per,L.length));for(let i=0;i<L.length;i+=per){const pg=E("div",{className:"dkp"});L.slice(i,i+per).forEach(a=>pg.append(icon(a,false)));s.append(pg)}bar.append(s);const set=E("div",{className:"dkset"});set.append(icon(APPS.find(a=>a.id==="settings"),false));d.append(bar,set);dockState()}
@@ -326,7 +326,7 @@ function settings(el){
    +'<h5>Notes</h5><div class="cd"><div class="rw"><span>Modifier les notes de la Bible<small>Depuis l\'app Notes. Les changements sont visibles dans l\'app Bible.</small></span>'+seg([["0","Non"],["1","Oui"]],S.editBible?"1":"0","data-eb")+'</div></div>'
    +'<h5>Données</h5><div class="cd"><div class="rw"><span>Note rapide</span><span class="sub" style="flex:none">'+((S.qn||"").length)+' caractères</span></div><div class="rw"><span>Notes</span><span class="sub" style="flex:none">'+((S.notes||[]).length)+' note(s)</span></div></div>'
    +'<h5>À propos</h5><div class="cd"><div class="rw"><span>Système</span><span class="sub" style="flex:none">LifeCasts System '+esc(window.LC_VER||"1.0")+'</span></div>'+APPS.filter(a=>REPOS[a.id]).map(a=>'<div class="rw"><span>'+esc(a.nom)+'</span><span class="sub" style="flex:none">'+(VER[a.id]?"v"+esc(VER[a.id].version):"—")+'</span></div>').join("")+'</div>'
-   +'<p class="sub" style="margin:8px 16px 0">Les applications se mettent à jour automatiquement depuis GitHub.</p>'
+   +'<p class="sub note">Les applications se mettent à jour automatiquement depuis GitHub.</p>'
    +'<h5>Zone de danger</h5><div class="cd"><div class="rw"><span class="danger">Réinitialiser LifeCasts System<small>Efface les réglages et les notes de cet appareil. Le compte LifeCasts n\'est pas supprimé.</small></span><button class="btn ghost danger" id="sReset" style="border-color:#ff453a">Réinitialiser</button></div></div>'
    +'<p class="ver">LifeCasts System · version '+esc(window.LC_VER||"1.0")+'</p>';
   W.querySelector("#sBk").onclick=closeSub;
