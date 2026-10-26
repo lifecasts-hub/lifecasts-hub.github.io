@@ -54,14 +54,15 @@ disk:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.
 return function(n,s){return '<svg class="ico" viewBox="0 0 24 24" width="'+(s||'1em')+'" height="'+(s||'1em')+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>'}})();
 
 /* Téléchargements : fichiers .apk / .dmg joints à la dernière Release GitHub */
+function LCBASE(repo){const r=repo.split("/")[1];return "https://lifecasts-hub.github.io/"+(/\.github\.io$/.test(r)?"":r+"/")}
 async function ghDownloads0(repo){
   try{const r=await fetch("https://api.github.com/repos/"+repo+"/contents/downloads");if(r.ok){const best={};
     for(const x of await r.json()){const n=x.name.toLowerCase(),t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":/\.(exe|msi)$/.test(n)?"Windows (EXE)":null;if(!t)continue;
-      const v=(x.name.match(/(\d+(?:\.\d+)+)/)||[])[1]||"0";if(!best[t]||vcmp(v,best[t].tag)>0)best[t]={label:t,url:"https://lifecasts-hub.github.io/"+repo.split("/")[1]+"/downloads/"+encodeURIComponent(x.name),size:x.size,tag:v}}
+      const v=(x.name.match(/(\d+(?:\.\d+)+)/)||[])[1]||"0";if(!best[t]||vcmp(v,best[t].tag)>0)best[t]={label:t,url:LCBASE(repo)+"downloads/"+encodeURIComponent(x.name),size:x.size,tag:v}}
     const out=Object.values(best);if(out.length)return out}}catch(e){}
   try{const r=await fetch("https://data.jsdelivr.com/v1/packages/gh/"+repo+"@main?structure=flat");if(r.ok){const best={};
     for(const f of (await r.json()).files||[]){const m=f.name.match(/^\/downloads\/([^/]+)$/);if(!m)continue;const n=m[1].toLowerCase(),t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":/\.(exe|msi)$/.test(n)?"Windows (EXE)":null;if(!t)continue;
-      const v=(m[1].match(/(\d+(?:\.\d+)+)/)||[])[1]||"0";if(!best[t]||vcmp(v,best[t].tag)>0)best[t]={label:t,url:"https://lifecasts-hub.github.io/"+repo.split("/")[1]+"/downloads/"+encodeURIComponent(m[1]),size:f.size,tag:v}}
+      const v=(m[1].match(/(\d+(?:\.\d+)+)/)||[])[1]||"0";if(!best[t]||vcmp(v,best[t].tag)>0)best[t]={label:t,url:LCBASE(repo)+"downloads/"+encodeURIComponent(m[1]),size:f.size,tag:v}}
     const out=Object.values(best);if(out.length)return out}}catch(e){}
   const r=await fetch("https://api.github.com/repos/"+repo+"/releases/latest");if(!r.ok)return [];const j=await r.json();
   return (j.assets||[]).map(x=>{const n=x.name.toLowerCase();const t=n.endsWith(".apk")?"Android (APK)":n.endsWith(".dmg")?"Mac (DMG)":/\.(exe|msi)$/.test(n)?"Windows (EXE)":null;return t&&{label:t,url:x.browser_download_url,size:x.size,tag:j.tag_name}}).filter(Boolean)}
@@ -72,4 +73,4 @@ async function ghCached(k,fn,fb){let c;try{c=JSON.parse(localStorage.getItem("lc
   try{const v=await fn();if(Array.isArray(v)&&!v.length&&c)return c.v;try{if(!(Array.isArray(v)&&!v.length))localStorage.setItem("lcgh:"+k,JSON.stringify({t:Date.now(),v}))}catch(e){}return v}
   catch(e){if(c)return c.v;if(fb)return fb();throw e}}
 function ghVersions(repo){return ghCached("v:"+repo,()=>ghVersions0(repo),async()=>{const v=await liveVersion(repo);return v?[{version:v,date:null,notes:""}]:[]})}
-function ghDownloads(repo){return ghCached("d2:"+repo,()=>ghDownloads0(repo),()=>[])}
+function ghDownloads(repo){return ghCached("d3:"+repo,()=>ghDownloads0(repo),()=>[])}
