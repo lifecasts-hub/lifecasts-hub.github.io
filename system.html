@@ -75,7 +75,7 @@ a{color:var(--accent)}
 textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;font:inherit;color:inherit;outline:none}
 
 /* Dock */
-#dock{--h:64px;--p:8px;--ic:calc(var(--h) - 2*var(--p));--g:4px;--sep:12px;position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:var(--sep)}
+#dock{--h:64px;--p:8px;--ic:calc(var(--h) - 2*var(--p));--g:var(--p);--sep:calc(2*var(--p));position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:var(--sep)}
 #dock .dkbar,#dock .dkset{box-sizing:border-box;height:var(--h);border-radius:calc(var(--h)/2);background:rgba(28,28,30,.88);-webkit-backdrop-filter:blur(30px) saturate(1.6);backdrop-filter:blur(30px) saturate(1.6);border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 28px rgba(0,0,0,.28)}
 #dock .dkbar{padding:var(--p);width:calc(var(--n,5)*var(--ic) + (var(--n,5) - 1)*var(--g) + 2*var(--p) + 2px);overflow:hidden;display:flex}
 #dock .dkset{width:var(--h);display:grid;place-items:center;flex:none}
@@ -230,7 +230,7 @@ function boot(){
 function icon(a,label){const b=E("button",{className:"ic",title:a.nom});b.dataset.app=a.id;b.innerHTML="<i>"+a.icon+"</i>"+(label?"<span>"+a.nom+"</span>":"");b.onclick=()=>open(a.id);return b}
 APPS.forEach(a=>q("gridApps").append(icon(a,true)));
 /* Dock : barre ronde, apps en pages (snap scroll comme la barre de Notes) */
-function dockBuild(){const d=q("dock"),m=innerWidth<=700,h=m?56:64,p=m?6:8,ic=h-2*p,per=Math.max(3,Math.min(7,Math.floor((innerWidth-24-12-h-2*p+4)/(ic+4)))),key=per+"|"+m;if(d.dataset.per==key)return;d.dataset.per=key;d.innerHTML="";const L=APPS.filter(a=>a.id!=="about"&&a.id!=="settings"),bar=E("div",{className:"dkbar"}),s=E("div",{className:"dks"});bar.style.setProperty("--n",Math.min(per,L.length));for(let i=0;i<L.length;i+=per){const pg=E("div",{className:"dkp"});L.slice(i,i+per).forEach(a=>pg.append(icon(a,false)));s.append(pg)}bar.append(s);const set=E("div",{className:"dkset"});set.append(icon(APPS.find(a=>a.id==="settings"),false));d.append(bar,set);dockState()}
+function dockBuild(){const d=q("dock"),m=innerWidth<=700,h=m?56:64,p=m?6:8,ic=h-2*p,per=Math.max(3,Math.min(7,Math.floor((innerWidth-24-2*p-h-2*p-2+p)/(ic+p)))),key=per+"|"+m;if(d.dataset.per==key)return;d.dataset.per=key;d.innerHTML="";const L=APPS.filter(a=>a.id!=="about"&&a.id!=="settings"),bar=E("div",{className:"dkbar"}),s=E("div",{className:"dks"});bar.style.setProperty("--n",Math.min(per,L.length));for(let i=0;i<L.length;i+=per){const pg=E("div",{className:"dkp"});L.slice(i,i+per).forEach(a=>pg.append(icon(a,false)));s.append(pg)}bar.append(s);const set=E("div",{className:"dkset"});set.append(icon(APPS.find(a=>a.id==="settings"),false));d.append(bar,set);dockState()}
 addEventListener("resize",dockBuild);
 document.addEventListener("click",e=>{const o=e.target.closest("[data-open]");if(o)open(o.dataset.open)});
 
