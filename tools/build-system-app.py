@@ -11,7 +11,7 @@ i=n.find('<script>/*LC-OTA*/');j=n.find('</script>',i)+9;head=re.sub(r'var B="[\
 k=n.rfind('/*LC-OTA*/');a=n.rfind('<script',0,k);b=n.find('</script>',k)+9
 mod=n[a:b].replace('APP="notes"','APP="system"').replace(R+"The-Notes-App/index.html",R+"LifeCasts-System/index.html").replace("typeof notes!==\"undefined\"","typeof LC_APPS!==\"undefined\"").replace("🔴 ","").replace("#1f2a44","#2a1c14")
 lc=rep(lc,"async function fbInit(withAuth){","let _FBI=null;function fbInit(a){return _FBI||(_FBI=fbInit0(a))}\nasync function fbInit0(withAuth){")
-s=rep(s,'<script src="lc-common.js?v=14"></script>','<script>'+lc+'</script>')
+s=rep(s,'<script src="lc-common.js?v=13"></script>','<script>'+lc+'</script>')
 s=rep(s,"function initGoogle(){","function initGoogle(){if(location.protocol===\"file:\")return fbBtn();")
 s=rep(s,"function logout(){try{","function logout(){try{if(window.firebase&&firebase.apps&&firebase.apps.length)firebase.auth().signOut()}catch(e){}try{")
 s=rep(s,'new URLSearchParams(location.search).get("app");if(want)','(new URLSearchParams(location.search).get("app")||location.hash.slice(1));if(want)')

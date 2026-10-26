@@ -18,10 +18,10 @@ function nl(s){return esc(s).replace(/\n/g,"<br>")}
 /* REGISTRE UNIQUE DES APPLICATIONS — pour publier une nouvelle app, ajouter UNE ligne ici (le dépôt doit avoir index.html + icon-192.png).
    Le site (Applications, System : dock, mises à jour, À propos) se met à jour tout seul. mot = mot-clé pour retrouver une ancienne fiche Firestore sans id. */
 const LC_APPS=[
- {id:"bible",repo:"lifecasts-hub/The-Bible-App",apk:"Bible_LifeCasts_0.9.3.apk",nom:"Bible LifeCasts",court:"Bible",mot:"bible",description:"La Parole, partout. Même hors connexion.",ordre:1},
- {id:"cantiques",repo:"lifecasts-hub/Songs-Book",apk:"Cantiques_LifeCasts_0.2.apk",nom:"Cantiques",court:"Cantiques",mot:"cantique",description:"Les chants d'autrefois, dans votre poche.",ordre:2},
- {id:"notes",repo:"lifecasts-hub/The-Notes-App",apk:"Notes_LifeCasts_1.2.apk",nom:"Notes",court:"Notes",mot:"note",description:"Vos notes et celles de la Bible, au même endroit.",ordre:3},
- {id:"system",repo:"lifecasts-hub/LifeCasts-System",apk:"LC_System_1.0.apk",nom:"LifeCasts System",court:"System",mot:"system",description:"Votre bureau LifeCasts : toutes vos applications au même endroit.",ordre:4}
+ {id:"bible",repo:"lifecasts-hub/The-Bible-App",nom:"Bible LifeCasts",court:"Bible",mot:"bible",description:"La Parole, partout. Même hors connexion.",ordre:1},
+ {id:"cantiques",repo:"lifecasts-hub/Songs-Book",nom:"Cantiques",court:"Cantiques",mot:"cantique",description:"Les chants d'autrefois, dans votre poche.",ordre:2},
+ {id:"notes",repo:"lifecasts-hub/The-Notes-App",nom:"Notes",court:"Notes",mot:"note",description:"Vos notes et celles de la Bible, au même endroit.",ordre:3},
+ {id:"system",repo:"lifecasts-hub/LifeCasts-System",nom:"LifeCasts System",court:"System",mot:"system",description:"Votre bureau LifeCasts : toutes vos applications au même endroit.",ordre:4}
 ];
 LC_APPS.forEach(a=>{a.dir=a.repo.split("/")[1];a.url="/"+a.dir+"/";a.iconUrl="https://lifecasts-hub.github.io"+a.url+"icon-192.png"});
 const REPOS=Object.fromEntries(LC_APPS.map(a=>[a.id,a.repo]));
@@ -73,6 +73,4 @@ async function ghCached(k,fn,fb){let c;try{c=JSON.parse(localStorage.getItem("lc
   try{const v=await fn();if(Array.isArray(v)&&!v.length&&c)return c.v;try{if(!(Array.isArray(v)&&!v.length))localStorage.setItem("lcgh:"+k,JSON.stringify({t:Date.now(),v}))}catch(e){}return v}
   catch(e){if(c)return c.v;if(fb)return fb();throw e}}
 function ghVersions(repo){return ghCached("v:"+repo,()=>ghVersions0(repo),async()=>{const v=await liveVersion(repo);return v?[{version:v,date:null,notes:""}]:[]})}
-/* Repli statique (si GitHub et jsDelivr ne répondent pas) : champ apk de LC_APPS, à garder à jour */
-function ghStatic(repo){const a=LC_APPS.find(x=>x.repo===repo);if(!a||!a.apk)return [];return [{label:"Android (APK)",url:LCBASE(repo)+"downloads/"+encodeURIComponent(a.apk),size:0,tag:(a.apk.match(/(\d+(?:\.\d+)+)/)||[])[1]||"0"}]}
-function ghDownloads(repo){return ghCached("d3:"+repo,async()=>{const d=await ghDownloads0(repo).catch(()=>[]);return d.length?d:ghStatic(repo)},()=>ghStatic(repo))}
+function ghDownloads(repo){return ghCached("d3:"+repo,()=>ghDownloads0(repo),()=>[])}
