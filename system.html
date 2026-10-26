@@ -228,7 +228,7 @@ function icon(a,label){const b=E("button",{className:"ic",title:a.nom});b.datase
 APPS.forEach(a=>q("gridApps").append(icon(a,true)));
 /* Dock : barre ronde, apps en pages (snap scroll comme la barre de Notes) */
 function dockBuild(){const d=q("dock"),per=innerWidth<=700?5:7;if(d.dataset.per==per)return;d.dataset.per=per;d.innerHTML="";const s=E("div",{className:"dks"}),L=APPS.filter(a=>a.id!=="about");for(let i=0;i<L.length;i+=per){const p=E("div",{className:"dkp"});p.style.setProperty("--n",per);L.slice(i,i+per).forEach(a=>p.append(icon(a,false)));s.append(p)}d.append(s);dockState()}
-dockBuild();addEventListener("resize",dockBuild);
+addEventListener("resize",dockBuild);
 document.addEventListener("click",e=>{const o=e.target.closest("[data-open]");if(o)open(o.dataset.open)});
 
 /* Fenêtres */
@@ -253,6 +253,7 @@ function close(id){wins[id].remove();delete wins[id];dockState();title()}
 function closeAll(){Object.keys(wins).forEach(close)}
 function title(){const vis=Object.entries(wins).filter(([,w])=>!w.hidden).sort((a,b)=>b[1].style.zIndex-a[1].style.zIndex)[0];q("appTitle").textContent=vis?APPS.find(a=>a.id===vis[0]).nom:"LifeCasts System"}
 function dockState(){document.querySelectorAll("#dock .ic").forEach(b=>b.classList.toggle("run",!!wins[b.dataset.app]))}
+dockBuild();
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){const t=Object.entries(wins).filter(([,w])=>!w.hidden).sort((a,b)=>b[1].style.zIndex-a[1].style.zIndex)[0];if(t)close(t[0])}});
 
 /* Menu */
