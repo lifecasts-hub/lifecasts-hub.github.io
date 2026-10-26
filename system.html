@@ -75,13 +75,13 @@ a{color:var(--accent)}
 textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;font:inherit;color:inherit;outline:none}
 
 /* Dock */
-#dock{--h:64px;--p:8px;--ic:calc(var(--h) - 2*var(--p));--g:var(--p);--sep:calc(2*var(--p));position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:var(--sep)}
+#dock{--h:65px;--cs:58px;--p:8px;--ic:50px;--g:6px;--sep:10px;position:fixed;left:50%;bottom:calc(8px + env(safe-area-inset-bottom)*.35);transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:var(--sep)}
 #dock .dkbar,#dock .dkset{box-sizing:border-box;height:var(--h);border-radius:calc(var(--h)/2);background:rgba(28,28,30,.88);-webkit-backdrop-filter:blur(30px) saturate(1.6);backdrop-filter:blur(30px) saturate(1.6);border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 28px rgba(0,0,0,.28)}
-#dock .dkbar{padding:var(--p);width:calc(var(--n,5)*var(--ic) + (var(--n,5) - 1)*var(--g) + 2*var(--p) + 2px);overflow:hidden;display:flex}
-#dock .dkset{width:var(--h);display:grid;place-items:center;flex:none}
+#dock .dkbar{padding:0 var(--p);align-items:center;width:calc(var(--n,5)*var(--ic) + (var(--n,5) - 1)*var(--g) + 2*var(--p) + 2px);overflow:hidden;display:flex}
+#dock .dkset{width:var(--cs);height:var(--cs);border-radius:50%;display:grid;place-items:center;flex:none}
 #dock .dks{flex:1;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 #dock .dks::-webkit-scrollbar{display:none}
-#dock .dkp{flex:0 0 100%;display:flex;gap:var(--g);align-items:center;scroll-snap-align:start;scroll-snap-stop:always}
+#dock .dkp{flex:0 0 100%;display:flex;gap:var(--g);align-items:center;justify-content:space-between;scroll-snap-align:start;scroll-snap-stop:always}
 #dock .ic{position:relative;flex:none}
 #dock .ic i{width:var(--ic);height:var(--ic);border-radius:50%;font-size:calc(var(--ic)*.48);box-shadow:none}
 #dock .ic span{display:none}
@@ -101,13 +101,30 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
 .win .body{flex:1;overflow:auto;padding:22px}
 @media (max-width:700px){.win{top:calc(34px + env(safe-area-inset-top));left:0;width:100vw;height:calc(100vh - 34px - env(safe-area-inset-top));transform:none;border-radius:0}.dots .x{display:none}.win .tb b{margin-right:30px}}
 
-/* Paramètres */
-.set{display:flex;height:100%;margin:-22px}
-.set nav{width:210px;flex:none;border-right:1px solid var(--line);padding:12px;background:var(--soft);display:flex;flex-direction:column;gap:2px}
-.set nav button{text-align:left;padding:8px 10px;border-radius:8px;display:flex;gap:8px;align-items:center}
-.set nav button.on{background:var(--accent);color:#fff}
-.set .pane{min-width:0;min-height:0;flex:1;overflow:auto;padding:24px}
-.set h3{margin:0 0 14px;font-size:22px}
+/* Paramètres : structure commune des apps LifeCasts (Compte > Réglages) */
+.set{position:relative;height:calc(100% + 44px);margin:-22px;overflow:hidden}
+.set .pg{position:absolute;inset:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:22px 24px 40px;background:var(--win)}
+.set .pg>*{max-width:640px;margin-left:auto;margin-right:auto}
+.set .sub2{transform:translateX(100%);transition:transform .3s ease;z-index:2}
+.set .sub2.on{transform:none}
+.set h3{margin:0 0 14px;font-size:30px;font-weight:700;letter-spacing:-.03em}
+.set h5{margin:22px 16px 6px;font-size:13px;font-weight:500;text-transform:uppercase;color:var(--muted);letter-spacing:0}
+.set .cd{background:var(--soft);border-radius:16px;overflow:hidden}
+.set .rw{display:flex;align-items:center;gap:12px;padding:11px 14px;min-height:54px;position:relative;width:100%;text-align:left}
+.set .rw+.rw::before{content:"";position:absolute;top:0;left:14px;right:0;border-top:1px solid var(--line)}
+.set .rw>span:not(.sq):not(.av){flex:1;min-width:0}.set .rw small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.set .rw img{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:none}
+.set .av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(128,128,128,.2);flex:none}
+.set .av svg,.set .bk2 svg,.set .chev{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.set .chev{margin-left:auto;opacity:.4;width:16px;height:16px;flex:none}
+.set .sq{width:32px;height:32px;border-radius:8px;background:#8e8e93;color:#fff;display:inline-grid;place-items:center;flex:none}.set .sq svg{width:20px;height:20px}
+.set .sq.big{width:56px;height:56px;border-radius:14px}.set .sq.big svg{width:32px;height:32px}
+.set .pg>.bk2{margin:0 auto 16px 0}.set .bk2{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:rgba(128,128,128,.2);margin-bottom:16px}
+.set .hero{padding:18px 16px;margin-bottom:6px}.set .hero h2{margin:12px 0 4px;font-size:22px;font-weight:700}.set .hero p{margin:0;color:var(--muted);font-size:14px;line-height:1.4}
+.set .danger{color:#ff453a}
+.set .ver{text-align:center;color:var(--muted);font-size:13px;margin:26px 0 0}
+.set .rw .btn{padding:6px 14px;font-size:14px;flex:none}
+.set .wps{padding:14px}
 .grp{background:var(--soft);border-radius:12px;padding:4px 14px;margin-bottom:18px}
 .grp>div{min-width:0;flex-wrap:wrap;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
 .grp>div:first-child{border-top:0}
@@ -119,19 +136,17 @@ textarea.qn{flex:1;min-height:110px;border:0;resize:none;background:transparent;
 .wps button.on{border-color:var(--accent)}
 .btn{display:inline-block;padding:8px 16px;border-radius:99px;background:var(--accent);color:#fff;font-weight:500;text-decoration:none}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-@media (max-width:700px){.set{flex-direction:column}.set nav{width:auto;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.set nav button{white-space:nowrap}}
 @media (max-width:700px){
  .win,.win.max{height:calc(100vh - 34px - env(safe-area-inset-top));height:calc(100dvh - 34px - env(safe-area-inset-top))}
  #desk{padding:20px 12px 110px}
  .tile{padding:16px;min-height:0}
  .clock{font-size:44px}
- #dock{--h:56px;--p:6px}
+ #dock{--p:6px;--ic:46px;--g:5px}
  #bar{gap:6px;padding-left:8px;padding-right:8px}
  #barClock{font-size:12px}
  .win .body{padding:16px}
- .set{margin:-16px}
- .set nav{padding:8px;flex:none}
- .set .pane{padding:16px}
+ .set{margin:-16px;height:calc(100% + 32px)}
+ .set .pg{padding:16px 16px 40px}
  .me span{font-size:12px}
  .seg button{padding:5px 9px}
 }
@@ -230,7 +245,7 @@ function boot(){
 function icon(a,label){const b=E("button",{className:"ic",title:a.nom});b.dataset.app=a.id;b.innerHTML="<i>"+a.icon+"</i>"+(label?"<span>"+a.nom+"</span>":"");b.onclick=()=>open(a.id);return b}
 APPS.forEach(a=>q("gridApps").append(icon(a,true)));
 /* Dock : barre ronde, apps en pages (snap scroll comme la barre de Notes) */
-function dockBuild(){const d=q("dock"),m=innerWidth<=700,h=m?56:64,p=m?6:8,ic=h-2*p,per=Math.max(3,Math.min(7,Math.floor((innerWidth-24-2*p-h-2*p-2+p)/(ic+p)))),key=per+"|"+m;if(d.dataset.per==key)return;d.dataset.per=key;d.innerHTML="";const L=APPS.filter(a=>a.id!=="about"&&a.id!=="settings"),bar=E("div",{className:"dkbar"}),s=E("div",{className:"dks"});bar.style.setProperty("--n",Math.min(per,L.length));for(let i=0;i<L.length;i+=per){const pg=E("div",{className:"dkp"});L.slice(i,i+per).forEach(a=>pg.append(icon(a,false)));s.append(pg)}bar.append(s);const set=E("div",{className:"dkset"});set.append(icon(APPS.find(a=>a.id==="settings"),false));d.append(bar,set);dockState()}
+function dockBuild(){const d=q("dock"),m=innerWidth<=700,p=m?6:8,ic=m?46:50,g=m?5:6,per=Math.max(3,Math.min(7,Math.floor((innerWidth-24-58-10-2*p-2+g)/(ic+g)))),key=per+"|"+m;if(d.dataset.per==key)return;d.dataset.per=key;d.innerHTML="";const L=APPS.filter(a=>a.id!=="about"&&a.id!=="settings"),bar=E("div",{className:"dkbar"}),s=E("div",{className:"dks"});bar.style.setProperty("--n",Math.min(per,L.length));for(let i=0;i<L.length;i+=per){const pg=E("div",{className:"dkp"});L.slice(i,i+per).forEach(a=>pg.append(icon(a,false)));s.append(pg)}bar.append(s);const set=E("div",{className:"dkset"});set.append(icon(APPS.find(a=>a.id==="settings"),false));d.append(bar,set);dockState()}
 addEventListener("resize",dockBuild);
 document.addEventListener("click",e=>{const o=e.target.closest("[data-open]");if(o)open(o.dataset.open)});
 
@@ -288,25 +303,40 @@ function ageUI(p){const V=p.querySelector("#sAge"),B=p.querySelector("#sAgeB"),Y
    who().then(x=>firebase.firestore().doc("users/"+x.uid).set({by:v?Y-v:0},{merge:true})).then(()=>{i.remove();ok.remove();load()}).catch(()=>{ok.disabled=false;ok.textContent="Réessayer"})}};
  load()}
 function settings(el){
- const P={compte:[ICO("user"),"Compte"],apparence:[ICO("palette"),"Apparence"],fond:[ICO("image"),"Fond d'écran"],notes:[ICO("book"),"Notes"],stockage:[ICO("disk"),"Données"],apropos:[ICO("info"),"À propos"]};
- el.innerHTML='<div class="set"><nav></nav><div class="pane"></div></div>';
- const nav=el.querySelector("nav"),pane=el.querySelector(".pane");
- function show(k){nav.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));const u=user();
-  if(k==="compte")pane.innerHTML='<h3>Compte</h3><div class="grp"><div><div class="me"><img src="'+esc(u&&u.picture||"favicon.png")+'" referrerpolicy="no-referrer" alt=""><div><b>'+esc(u?u.name||"":"Invité")+'</b><span>'+esc(u?u.email:"Non connecté")+'</span></div></div></div><div><span>Connexion</span><span class="sub">'+(u?"Google":"—")+'</span></div><div><span>Membre depuis</span><span class="sub">'+(u&&u.since?new Date(u.since).toLocaleDateString("fr-FR"):"—")+'</span></div>'+(u?'<div><span>Âge</span><span style="display:flex;gap:8px;align-items:center"><span class="sub" id="sAge">…</span><button class="btn ghost" id="sAgeB" hidden>Modifier</button></span></div>':'')+'</div><button class="btn" id="sOut">'+(u?"Se déconnecter":"Se connecter")+'</button>';
-  if(k==="apparence")pane.innerHTML='<h3>Apparence</h3><div class="grp"><div><span>Thème</span><div class="seg">'+[["light","Clair"],["dark","Sombre"],["auto","Auto"]].map(t=>'<button data-t="'+t[0]+'" class="'+((S.theme||"auto")===t[0]?"on":"")+'">'+t[1]+'</button>').join("")+'</div></div></div>';
-  if(k==="fond")pane.innerHTML='<h3>Fond d\'écran</h3><div class="wps">'+Object.entries(WP).map(([n,g])=>'<button data-w="'+n+'" class="'+((S.wp||"braise")===n?"on":"")+'" style="background:'+g+'" title="'+n+'"></button>').join("")+'</div>';
-  if(k==="stockage")pane.innerHTML='<h3>Données</h3><div class="grp"><div><span>Note rapide</span><span class="sub">'+((S.qn||"").length)+' caractères</span></div><div><span>Notes</span><span class="sub">'+((S.notes||[]).length)+' note(s)</span></div></div><button class="btn ghost" id="sReset">Réinitialiser LifeCasts System sur cet appareil</button>';
-  if(k==="notes")pane.innerHTML='<h3>Notes</h3><div class="grp"><div><span>Modifier les notes de la Bible<span class="sub" style="display:block">Depuis l\'app Notes. Les changements sont visibles dans l\'app Bible.</span></span><div class="seg"><button data-eb="0" class="'+(S.editBible?"":"on")+'">Non</button><button data-eb="1" class="'+(S.editBible?"on":"")+'">Oui</button></div></div></div>';
-  if(k==="apropos")pane.innerHTML='<h3>À propos</h3><div class="grp"><div><span>Système</span><span class="sub">LifeCasts System '+(window.LC_VER||"1.0")+'</span></div>'+APPS.filter(a=>REPOS[a.id]).map(a=>'<div><span>'+a.nom+'</span><span class="sub">'+(VER[a.id]?"v"+esc(VER[a.id].version):"—")+'</span></div>').join("")+'</div><p class="sub">Les applications se mettent à jour automatiquement depuis GitHub.</p>';
-  const o=pane.querySelector("#sOut");if(o)o.onclick=logout;
-  if(k==="compte"&&u)ageUI(pane);
-  pane.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{S.theme=b.dataset.t;save();theme();show(k)});
-  pane.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{S.wp=b.dataset.w;save();theme();show(k)});
-  pane.querySelectorAll("[data-eb]").forEach(b=>b.onclick=()=>{const on=b.dataset.eb==="1";if(on&&!S.editBible&&!confirm("Autoriser la modification des notes de la Bible depuis Notes ?"))return;S.editBible=on;save();show(k)});
-  const r=pane.querySelector("#sReset");if(r)r.onclick=()=>{if(confirm("Effacer les réglages et notes de LifeCasts System sur cet appareil ?")){localStorage.removeItem(SK);location.reload()}};
- }
- Object.entries(P).forEach(([k,[i,t]])=>{const b=E("button",{innerHTML:"<span style=\"display:flex\">"+i+"</span>"+t});b.dataset.k=k;b.onclick=()=>show(k);nav.append(b)});
- show("compte");
+ /* Structure commune LifeCasts : page Compte, ligne « Réglages › », sous-page qui glisse depuis la droite */
+ const CH='<svg class="chev" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>',OKS='<svg class="chev" style="opacity:1;width:20px;height:20px" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+ el.innerHTML='<div class="set"><div class="pg" id="sMain"></div></div>';
+ const root=el.querySelector(".set"),main=root.querySelector("#sMain");let sub=null;
+ const seg=(a,cur,at)=>'<div class="seg">'+a.map(t=>'<button '+at+'="'+t[0]+'" class="'+(String(cur)===t[0]?"on":"")+'">'+t[1]+'</button>').join("")+'</div>';
+ function drawMain(){const u=user();
+  main.innerHTML='<h3>Compte</h3><div class="cd"><div class="rw"><span class="av">'+ICO("user","20px")+'</span><span>'+esc(u?u.email:"Non connecté")+'</span></div>'
+   +(u?'<div class="rw"><img src="'+esc(u.picture||"favicon.png")+'" referrerpolicy="no-referrer" alt=""><span>'+esc(u.name||"")+'<small>Google</small></span>'+OKS+'</div>':'<button class="rw" id="sOut"><span class="av">'+ICO("user","20px")+'</span><span>Se connecter</span></button>')+'</div>'
+   +(u?'<h5>Ce compte</h5><div class="cd"><div class="rw"><span>Âge<small id="sAge">…</small></span><button class="btn ghost" id="sAgeB" hidden>Modifier</button></div>'
+     +(u.since?'<div class="rw"><span>Membre depuis<small>'+new Date(u.since).toLocaleDateString("fr-FR")+'</small></span></div>':'')
+     +'<button class="rw" id="sOut"><span>Se déconnecter</span></button></div>':'')
+   +'<div class="cd" style="margin-top:22px"><button class="rw" id="sSet"><span class="sq">'+ICO("gear","20px")+'</span><span>Réglages</span>'+CH+'</button></div>';
+  const o=main.querySelector("#sOut");if(o)o.onclick=logout;
+  main.querySelector("#sSet").onclick=openSub;
+  if(u)ageUI(main)}
+ function drawSub(){const W=sub;if(!W)return;
+  W.innerHTML='<button class="bk2" id="sBk" aria-label="Retour"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>'
+   +'<div class="cd hero"><span class="sq big">'+ICO("gear","32px")+'</span><h2>Réglages</h2><p>Apparence, fond d\'écran, notes et données de LifeCasts System.</p></div>'
+   +'<h5>Apparence</h5><div class="cd"><div class="rw"><span>Thème</span>'+seg([["light","Clair"],["dark","Sombre"],["auto","Auto"]],S.theme||"auto","data-t")+'</div></div>'
+   +'<h5>Fond d\'écran</h5><div class="cd"><div class="wps">'+Object.entries(WP).map(([n,g])=>'<button data-w="'+n+'" class="'+((S.wp||"braise")===n?"on":"")+'" style="background:'+g+'" title="'+n+'"></button>').join("")+'</div></div>'
+   +'<h5>Notes</h5><div class="cd"><div class="rw"><span>Modifier les notes de la Bible<small>Depuis l\'app Notes. Les changements sont visibles dans l\'app Bible.</small></span>'+seg([["0","Non"],["1","Oui"]],S.editBible?"1":"0","data-eb")+'</div></div>'
+   +'<h5>Données</h5><div class="cd"><div class="rw"><span>Note rapide</span><span class="sub" style="flex:none">'+((S.qn||"").length)+' caractères</span></div><div class="rw"><span>Notes</span><span class="sub" style="flex:none">'+((S.notes||[]).length)+' note(s)</span></div></div>'
+   +'<h5>À propos</h5><div class="cd"><div class="rw"><span>Système</span><span class="sub" style="flex:none">LifeCasts System '+esc(window.LC_VER||"1.0")+'</span></div>'+APPS.filter(a=>REPOS[a.id]).map(a=>'<div class="rw"><span>'+esc(a.nom)+'</span><span class="sub" style="flex:none">'+(VER[a.id]?"v"+esc(VER[a.id].version):"—")+'</span></div>').join("")+'</div>'
+   +'<p class="sub" style="margin:8px 16px 0">Les applications se mettent à jour automatiquement depuis GitHub.</p>'
+   +'<h5>Zone de danger</h5><div class="cd"><div class="rw"><span class="danger">Réinitialiser LifeCasts System<small>Efface les réglages et les notes de cet appareil. Le compte LifeCasts n\'est pas supprimé.</small></span><button class="btn ghost danger" id="sReset" style="border-color:#ff453a">Réinitialiser</button></div></div>'
+   +'<p class="ver">LifeCasts System · version '+esc(window.LC_VER||"1.0")+'</p>';
+  W.querySelector("#sBk").onclick=closeSub;
+  W.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{S.theme=b.dataset.t;save();theme();drawSub()});
+  W.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{S.wp=b.dataset.w;save();theme();drawSub()});
+  W.querySelectorAll("[data-eb]").forEach(b=>b.onclick=()=>{const on=b.dataset.eb==="1";if(on&&!S.editBible&&!confirm("Autoriser la modification des notes de la Bible depuis Notes ?"))return;S.editBible=on;save();drawSub()});
+  W.querySelector("#sReset").onclick=()=>{if(confirm("Effacer les réglages et notes de LifeCasts System sur cet appareil ?")){localStorage.removeItem(SK);location.reload()}}}
+ function openSub(){if(sub)return;sub=E("div",{className:"pg sub2"});root.append(sub);drawSub();sub.scrollTop=0;requestAnimationFrame(()=>requestAnimationFrame(()=>sub&&sub.classList.add("on")))}
+ function closeSub(){const W=sub;if(!W)return;sub=null;W.classList.remove("on");setTimeout(()=>W.remove(),300)}
+ drawMain();
 }
 function brochures(el){el.innerHTML='<div style="max-width:560px;margin:20px auto;text-align:center"><div style="color:var(--accent)">'+ICO("book","64px")+'</div><h2 style="font-size:30px;letter-spacing:-.03em;margin:8px 0">Brochures LifeCasts</h2><p class="sub" style="font-size:16px">Des brochures tirées des bandes du Message de William Branham, imprimées et distribuées avec soin.</p><p style="margin-top:18px">Pour recevoir une brochure, écrivez-nous depuis la page de contact du site.</p><p style="margin-top:18px"><a class="btn" href="index.html#contact" target="_blank">Nous écrire</a></p></div>'}
 function about(el){el.innerHTML='<div style="text-align:center;padding:20px"><div class="mark" style="margin:0 auto"><img src="system-icon.png?v=1" alt=""></div><h2 style="margin:14px 0 4px">LifeCasts System</h2><p class="sub">Version '+(window.LC_VER||"1.0")+'</p><p style="max-width:440px;margin:16px auto 0">Un espace unique pour les applications LifeCasts : Bible, Cantiques, vos réglages et votre compte.</p><p class="sub" style="margin-top:16px">© '+new Date().getFullYear()+' LifeCasts · <a href="confidentialite.html" target="_blank">Confidentialité</a> · <a href="conditions.html" target="_blank">Conditions</a></p></div>'}
